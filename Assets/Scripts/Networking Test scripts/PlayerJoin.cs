@@ -5,16 +5,19 @@ using UnityEngine;
 using UnityEngine.Networking;
 using Unity.Netcode;
 using Unity.Networking.Transport;
+using System;
 
 public class PlayerJoin : NetworkBehaviour
 {
-    [ClientRpc]
-    private void PlayerJoinedClientRPC()
+    [Rpc(SendTo.Everyone)]
+    private void JoinRpc()
     {
         Debug.Log("joined");
     }
 
-    private void Awake() { }
-
-    public override void OnNetworkSpawn() { }
+    private void Start()
+    {
+        if (IsClient && !IsServer)
+            JoinRpc();
+    }
 }
