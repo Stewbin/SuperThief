@@ -12,6 +12,8 @@ public class InputManager : MonoBehaviour
 
     private PlayerLook look;
 
+    public Joystick joyStick;
+
 
 
     void Awake()
@@ -29,6 +31,8 @@ public class InputManager : MonoBehaviour
 
         //move using value from input action
         motor.Move(onFoot.Movement.ReadValue<Vector2>());
+
+        
     }
 
     private void LateUpdate()
