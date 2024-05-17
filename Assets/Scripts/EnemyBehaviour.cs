@@ -1,9 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
-using Palmmedia.ReportGenerator.Core.Parser.Analysis;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.UIElements;
+
 
 public class EnemyBehaviour : MonoBehaviour
 {
@@ -16,7 +13,7 @@ public class EnemyBehaviour : MonoBehaviour
     public float MoveSpeed = 1f;
     public float StoppingDistance = 0.5f;
     public float WanderDistance = 1f;
-    States CurrentState = States.Wander;
+    [SerializeField] States CurrentState = States.Wander;
     private NavMeshAgent Agent;
     Vector3 HomePoint;
     public Transform Player;
@@ -30,24 +27,27 @@ public class EnemyBehaviour : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void LateUpdate()
     {
         Agent.stoppingDistance = StoppingDistance;
         Agent.speed = MoveSpeed;       
         // Update CurrentState
-        CurrentState = SensePlayer() ? States.Chase : States.Wander;
+        //CurrentState = SensePlayer() ? States.Chase : States.Wander;
 
         if(CurrentState == States.Wander)
         {
-            if(Agent.pathStatus == NavMeshPathStatus.PathComplete)
+            if(Agent.isPathStale)
             {
                 Agent.SetDestination(RandomPoint(HomePoint));
             }
         } 
-        if(CurrentState == States.Chase)
+        else if(CurrentState == States.Chase)
         {
             Agent.SetDestination(Player.position);
         }
+
+        Debug.DrawRay(transform.position, Agent.destination, Color.green);
+
     }
 
     bool SensePlayer()
