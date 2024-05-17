@@ -32,24 +32,27 @@ public class EnemyBehaviour : MonoBehaviour
         Agent.stoppingDistance = StoppingDistance;
         Agent.speed = MoveSpeed;       
         // Update CurrentState
-        //CurrentState = SensePlayer() ? States.Chase : States.Wander;
-
+        CurrentState = SensePlayer() ? States.Chase : States.Wander;
+        
         if(CurrentState == States.Wander)
         {
-            if(Agent.isPathStale)
+            if(!Agent.pathPending)
             {
-                Agent.SetDestination(RandomPoint(HomePoint));
+                Vector3 rando = RandomPoint(HomePoint);
+                Debug.Log($"Random point: {rando}");
+                Agent.SetDestination(rando);
             }
         } 
         else if(CurrentState == States.Chase)
         {
             Agent.SetDestination(Player.position);
-        }
-
-        Debug.DrawRay(transform.position, Agent.destination, Color.green);
-
+        }      
     }
 
+    /// <summary>
+    /// Draws a rectangular steradian of a sphere of Physics Raycasts.
+    /// </summary>
+    /// <returns>True if object tagged with "Player" is hit.</returns>
     bool SensePlayer()
     {
         // Convert degrees to radians
@@ -76,12 +79,14 @@ public class EnemyBehaviour : MonoBehaviour
 
     Vector3 RandomPoint(Vector3 centerPoint)
     {
-        Vector3 randomPoint = centerPoint + Random.insideUnitSphere * WanderDistance; //random point in a sphere
+        Vector3 randomPoint = centerPoint + Random.insideUnitSphere * WanderDistance; // Random point in a sphere
+        
         NavMeshHit hit;
-        if (NavMesh.SamplePosition(randomPoint, out hit, 1.0f, NavMesh.AllAreas)) 
-            return hit.position;
-        else 
-            return Vector3.zero;
+        // Find closest point to randomPoint by projecting onto NavMesh 
+        if (NavMesh.SamplePosition(randomPoint, out hit, WanderDistance, NavMesh.AllAreas))
+            return hit.position; // Move to projected point
+        else
+            return centerPoint; // Return to center
     }
 }
 
