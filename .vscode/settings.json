@@ -51,6 +51,11 @@
       "temp/": true,
       "Temp/": true
     },
+
     "dotnet.defaultSolution": "SuperTheif.sln",
     "dotnet.preferCSharpExtension": true
   }
+
+    "dotnet.defaultSolution": "supertheif.sln"
+}
+
