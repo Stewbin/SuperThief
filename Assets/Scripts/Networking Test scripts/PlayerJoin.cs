@@ -9,7 +9,7 @@ using System;
 
 public class PlayerJoin : NetworkBehaviour
 {
-    [Rpc(SendTo.Everyone)]
+   // [Rpc(SendTo.Everyone)]
     private void JoinRpc()
     {
         Debug.Log("joined");
