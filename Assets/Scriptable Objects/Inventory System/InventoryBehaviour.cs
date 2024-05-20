@@ -1,25 +1,25 @@
 using UnityEngine;
 using System.Collections.Generic;
-using Unity.VisualScripting;
+using System;
+using UnityEngine.Assertions;
 
 public class InventoryBehaviour : MonoBehaviour {
     [SerializeField] private List<ItemStack> Inventory = new();
 
     // Picking up items
     private void OnTriggerEnter(Collider other) {
+        
+        Debug.Log("Entered Collider");
+        //Assert.IsTrue(TryGetComponent<ItemBehaviour>(out ItemBehaviour ib));
         // Add item to inventory 
-        if(TryGetComponent(out ItemBehaviour itemStack)) {
-            
-            Destroy(other.gameObject);
+        if(other.TryGetComponent(out ItemBehaviour Item)) 
+        {
+            Inventory.Add(Item.itemStack); 
+            Destroy(Item.gameObject); 
         }
-    }
-
-    public class ItemStack
-    {
-        public ItemDetails Item;
-        public int amount {get; private set;} = 1;
-
-        public void AddAmount(int amount) {this.amount += amount;}
-
+        else 
+        {
+            Debug.Log("ItemBehaviour not found");
+        }
     }
 }

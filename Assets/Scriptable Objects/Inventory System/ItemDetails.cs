@@ -9,7 +9,7 @@ public enum ItemType
 }
 
 /// <summary>
-/// The Scriptable Object class from which all Item Scriptable Objects iherit from.
+/// The Scriptable Object class from which all Item Scriptable Objects iherit from. 
 /// Despite the name, this class is NOT meant to be instantiated or live as any sort of
 /// object anywhere.
 /// </summary>
