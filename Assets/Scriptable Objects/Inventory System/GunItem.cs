@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "New Gun Item", menuName = "Invetory System/GunItem")]
-public class GunItem : ItemObject {
+public class GunItem : ItemDetails {
     public event UseItem OnShoot;
     [SerializeField] private int BulletsPerClip; 
     [SerializeField] private int BulletsPerSecond;
