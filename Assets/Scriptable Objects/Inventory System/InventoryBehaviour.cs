@@ -9,7 +9,7 @@ public class InventoryBehaviour : MonoBehaviour {
     // Picking up items
     private void OnTriggerEnter(Collider other) {
         
-        Debug.Log("Entered Collider");
+        Debug.Log(other.name);
         //Assert.IsTrue(TryGetComponent<ItemBehaviour>(out ItemBehaviour ib));
         // Add item to inventory 
         if(other.TryGetComponent(out ItemBehaviour Item)) 
