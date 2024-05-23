@@ -16226,7 +16226,6 @@ GameObject:
   - component: {fileID: 1046401589}
   - component: {fileID: 1046401588}
   - component: {fileID: 1046401587}
-  - component: {fileID: 1046401586}
   - component: {fileID: 1046401591}
   m_Layer: 7
   m_Name: Item
@@ -16235,22 +16234,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1046401586
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1046401585}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 08cc6f03c672b1c488e980b3049e7b87, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  holdDuration: 5
-  holdInteract: 1
-  multipleUse: 0
-  isInteractable: 1
 --- !u!65 &1046401587
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -16346,13 +16329,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 1046401585}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ccf4e0b8c04365c47a591d149b21ff5f, type: 3}
+  m_Script: {fileID: 11500000, guid: 08cc6f03c672b1c488e980b3049e7b87, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  holdDuration: 0
+  holdDuration: 5
   holdInteract: 1
   multipleUse: 0
   isInteractable: 1
+  tooltipMessage: D
 --- !u!43 &1165513413
 Mesh:
   m_ObjectHideFlags: 0
