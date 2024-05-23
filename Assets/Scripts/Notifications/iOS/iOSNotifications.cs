@@ -35,7 +35,7 @@ public class iOSNotifications : MonoBehaviour
         var timeTrigger = new iOSNotificationTimeIntervalTrigger()
         {
             TimeInterval = new System.TimeSpan(0, fireTimeInMinutes, 0),
-            Repeats = false
+            Repeats = true
         };
 
         var notification = new iOSNotification()
