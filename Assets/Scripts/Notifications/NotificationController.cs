@@ -18,7 +18,7 @@ public class NotificationController : MonoBehaviour
     {
         if (focus == false)
         {
-            iosNotifications.SendNotification("Testing Notifications", "Notification now works", "Testing stuff", 1);
+            iosNotifications.SendNotification("SUPERTHIEF", "Notification now works", "Lunexis", 1);
         }
     }
 }
