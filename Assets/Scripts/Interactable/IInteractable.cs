@@ -11,6 +11,8 @@ public interface IInteractable
     bool IsInteractable { get; }
     bool MultipleUse { get; }
 
+    string ToolTipMessage {get;}
+
 
     void OnInteract()
     {
