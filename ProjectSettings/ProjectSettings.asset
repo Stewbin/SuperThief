@@ -13,7 +13,7 @@ PlayerSettings:
   useOnDemandResources: 0
   accelerometerFrequency: 60
   companyName: Lunexis Technologies
-  productName: SuperThief
+  productName: SUPERTHIEF
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0, g: 0, b: 0, a: 1}
@@ -165,7 +165,7 @@ PlayerSettings:
   androidSupportedAspectRatio: 1
   androidMaxAspectRatio: 2.1
   applicationIdentifier:
-    iPhone: com.Lunexis-Technologies.SuperThief
+    iPhone: com.Lunexis-Technologies.SUPERTHIEF
   buildNumber:
     Standalone: 0
     VisionOS: 0
