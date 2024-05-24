@@ -11,4 +11,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Christian.unity
     guid: 851cd6eb5e57b0143852710f8af7266c
+  - enabled: 1
+    path: Assets/Scenes/Networking scenes/Networking.unity
+    guid: db7d63bb93b090c4ab98920237682214
+  - enabled: 1
+    path: Assets/Scenes/Networking scenes/MainMenu.unity
+    guid: b720b59774e7d4f4ca0c798957f7dc9e
   m_configObjects: {}
