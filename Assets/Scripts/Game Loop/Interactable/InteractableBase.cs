@@ -27,7 +27,7 @@ public bool IsInteractable => isInteractable;
 public string ToolTipMessage => tooltipMessage; 
 
 public virtual void OnInteract(){
-    Debug.Log("INTERACTED:  " + gameObject.name); 
+    //Debug.Log("INTERACTED:  " + gameObject.name); 
 }
 
 
