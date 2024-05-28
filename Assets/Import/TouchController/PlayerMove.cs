@@ -26,6 +26,9 @@ public class PlayerMove : MonoBehaviour
     void Start()
     {
         controller= GetComponent<CharacterController>();
+        Transform newTrans = SpawnManager.instance.GetSpawnPoints();
+        transform.position = newTrans.position;
+        transform.rotation = newTrans.rotation;
     }
 
     

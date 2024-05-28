@@ -31,12 +31,12 @@ namespace VHS
     if (Touchscreen.current.primaryTouch.press.isPressed)
     {
         interactionInputData.InteractedClicked = true;
-        print("Touch press detected");
+        //print("Touch press detected");
     }
     else if (!Touchscreen.current.primaryTouch.press.isPressed)
     {
         interactionInputData.InteractedReleased = true;
-        print("Touch release detected");
+        //print("Touch release detected");
     }
     else
     {
@@ -56,7 +56,7 @@ namespace VHS
 
             touchPosition = Touchscreen.current.primaryTouch.position.ReadValue();
 
-            print(touchPosition);
+            //print(touchPosition);
 
 
 
