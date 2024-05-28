@@ -9,6 +9,7 @@ public class CamEncircler : MonoBehaviour
 {
     public Transform target;
     public float speed = 1f;
+    public Vector3 newPosition;
 
     void LateUpdate()
     {
@@ -19,9 +20,10 @@ public class CamEncircler : MonoBehaviour
         // Circle around target
         float radius = Vector3.Magnitude(Vector3.ProjectOnPlane(targetDirection, Vector3.up)); // Project direction into xz plane, then take Magnitude
         float t = speed * Time.time;
-        transform.position = radius * new Vector3(Mathf.Cos(t), 0, Mathf.Sin(t)) + // Circular motion
-        target.position + // Translate center to target
-        transform.position.y * Vector3.up; // Translate y-coord to cam level
+        newPosition = radius * new Vector3(Mathf.Cos(t), 0, Mathf.Sin(t)) + // Circular motion
+        new Vector3(target.position.x, transform.position.y, target.position.z);  // Translate center to target and y-coord to cam level
+
+        transform.position = newPosition;
         
     }
 }
