@@ -8,8 +8,9 @@ public class CompassController : MonoBehaviour
     public Transform[] Objectives;
     public RectTransform[] Markers; 
     public GameObject Player;
-    public float CompassWidth = 526;
-    [SerializeField] private float angle;
+    public bool ShouldShrinkMarkers;
+    [SerializeField] private RectTransform NSWE;
+    private float CompassWidth;
     private float fov;
     private Vector2 xzForward;
 
@@ -18,41 +19,60 @@ public class CompassController : MonoBehaviour
     {
         // Player = GameObject.FindWithTag("Player");
         fov = Player.GetComponentInChildren<Camera>().fieldOfView;
-        xzForward = new Vector2(Player.transform.forward.x, Player.transform.forward.z);
+        CompassWidth = GetComponent<RectTransform>().rect.width;
     }
 
     // Update is called once per frame
     void Update()
     {
         for (int i = 0; i < Objectives.Length; i++)
+        {   
+            // Foward vector, translated into XZ plane
+            xzForward = new Vector2(Player.transform.forward.x, Player.transform.forward.z);
+            // Direction to objective
+            Vector3 objectiveDirection = Objectives[i].position - Player.transform.position;
+            SetMarker(objectiveDirection, Markers[i]);   
+        }
+
+        // Cardinal Directions
+        Vector3[] directions = {Vector3.forward, Vector3.back, Vector3.right, Vector3.left};
+        for (int i = 0; i < 4; i++)
         {
-            SetObjectiveMarker(Objectives[i], Markers[i]);   
+            SetMarker(directions[i], (RectTransform)NSWE.GetChild(i));
         }
     }
 
-    void SetObjectiveMarker(Transform objective, RectTransform marker) 
+    void SetMarker(Vector3 objectiveDirection, RectTransform marker, float size=1) 
     {
         // Calculate position on compass
-        Vector3 Distance = objective.position - Player.transform.position;
-        Vector2 xzDistance = new Vector2(Distance.x, Distance.z);
+        Vector2 xzDirection = new(objectiveDirection.x, objectiveDirection.z);
 
-        angle = Vector2.SignedAngle(xzDistance, xzForward);
-        if(Mathf.Abs(angle) > fov)
+        float angle = Vector2.SignedAngle(xzDirection, xzForward);
+        float percentage = angle / fov;
+        
+        
+        if(Mathf.Abs(percentage) > 1.2)
         {
             marker.gameObject.SetActive(false);
         }
         else 
         {
-            Vector2 newPosition = Mathf.Clamp(2 * angle / fov, -1, 1) * Vector2.right;
-            marker.anchoredPosition = CompassWidth / 2 * newPosition; 
+            marker.gameObject.SetActive(true);
+            
+            Vector2 newPosition = CompassWidth / 2 * Mathf.Clamp(percentage, -1, 1) * Vector2.right;
+            marker.anchoredPosition = newPosition; 
         }
         
         // Calculate size of marker
-
-        // Gizmos
+        if(ShouldShrinkMarkers)
+        {
+            marker.localScale *= size;
+        }
+        // Gizmos for testing
         /*
+        Debug.Log($"{objective.name}: {percentage}");
         Debug.DrawRay(Player.transform.position, Player.transform.forward, Color.green);
-        Debug.DrawRay(Player.transform.position, Distance, Color.red);
+        Debug.DrawRay(Player.transform.position, Direction, Color.red);
         */
     }
 }
