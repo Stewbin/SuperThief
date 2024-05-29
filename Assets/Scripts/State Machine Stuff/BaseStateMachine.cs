@@ -8,9 +8,10 @@ public class BaseStateMachine : MonoBehaviour
         [SerializeField] private BaseState _initialState;
         public BaseState CurrentState {get; set;}
         private Dictionary<Type, Component> _cachedComponents;
-        void Start()
+        
+        private void Awake()
         {
-            CurrentState = _initialState;
+            Init();
             _cachedComponents = new Dictionary<Type, Component>();
         }
 
@@ -20,7 +21,7 @@ public class BaseStateMachine : MonoBehaviour
         }
 
         /// <summary>
-        /// Custom GetComponent method that is memoized; will 
+        /// Custom GetComponent method that will 
         /// return previously fetched components from cache instead of 
         /// accessing like normal. (The tutorial recommends this).
         /// </summary>
@@ -37,5 +38,15 @@ public class BaseStateMachine : MonoBehaviour
                 _cachedComponents.Add(typeof(T), component);
             }
             return component;
+        }
+
+        public virtual void Init()
+        {
+            CurrentState = _initialState;
+        }
+
+        public virtual void Execute()
+        {
+            CurrentState.Execute(this);
         }
     }
