@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using Photon.Pun;
 
-public class FixedTouchField : MonoBehaviourPunCallbacks , IPointerDownHandler, IPointerUpHandler
+public class FixedTouchField : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointerUpHandler
 {
     [HideInInspector]
     public Vector2 TouchDist;
@@ -18,16 +18,13 @@ public class FixedTouchField : MonoBehaviourPunCallbacks , IPointerDownHandler, 
     // Use this for initialization
     void Start()
     {
-
+        // Initialization code can go here if needed
     }
 
     // Update is called once per frame
     void Update()
     {
-
-        if(photonView.IsMine) {
-       
-if (Pressed)
+        if (Pressed)
         {
             if (PointerId >= 0 && PointerId < Input.touches.Length)
             {
@@ -42,36 +39,19 @@ if (Pressed)
         }
         else
         {
-            TouchDist = new Vector2();
-        }
-        
+            TouchDist = Vector2.zero;
         }
     }
 
     public void OnPointerDown(PointerEventData eventData)
     {
-
-if(photonView.IsMine){
-  Pressed = true;
+        Pressed = true;
         PointerId = eventData.pointerId;
         PointerOld = eventData.position;
-}
-
-      
-        
-        
     }
-
 
     public void OnPointerUp(PointerEventData eventData)
     {
-
-        if(photonView.IsMine){
- Pressed = false;
-        }
-       
-
-        
-       
+        Pressed = false;
     }
 }

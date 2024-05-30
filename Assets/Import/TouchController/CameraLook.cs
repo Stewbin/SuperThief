@@ -11,17 +11,14 @@ public class CameraLook : MonoBehaviourPunCallbacks
     [SerializeField] private Transform PlayerBody;
     public Vector2 LockAxis;
     [SerializeField] public float Sensivity = 5f;
-    void Start()
-    {
-        
-    }
+
 
     
     void LateUpdate()
     {
        
-       if(photonView.IsMine){
- XMove = LockAxis.x * Sensivity * Time.deltaTime;
+  
+        XMove = LockAxis.x * Sensivity * Time.deltaTime;
         YMove = LockAxis.y * Sensivity * Time.deltaTime;
         XRotation -= YMove;
         XRotation = Mathf.Clamp(XRotation, -90f, 90f);
@@ -29,9 +26,9 @@ public class CameraLook : MonoBehaviourPunCallbacks
         transform.localRotation = Quaternion.Euler(XRotation,0,0);
         PlayerBody.Rotate(Vector3.up * XMove);
 
-       }
        
-        }
+       
+    }
        
     
 }
