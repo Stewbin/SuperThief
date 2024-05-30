@@ -6,28 +6,29 @@ using System.Collections.Generic;
 public class BaseStateMachine : MonoBehaviour 
     {
         [SerializeField] private BaseState _initialState;
-        public BaseState CurrentState {get; set;}
+        [SerializeField] private FSMGraph _graph;
+        public BaseStateNode CurrentState { get; set; }
         private Dictionary<Type, Component> _cachedComponents;
         
-        private void Awake()
+        void Awake()
         {
             Init();
             _cachedComponents = new Dictionary<Type, Component>();
         }
 
-        public void Update()
+        void Update()
         {
-            CurrentState.Execute(this);
+            Execute(this);
         }
 
-        public virtual void Init()
+        public void Init()
         {
-            CurrentState = _initialState;
+            CurrentState = _graph.InitialState;
         }
 
-        public virtual void Execute()
+        public void Execute()
         {
-            CurrentState.Execute(this);
+            ((StateNode)CurrentState).Execute(this);
         }
 
         /// <summary>
