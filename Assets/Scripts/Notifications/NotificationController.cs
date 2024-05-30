@@ -18,7 +18,7 @@ public class NotificationController : MonoBehaviour
     {
         if (focus == false)
         {
-            iosNotifications.SendNotification("SUPERTHIEF", "Notification now works", "Lunexis", 1);
+            iosNotifications.SendNotification("SUPERTHIEF", "We are cooking babyyyy!!!!", "Lunexis", 59);
         }
     }
 }

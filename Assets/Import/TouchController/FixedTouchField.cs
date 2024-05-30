@@ -2,8 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using Photon.Pun;
 
-public class FixedTouchField : MonoBehaviour , IPointerDownHandler, IPointerUpHandler
+public class FixedTouchField : MonoBehaviourPunCallbacks , IPointerDownHandler, IPointerUpHandler
 {
     [HideInInspector]
     public Vector2 TouchDist;
@@ -23,7 +24,10 @@ public class FixedTouchField : MonoBehaviour , IPointerDownHandler, IPointerUpHa
     // Update is called once per frame
     void Update()
     {
-        if (Pressed)
+
+        if(photonView.IsMine) {
+       
+if (Pressed)
         {
             if (PointerId >= 0 && PointerId < Input.touches.Length)
             {
@@ -40,18 +44,34 @@ public class FixedTouchField : MonoBehaviour , IPointerDownHandler, IPointerUpHa
         {
             TouchDist = new Vector2();
         }
+        
+        }
     }
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        Pressed = true;
+
+if(photonView.IsMine){
+  Pressed = true;
         PointerId = eventData.pointerId;
         PointerOld = eventData.position;
+}
+
+      
+        
+        
     }
 
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        Pressed = false;
+
+        if(photonView.IsMine){
+ Pressed = false;
+        }
+       
+
+        
+       
     }
 }

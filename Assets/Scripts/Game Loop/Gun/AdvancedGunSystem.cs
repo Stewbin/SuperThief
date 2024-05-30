@@ -6,9 +6,10 @@ using System.Collections.Specialized;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 using UnityEngine.UI;
 
-public class AdvancedGunSystem : MonoBehaviour
+public class AdvancedGunSystem : MonoBehaviourPunCallbacks
 {
     
 
@@ -49,6 +50,10 @@ public float muzzleCounter;
     void Update()
     {
 
+if(photonView.IsMine){
+
+
+       
         if (allGuns[selectedGun].muzzleFlash.activeInHierarchy){
 
         muzzleCounter -= Time.deltaTime;
@@ -62,11 +67,11 @@ public float muzzleCounter;
 
 
         if(!overHeated){
-        if(Input.GetMouseButtonDown(0)){
+        if(Input.GetMouseButtonDown(1)){
             Shoot(); 
         }
 
-         if(Input.GetMouseButton(0) && allGuns[selectedGun].isAutomatic){
+         if(Input.GetMouseButton(1) && allGuns[selectedGun].isAutomatic){
             shotCounter -= Time.deltaTime;
 
             if(shotCounter <= 0){
@@ -122,6 +127,10 @@ public float muzzleCounter;
         }
        }
 
+
+        
+
+}
        
     }
 
@@ -167,7 +176,7 @@ public float muzzleCounter;
     }
 
   
-    void SwitchGunForMobile()
+    public void SwitchGunForMobile()
     {
         selectedGun++;
         if (selectedGun >= allGuns.Length)
@@ -179,6 +188,8 @@ public float muzzleCounter;
          /// <returns></returns>
         } 
         SwitchGun();
+
+        print("Switching Gun"); 
     }
 
    

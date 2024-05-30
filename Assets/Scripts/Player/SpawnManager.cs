@@ -1,30 +1,30 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
-public class SpawnManager : MonoBehaviour
+public class SpawnManager : MonoBehaviourPunCallbacks
 {
     public static SpawnManager instance;
-   void awake(){
 
-        instance = this; 
+    private void Awake()
+    {
+        instance = this;
     }
-    public Transform [] spawnPoints; 
 
-    void Start() {
+    public Transform[] spawnPoints;
 
-        foreach(Transform spawn in spawnPoints){
-
-            spawn.gameObject.SetActive(false); 
+    private void Start()
+    {
+        foreach (Transform spawn in spawnPoints)
+        {
+            spawn.gameObject.SetActive(false);
         }
     }
 
-    void Update() {
-
-    }
-
-    public Transform GetSpawnPoints(){
-
-        return spawnPoints[Random.Range(0, spawnPoints.Length)];
+    public Transform GetSpawnPoint()
+    {
+        int randomIndex = Random.Range(0, spawnPoints.Length);
+        return spawnPoints[randomIndex];
     }
 }

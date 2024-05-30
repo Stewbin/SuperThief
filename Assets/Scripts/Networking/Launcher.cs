@@ -1,4 +1,3 @@
-using System.Net.Mime;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -27,9 +26,21 @@ public class Launcher : MonoBehaviourPunCallbacks
     public GameObject roomBrowserScreen;
     public RoomButton theRoomButton; 
 
+    public TMP_Text playerNameLabel; 
+   private List<TMP_Text> allPlayerNames = new List<TMP_Text>();
+
     public List<RoomButton> allRoomButtons = new List<RoomButton>(); 
     
-   
+   public GameObject nameInputScreen;
+   public TMP_InputField nameInput;
+
+   private bool hasSetUsername; 
+
+   public string levelToPlay;
+
+   public GameObject startButton; 
+
+   public GameObject roomTestButton; 
 
 
     void Awake(){
@@ -45,6 +56,11 @@ public class Launcher : MonoBehaviourPunCallbacks
        
         //Connect using settings we set up for photon netwrok 
         PhotonNetwork.ConnectUsingSettings(); 
+
+#if UNITY_EDITOR
+    roomTestButton.SetActive(true);
+#endif
+       
     }
 
     void CloseMenus(){
@@ -53,7 +69,8 @@ public class Launcher : MonoBehaviourPunCallbacks
         createRoomScreen.SetActive(false); 
         roomScreen.SetActive(false); 
         errorScreen.SetActive(false); 
-         roomBrowserScreen.SetActive(false); 
+        roomBrowserScreen.SetActive(false); 
+        nameInputScreen.SetActive(false);
     }
 
     // Update is called once per frame
@@ -64,6 +81,8 @@ public class Launcher : MonoBehaviourPunCallbacks
     
     PhotonNetwork.JoinLobby(); 
 
+    PhotonNetwork.AutomaticallySyncScene = true; 
+
     loadingText.text = "Joining Lobby..."; 
 
     }
@@ -71,8 +90,23 @@ public class Launcher : MonoBehaviourPunCallbacks
     public override void OnJoinedLobby(){
     CloseMenus(); 
     menuButtons.SetActive(true);
+    PhotonNetwork.NickName = Random.Range(0,1000).ToString();
+
+
+if(!hasSetUsername){
+    CloseMenus();
+    nameInputScreen.SetActive(true);
+
+    if (PlayerPrefs.HasKey("playerName")){
+        nameInput.text =PlayerPrefs.GetString("playerName");
+    }
+} else {
+    PhotonNetwork.NickName = PlayerPrefs.GetString("playerName");
+}
+
     }
 
+   
     public void OpenRoomCreate(){
         CloseMenus();
         createRoomScreen.SetActive(true);
@@ -98,12 +132,59 @@ public class Launcher : MonoBehaviourPunCallbacks
         
         roomNameText.text = PhotonNetwork.CurrentRoom.Name; 
 
+        ListAllPlayers(); 
+
+        if(PhotonNetwork.IsMasterClient){
+            startButton.SetActive(true);
+        } else {
+            startButton.SetActive(false); 
+        }
+    }
+
+     public void ListAllPlayers(){
+
+        foreach(TMP_Text player in allPlayerNames){
+
+            Destroy(player.gameObject);
+        }
+
+        allPlayerNames.Clear();
+
+        Player[] players = PhotonNetwork.PlayerList; 
+
+
+        for (int i = 0; i < players.Length; i++){
+            TMP_Text newPlayerLabel = Instantiate(playerNameLabel,playerNameLabel.transform.parent);
+            newPlayerLabel.text = players[i].NickName;
+            newPlayerLabel.gameObject.SetActive(true); 
+
+            allPlayerNames.Add(newPlayerLabel);
+//dd
+        }   
+        
+    }
+
+    public override void OnPlayerEnteredRoom(Player newPlayer){
+
+            TMP_Text newPlayerLabel = Instantiate(playerNameLabel,playerNameLabel.transform.parent);
+            newPlayerLabel.text = newPlayer.NickName;
+            newPlayerLabel.gameObject.SetActive(true); 
+
+            allPlayerNames.Add(newPlayerLabel);
+//
+    }
+
+    public override void OnPlayerLeftRoom(Player otherPlayer){
+
+ListAllPlayers();
 
     }
 
+
+
      public override void OnCreateRoomFailed(short returnCode, string message){
 
-        errorText.text = "Failed to Create Room" + message;
+        errorText.text = "Failed To Create Room " + message;
         CloseMenus(); 
         errorScreen.SetActive(true); 
 
@@ -180,6 +261,45 @@ public class Launcher : MonoBehaviourPunCallbacks
         loadingScreen.SetActive(true);
     }
 
+
+    public  void  SetNickname(){
+
+        if(!string.IsNullOrEmpty(nameInput.text)){
+
+           PhotonNetwork.NickName = nameInput.text; 
+
+           PlayerPrefs.SetString("playerName", nameInput.text);
+           CloseMenus();
+           menuButtons.SetActive(true);
+
+           hasSetUsername = true;
+        }
+    }
+
+
+
+    public void StartGame(){
+
+PhotonNetwork.LoadLevel(levelToPlay);
+    }
+ 
+    public override void OnMasterClientSwitched(Player newMasterClient){
+         if(PhotonNetwork.IsMasterClient){
+            startButton.SetActive(true);
+        } else {
+            startButton.SetActive(false); 
+        }
+    }
+
+
+    public void QuickJoin(){
+        RoomOptions options = new RoomOptions(); 
+        options.MaxPlayers = 8; 
+        PhotonNetwork.CreateRoom("Test");
+        CloseMenus();
+        loadingText.text = "Creating Room";
+        loadingScreen.SetActive(true);
+    }
     public void QuitGame(){
         Application.Quit(); 
     }

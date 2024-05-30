@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
-public class TouchController : MonoBehaviour
+public class TouchController : MonoBehaviourPunCallbacks
 {
     public FixedTouchField _FixedTouchField;
     public CameraLook _CameraLook;
@@ -18,7 +19,11 @@ public class TouchController : MonoBehaviour
     
     void Update()
     {
-        _CameraLook.LockAxis = _FixedTouchField.TouchDist;
+
+        if(photonView.IsMine){
+_CameraLook.LockAxis = _FixedTouchField.TouchDist;
         _PlayerMove.Pressed = _FixedButton.Pressed;
+        }
+        
     }
 }
