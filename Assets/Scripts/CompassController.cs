@@ -63,11 +63,9 @@ public class CompassController : MonoBehaviour
             marker.anchoredPosition = newPosition; 
         }
         
-        // Calculate size of marker
-        if(ShouldShrinkMarkers)
-        {
-            marker.localScale *= size;
-        }
+        // Update marker size
+        marker.localScale *= size;
+        
         // Gizmos for testing
         /*
         Debug.Log($"{objective.name}: {percentage}");
