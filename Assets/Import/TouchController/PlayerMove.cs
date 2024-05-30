@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
-public class PlayerMove : MonoBehaviour
+public class PlayerMove : MonoBehaviourPunCallbacks
 {
     
     public FixedJoystick joystick;
@@ -24,17 +25,26 @@ public class PlayerMove : MonoBehaviour
     Vector3 velocity; 
 
     void Start()
+
     {
+       
         controller= GetComponent<CharacterController>();
-        Transform newTrans = SpawnManager.instance.GetSpawnPoints();
-        transform.position = newTrans.position;
-        transform.rotation = newTrans.rotation;
+
+        
+       
+        //Transform newTrans = SpawnManager.instance.GetSpawnPoints();
+        //transform.position = newTrans.position;
+        //transform.rotation = newTrans.rotation;
     }
 
     
     void Update()
     {
-        isGrounded = Physics.CheckSphere(Ground.position, GroundDistance, layerMask);
+
+        if(photonView.IsMine) {
+
+
+            isGrounded = Physics.CheckSphere(Ground.position, GroundDistance, layerMask);
 
         if(isGrounded && velocity.y < 0){
             velocity.y =-2f;
@@ -50,5 +60,12 @@ public class PlayerMove : MonoBehaviour
 
         velocity.y += Gravity * Time.deltaTime;
         controller.Move(velocity* Time.deltaTime);
-    }
+        }
+
+        }
+
+       
+
+        
+    
 }

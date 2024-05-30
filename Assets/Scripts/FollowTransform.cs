@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
-public class FollowTransform : MonoBehaviour
+public class FollowTransform : MonoBehaviourPunCallbacks
 {
     [SerializeField] private Transform Target;
     public float CameraHeight = 16f;
@@ -13,6 +14,7 @@ public class FollowTransform : MonoBehaviour
     void LateUpdate()
     {
         // Update position
+        if(photonView.IsMine){
         if (FollowPosition)
         {
             Vector3 NewPosition = Target.position;
@@ -24,5 +26,7 @@ public class FollowTransform : MonoBehaviour
         {
             transform.eulerAngles = new Vector3(0f, Target.eulerAngles.y, 0f);
         }
+        }
     }
+
 }

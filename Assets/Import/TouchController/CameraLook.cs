@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun; 
 
-public class CameraLook : MonoBehaviour
+public class CameraLook : MonoBehaviourPunCallbacks
 {
     private float XMove;
     private float YMove;
@@ -16,14 +17,21 @@ public class CameraLook : MonoBehaviour
     }
 
     
-    void Update()
+    void LateUpdate()
     {
-        XMove = LockAxis.x * Sensivity * Time.deltaTime;
+       
+       if(photonView.IsMine){
+ XMove = LockAxis.x * Sensivity * Time.deltaTime;
         YMove = LockAxis.y * Sensivity * Time.deltaTime;
         XRotation -= YMove;
         XRotation = Mathf.Clamp(XRotation, -90f, 90f);
 
         transform.localRotation = Quaternion.Euler(XRotation,0,0);
         PlayerBody.Rotate(Vector3.up * XMove);
-    }
+
+       }
+       
+        }
+       
+    
 }

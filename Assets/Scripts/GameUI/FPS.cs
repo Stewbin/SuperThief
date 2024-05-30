@@ -2,8 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro; 
+using Photon.Pun; 
 
-public class FPS : MonoBehaviour
+public class FPS : MonoBehaviourPunCallbacks
 {
     public float fps;
 
@@ -13,7 +14,10 @@ public class FPS : MonoBehaviour
 
      void Start()
     {
-        InvokeRepeating("GetFPS", 1, 1);
+        if(photonView.IsMine){
+              InvokeRepeating("GetFPS", 1, 1);
+        }
+       
     }
 
     void GetFPS()
