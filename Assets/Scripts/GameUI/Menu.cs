@@ -8,7 +8,7 @@ public class Menu : MonoBehaviour
   
     public void Play(){
         //CLick Play to start playing
-        SceneManager.LoadScene("Arena");
+        SceneManager.LoadScene(1);
         print("Successfully started playing");
     }
     

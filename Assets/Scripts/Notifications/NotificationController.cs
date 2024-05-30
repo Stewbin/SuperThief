@@ -7,6 +7,7 @@ using Unity.Notifications.iOS;
 
 public class NotificationController : MonoBehaviour
 {
+    #if UNITY_IOS
     [SerializeField] private iOSNotifications iosNotifications; 
 
     private void Start()
@@ -21,4 +22,5 @@ public class NotificationController : MonoBehaviour
             iosNotifications.SendNotification("SUPERTHIEF", "We are cooking babyyyy!!!!", "Lunexis", 59);
         }
     }
+    #endif
 }

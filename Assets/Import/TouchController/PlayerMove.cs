@@ -8,7 +8,7 @@ public class PlayerMove : MonoBehaviourPunCallbacks
     
     public FixedJoystick joystick;
     public float SpeedMove = 5f;
-    private CharacterController controller;
+    public CharacterController controller;
 
     private float Gravity = -9.81f; 
     public float GroundDistance = 0.3f;
@@ -28,7 +28,10 @@ public class PlayerMove : MonoBehaviourPunCallbacks
 
     {
        
-        controller= GetComponent<CharacterController>();
+       if(photonView.IsMine){
+ controller= GetComponent<CharacterController>();
+       }
+       
 
         
        
