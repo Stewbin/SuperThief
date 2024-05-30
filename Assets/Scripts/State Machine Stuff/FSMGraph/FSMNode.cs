@@ -1,11 +1,10 @@
 using System.Collections.Generic;
-using UnityEngine;
 using XNode;
 
 namespace FiniteStateMachine
 {   
     /// <summary>
-    /// Parent class all nodes in the FSM namespace inherit from
+    /// Parent class all nodes in the FSM namespace inherit from.
     /// </summary>
     public abstract class FSMNode : Node
     {

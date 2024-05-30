@@ -2913,9 +2913,9 @@ GameObject:
   - component: {fileID: 563242921}
   - component: {fileID: 563242920}
   - component: {fileID: 563242919}
-  - component: {fileID: 563242918}
-  - component: {fileID: 563242923}
   - component: {fileID: 563242924}
+  - component: {fileID: 563242923}
+  - component: {fileID: 563242925}
   m_Layer: 0
   m_Name: New Enemy
   m_TagString: Untagged
@@ -2923,19 +2923,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &563242918
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 563242917}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 933664de89ce1c846b1dfa4816902b36, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _initialState: {fileID: 11400000, guid: edf3e6c2194381044ade23e8790871ad, type: 2}
 --- !u!65 &563242919
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -3062,6 +3049,20 @@ NavMeshAgent:
   m_BaseOffset: 0.5
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!114 &563242925
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 563242917}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3126a795d97a50b44b67a32501c32d92, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _initialState: {fileID: 11400000, guid: 14df012ddaef57447a49759b3947480b, type: 2}
+  _graph: {fileID: 11400000, guid: d347443c5902dc441b04471eabe0c85f, type: 2}
 --- !u!1 &596094335
 GameObject:
   m_ObjectHideFlags: 0

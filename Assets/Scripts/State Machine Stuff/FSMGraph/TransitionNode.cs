@@ -1,7 +1,7 @@
 namespace FiniteStateMachine
 {
     [CreateNodeMenu("Transition")]
-    public sealed class TransitionNode : FSMNodeBase
+    public sealed class TransitionNode : FSMNode
     {
         public Decision Decision;
         [Output] public BaseStateNode TrueState;

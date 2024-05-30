@@ -1,12 +1,10 @@
-using UnityEngine;
-
 namespace FiniteStateMachine
 {
     /// <summary>
-    /// Parent class for all State-related nodes
+    /// Parent class for all state-related nodes.
     /// </summary>
     public abstract class BaseStateNode : FSMNode
     {
-        // Intentionally left blank?
+        // Intentionally left blank. For organizational purposes only apparently.
     }
 }
