@@ -8,8 +8,8 @@ public class TouchController : MonoBehaviourPunCallbacks
     public FixedTouchField _FixedTouchField;
     public CameraLook _CameraLook;
 
-   // public PlayerMove _PlayerMove;
-   // public FixedButton _FixedButton;
+    public PlayerMove _PlayerMove;
+    public FixedButton _FixedButton;
 
    
 
@@ -19,6 +19,7 @@ public class TouchController : MonoBehaviourPunCallbacks
 
       
 _CameraLook.LockAxis = _FixedTouchField.TouchDist;
+ _PlayerMove.Pressed =  _FixedButton.Pressed;
      
 
     }

@@ -22,14 +22,26 @@ public class PlayerMove : MonoBehaviourPunCallbacks
 
     public bool Pressed; 
 
+    public Animator anim; 
+
     Vector3 velocity; 
+
+    public GameObject playerModel; 
+
+    public Transform modelGunPoint; 
+    public Transform gunHolder; 
 
     void Start()
 
     {
        
        if(photonView.IsMine){
- controller= GetComponent<CharacterController>();
+        controller= GetComponent<CharacterController>();
+        playerModel.SetActive(true);
+       } else {
+        gunHolder.parent = modelGunPoint;
+        gunHolder.localPosition = Vector3.zero; 
+        gunHolder.localRotation = Quaternion.identity; 
        }
        
 
@@ -63,9 +75,14 @@ public class PlayerMove : MonoBehaviourPunCallbacks
 
         velocity.y += Gravity * Time.deltaTime;
         controller.Move(velocity* Time.deltaTime);
-        }
+
+        anim.SetBool("grounded", isGrounded);
+        anim.SetFloat("speed", Move.magnitude);
 
         }
+
+       
+    }
 
        
 

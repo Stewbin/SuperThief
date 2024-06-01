@@ -1,8 +1,3 @@
-using System.ComponentModel;
-using System.Timers;
-using System;
-using System.Threading;
-using System.Collections.Specialized;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -35,15 +30,33 @@ private int selectedGun;
 public Image imageButton;
 
 public float muzzleDisplayTime; 
-public float muzzleCounter; 
+public float muzzleCounter;
+public GameObject playerHitImpact;  
+
+[Header("Player Health ")]
+
+public int maxHealth = 100; 
+private int currentHealth; 
+
+//Networking UI Text testing
+
 
 
     void Start()
     {
-        UIController.instance.weaponTempSlider.maxValue = maxHeat;
+        //UIController.instance.weaponTempSlider.maxValue = maxHeat;
 
-        SwitchGun(); 
+      SwitchGun(); 
        
+      currentHealth = maxHealth;
+
+      if(photonView.IsMine){
+      UIController.instance.healthSlider.maxValue = maxHealth;
+      UIController.instance.healthSlider.value = currentHealth;
+      }
+
+    
+  
     }
 
 
@@ -88,7 +101,7 @@ if(photonView.IsMine){
         if(heatCounter <= 0) {
            
             overHeated = false; 
-            UIController.instance.overheatedMessage.gameObject.SetActive(false);
+           // UIController.instance.overheatedMessage.gameObject.SetActive(false);
 
 
         }
@@ -97,7 +110,7 @@ if(photonView.IsMine){
 
         heatCounter = 0f;
     }
-       UIController.instance.weaponTempSlider.value = heatCounter; 
+      // UIController.instance.weaponTempSlider.value = heatCounter; 
        
 
        if(Input.GetAxisRaw("Mouse ScrollWheel") > 0f){
@@ -144,9 +157,19 @@ if(photonView.IsMine){
 
             print("We just hit : " + hit.collider.gameObject.name);
 
+if(hit.collider.gameObject.tag =="Player"){
+    print("We just hit : " + hit.collider.gameObject.GetPhotonView().Owner.NickName);
+PhotonNetwork.Instantiate(playerHitImpact.name, hit.point, Quaternion.identity);
+
+hit.collider.gameObject.GetPhotonView().RPC("DealDamage", RpcTarget.All, photonView.Owner.NickName, allGuns[selectedGun].shotDamage); 
+
+} else {
+
+
             GameObject bulletImpactObject = Instantiate(bulletImpact, hit.point + (hit.normal * 0.002f), Quaternion.LookRotation(hit.normal, Vector3.up));
 
             Destroy(bulletImpactObject, 5f); 
+}
         }
 
         shotCounter = allGuns[selectedGun].timeBetweenShots; 
@@ -157,11 +180,36 @@ if(photonView.IsMine){
             heatCounter = maxHeat; 
             overHeated = true; 
 
-            UIController.instance.overheatedMessage.gameObject.SetActive(true);
+           // UIController.instance.overheatedMessage.gameObject.SetActive(true);
         }
         allGuns[selectedGun].muzzleFlash.SetActive(true);
         muzzleCounter = muzzleDisplayTime;
 
+    }
+
+    [PunRPC] 
+    public void DealDamage(string damager, int damageAmount){
+         TakeDamage(damager, damageAmount); 
+    }
+
+    public void TakeDamage(string damager,int damageAmount) {
+
+if(photonView.IsMine){
+
+        print(photonView.Owner.NickName + "has been hit by" + damager); 
+
+        //gameObject.SetActive(false);
+
+        currentHealth -= damageAmount;
+        
+        if(currentHealth <= 0){
+            currentHealth = 0; 
+            PlayerSpawner.instance.Die(damager);
+        }
+        UIController.instance.healthSlider.value = currentHealth;
+
+      
+}
     }
 
     public void SwitchGun(){
@@ -192,5 +240,8 @@ if(photonView.IsMine){
         print("Switching Gun"); 
     }
 
+    public void notShooting(){
+        print("Not shooting "); 
+    }
    
 }
