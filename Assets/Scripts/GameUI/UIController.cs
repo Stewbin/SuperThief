@@ -13,6 +13,12 @@ public class UIController : MonoBehaviour
     instance = this;
   }
 
-  public TMP_Text overheatedMessage; 
-  public Slider weaponTempSlider; 
+ //public TMP_Text overheatedMessage; 
+  //public Slider weaponTempSlider; 
+
+  public Slider healthSlider;
+
+  public GameObject deathScreen; 
+   public TMP_Text deathText; 
+
 }
