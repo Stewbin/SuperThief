@@ -38,6 +38,7 @@ public GameObject playerHitImpact;
 public int maxHealth = 100; 
 private int currentHealth; 
 
+
 //Networking UI Text testing
 
 
@@ -46,7 +47,9 @@ private int currentHealth;
     {
         //UIController.instance.weaponTempSlider.maxValue = maxHeat;
 
-      SwitchGun(); 
+      //SwitchGun(); 
+
+      photonView.RPC("SetGun", RpcTarget.All, selectedGun);
        
       currentHealth = maxHealth;
 
@@ -120,23 +123,26 @@ if(photonView.IsMine){
             selectedGun = 0;
         }
 
-        SwitchGun(); 
+        //SwitchGun(); 
+        photonView.RPC("SetGun", RpcTarget.All, selectedGun);
 
        } else if(Input.GetAxisRaw("Mouse ScrollWheel") < 0f){
 
         selectedGun--; 
          if(selectedGun <0){
-            selectedGun = allGuns.Length;
+            selectedGun = allGuns.Length -1;
         }
 
-        SwitchGun(); 
+        //SwitchGun(); 
+          photonView.RPC("SetGun", RpcTarget.All, selectedGun);
        }
 
        for (int i = 0 ; i <allGuns.Length ; i++){
 
         if (Input.GetKeyDown((i + 1).ToString())){
             selectedGun = i; 
-            SwitchGun(); 
+            //SwitchdGun(); 
+            photonView.RPC("SetGun", RpcTarget.All, selectedGun);
         }
        }
 
@@ -161,7 +167,7 @@ if(hit.collider.gameObject.tag =="Player"){
     print("We just hit : " + hit.collider.gameObject.GetPhotonView().Owner.NickName);
 PhotonNetwork.Instantiate(playerHitImpact.name, hit.point, Quaternion.identity);
 
-hit.collider.gameObject.GetPhotonView().RPC("DealDamage", RpcTarget.All, photonView.Owner.NickName, allGuns[selectedGun].shotDamage); 
+hit.collider.gameObject.GetPhotonView().RPC("DealDamage", RpcTarget.All, photonView.Owner.NickName, allGuns[selectedGun].shotDamage, PhotonNetwork.LocalPlayer.ActorNumber); 
 
 } else {
 
@@ -188,11 +194,11 @@ hit.collider.gameObject.GetPhotonView().RPC("DealDamage", RpcTarget.All, photonV
     }
 
     [PunRPC] 
-    public void DealDamage(string damager, int damageAmount){
-         TakeDamage(damager, damageAmount); 
+    public void DealDamage(string damager, int damageAmount, int actor ){
+         TakeDamage(damager, damageAmount, actor); 
     }
 
-    public void TakeDamage(string damager,int damageAmount) {
+    public void TakeDamage(string damager,int damageAmount, int actor) {
 
 if(photonView.IsMine){
 
@@ -205,6 +211,8 @@ if(photonView.IsMine){
         if(currentHealth <= 0){
             currentHealth = 0; 
             PlayerSpawner.instance.Die(damager);
+            
+            MatchManager.instance.UpdateStatsSend(actor, 0, 1);
         }
         UIController.instance.healthSlider.value = currentHealth;
 
@@ -242,6 +250,16 @@ if(photonView.IsMine){
 
     public void notShooting(){
         print("Not shooting "); 
+    }
+
+    [PunRPC]
+    public void SetGun(int gunToSwitchTo){
+
+        if (gunToSwitchTo < allGuns.Length){
+
+            selectedGun = gunToSwitchTo;
+            SwitchGunForMobile(); 
+        }
     }
    
 }

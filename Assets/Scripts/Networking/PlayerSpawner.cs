@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,6 +10,8 @@ public class PlayerSpawner : MonoBehaviourPunCallbacks
 
     private GameObject player;
     public GameObject playerPrefab;
+
+    //public GameObject nameUI; 
 
      public GameObject deathEffect;
 
@@ -42,6 +45,8 @@ public class PlayerSpawner : MonoBehaviourPunCallbacks
         //PhotonNetwork.Destroy(player); 
 
         //SpawnPlayer();
+
+        MatchManager.instance.UpdateStatsSend(PhotonNetwork.LocalPlayer.ActorNumber, 1, 1); 
 
         if(player != null){
             StartCoroutine(DieCoroutine());
