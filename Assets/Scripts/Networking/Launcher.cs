@@ -42,6 +42,17 @@ public class Launcher : MonoBehaviourPunCallbacks
 
    public GameObject roomTestButton; 
 
+   [Header("Name On Player Implementation")]
+
+   [SerializeField] public string nickname; 
+
+   
+    [PunRPC]
+     public void SetNicknameUI(string _name){
+        nickname = _name; 
+    }
+
+ 
 
     void Awake(){
         instance = this; 

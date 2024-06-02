@@ -19,7 +19,7 @@ public class NotificationController : MonoBehaviour
     {
         if (focus == false)
         {
-            iosNotifications.SendNotification("SUPERTHIEF", "We are cooking babyyyy!!!!", "Lunexis", 59);
+            iosNotifications.SendNotification("SUPERTHIEF", "Pablo Escobar has invited you to a team heist. Join now and plan the perfect heist together!", "Team Heist", 360);
         }
     }
     #endif

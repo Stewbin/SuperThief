@@ -31,6 +31,8 @@ public class PlayerMove : MonoBehaviourPunCallbacks
     public Transform modelGunPoint; 
     public Transform gunHolder; 
 
+    public string nickname; 
+
     void Start()
 
     {
@@ -83,6 +85,7 @@ public class PlayerMove : MonoBehaviourPunCallbacks
 
        
     }
+
 
        
 
