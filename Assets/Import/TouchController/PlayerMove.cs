@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 using Photon.Pun;
 
 public class PlayerMove : MonoBehaviourPunCallbacks
@@ -31,7 +32,17 @@ public class PlayerMove : MonoBehaviourPunCallbacks
     public Transform modelGunPoint; 
     public Transform gunHolder; 
 
-    public string nickname; 
+ [Header("Name On Player Implementations Test")]
+    [SerializeField] public string nickname;
+    [SerializeField] public TMP_Text nicknameUIText;
+    [SerializeField] public Vector3 nicknameOffset = new Vector3(0f, 2f, 0f);
+
+    [PunRPC]
+    public void SetNicknameUI(string _name)
+    {
+        nickname = _name;
+        nicknameUIText.text = nickname;
+    }
 
     void Start()
 
@@ -40,6 +51,8 @@ public class PlayerMove : MonoBehaviourPunCallbacks
        if(photonView.IsMine){
         controller= GetComponent<CharacterController>();
         playerModel.SetActive(true);
+        photonView.RPC("SetNicknameUI", RpcTarget.All, Launcher.instance.nameInput.text);
+        nicknameUIText.transform.position = transform.position + nicknameOffset;
        } else {
         gunHolder.parent = modelGunPoint;
         gunHolder.localPosition = Vector3.zero; 
