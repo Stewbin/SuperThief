@@ -25,7 +25,21 @@ public class UIController : MonoBehaviour
   
   public GameObject leaderboard; 
 
+  public GameObject endScreen;
+
+  public TMP_Text waitingText; 
+
+  public TMP_Text respawnText; 
+
+  public GameObject waitingScreen;
+
+   public GameObject healthComponent;
+   public GameObject leaderboardComponent;
+   public GameObject statsComponent;
+
   public Leaderboard leaderboardPlayerDisplay; 
+
+  public TMP_Text currentHealthDisplay; 
   
   //public TMP_Text gameMessageText; 
 

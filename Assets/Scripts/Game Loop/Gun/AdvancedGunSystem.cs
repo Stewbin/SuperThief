@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using UnityEngine.UI;
+using TMPro; 
 
 public class AdvancedGunSystem : MonoBehaviourPunCallbacks
 {
@@ -39,6 +40,10 @@ public int maxHealth = 100;
 private int currentHealth; 
 
 
+
+
+
+
 //Networking UI Text testing
 
 
@@ -56,6 +61,7 @@ private int currentHealth;
       if(photonView.IsMine){
       UIController.instance.healthSlider.maxValue = maxHealth;
       UIController.instance.healthSlider.value = currentHealth;
+      UIController.instance.currentHealthDisplay.text = currentHealth.ToString(); 
       }
 
     
@@ -68,7 +74,8 @@ private int currentHealth;
 
 if(photonView.IsMine){
 
-
+        //display hp in the bottom 
+        UIController.instance.currentHealthDisplay.text = currentHealth.ToString(); 
        
         if (allGuns[selectedGun].muzzleFlash.activeInHierarchy){
 
