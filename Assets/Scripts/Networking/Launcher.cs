@@ -34,13 +34,14 @@ public class Launcher : MonoBehaviourPunCallbacks
    public GameObject nameInputScreen;
    public TMP_InputField nameInput;
 
-   private bool hasSetUsername; 
+   private static bool hasSetUsername; 
 
    public string levelToPlay;
 
    public GameObject startButton; 
 
    public GameObject roomTestButton; 
+
 
 
  
@@ -74,6 +75,27 @@ public class Launcher : MonoBehaviourPunCallbacks
         roomBrowserScreen.SetActive(false); 
         nameInputScreen.SetActive(false);
     }
+
+    public void OpenMenusButtonsFromCreateScreen(){
+        menuButtons.SetActive(true);
+        createRoomScreen.SetActive(false); 
+    }
+
+       public void OpenMenusButtonsFromSelectRoomPanel(){
+        menuButtons.SetActive(true);
+        roomScreen.SetActive(false); 
+    }
+
+       public void OpenMenusButtonsFromRoomBrowserScreen(){
+        menuButtons.SetActive(true);
+        roomBrowserScreen.SetActive(false); 
+    }
+       public void OpenMenusButtonsFromErrorScreen(){
+        menuButtons.SetActive(true);
+        errorScreen.SetActive(false); 
+    }
+
+
 
     // Update is called once per frame
 

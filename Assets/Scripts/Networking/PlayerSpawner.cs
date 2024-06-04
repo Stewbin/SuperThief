@@ -11,6 +11,8 @@ public class PlayerSpawner : MonoBehaviourPunCallbacks
     private GameObject player;
     public GameObject playerPrefab;
 
+
+ 
     //public GameObject nameUI; 
 
      public GameObject deathEffect;
@@ -42,6 +44,7 @@ public class PlayerSpawner : MonoBehaviourPunCallbacks
        
 
         UIController.instance.deathText.text = "You were killed by " + damager;
+        UIController.instance.respawnText.text = "Going Back In 5s "; 
         //PhotonNetwork.Destroy(player); 
 
         //SpawnPlayer();
@@ -53,22 +56,38 @@ public class PlayerSpawner : MonoBehaviourPunCallbacks
         }
     }   
 
-    public IEnumerator DieCoroutine(){
+public IEnumerator DieCoroutine()
+{
+    PhotonNetwork.Instantiate(deathEffect.name, player.transform.position, Quaternion.identity);
 
- PhotonNetwork.Instantiate(deathEffect.name, player.transform.position, Quaternion.identity); 
+    PhotonNetwork.Destroy(player);
+    player = null;
 
-PhotonNetwork.Destroy(player); 
+    UIController.instance.deathScreen.SetActive(true);
 
-UIController.instance.deathScreen.SetActive(true);
-
-yield return new WaitForSeconds(respawnTime); 
-
-
-UIController.instance.deathScreen.SetActive(false);
-
-SpawnPlayer(); 
+    UIController.instance.leaderboardComponent.SetActive(false);
+    UIController.instance.healthComponent.SetActive(false);
+    UIController.instance.statsComponent.SetActive(false);
 
 
+    float countdownTime = respawnTime;
+
+    while (countdownTime > 0)
+    {
+        UIController.instance.respawnText.text = "Going Back in  " + Mathf.CeilToInt(countdownTime) + "s";
+        yield return new WaitForSeconds(1f);
+        countdownTime--;
     }
 
+    UIController.instance.deathScreen.SetActive(false);
+    UIController.instance.leaderboardComponent.SetActive(true);
+    UIController.instance.healthComponent.SetActive(true);
+    UIController.instance.statsComponent.SetActive(true);
+
+
+    if (MatchManager.instance.state == MatchManager.GameState.Playing && player == null)
+    {
+        SpawnPlayer();
+    }
+}
 }
