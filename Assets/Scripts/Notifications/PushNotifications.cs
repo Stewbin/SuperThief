@@ -1,4 +1,4 @@
-using System.Collections;
+/*using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Firebase.Extensions;
@@ -19,3 +19,4 @@ public void OnMessageReceived(object sender, Firebase.Messaging.MessageReceivedE
   UnityEngine.Debug.Log("Received a new message from: " + e.Message.From);
 }
 }
+*/
