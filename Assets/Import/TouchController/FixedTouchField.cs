@@ -2,8 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using Photon.Pun;
 
-public class FixedTouchField : MonoBehaviour , IPointerDownHandler, IPointerUpHandler
+public class FixedTouchField : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointerUpHandler
 {
     [HideInInspector]
     public Vector2 TouchDist;
@@ -17,7 +18,7 @@ public class FixedTouchField : MonoBehaviour , IPointerDownHandler, IPointerUpHa
     // Use this for initialization
     void Start()
     {
-
+        // Initialization code can go here if needed
     }
 
     // Update is called once per frame
@@ -38,7 +39,7 @@ public class FixedTouchField : MonoBehaviour , IPointerDownHandler, IPointerUpHa
         }
         else
         {
-            TouchDist = new Vector2();
+            TouchDist = Vector2.zero;
         }
     }
 
@@ -48,7 +49,6 @@ public class FixedTouchField : MonoBehaviour , IPointerDownHandler, IPointerUpHa
         PointerId = eventData.pointerId;
         PointerOld = eventData.position;
     }
-
 
     public void OnPointerUp(PointerEventData eventData)
     {

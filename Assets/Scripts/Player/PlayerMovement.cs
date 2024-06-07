@@ -1,3 +1,4 @@
+
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -16,6 +17,10 @@ public class PlayerMovement : MonoBehaviour
 
         //Cursor.lockState = CursorLockMode.Locked; 
         controller = GetComponent<CharacterController>();
+
+        //Transform newTrans = SpawnManager.instance.GetSpawnPoints();
+        //transform.position = newTrans.position;
+        //transform.rotation = newTrans.rotation;
     }
 
     // Update is called once per frame

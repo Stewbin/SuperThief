@@ -9,6 +9,9 @@ EditorBuildSettings:
     path: Assets/Scenes/Login Screen.unity
     guid: f28bdcaffacf3d649a3d4e6d2e554c0c
   - enabled: 1
+    path: Assets/Scenes/MutiplayerTest.unity
+    guid: 2b2399d8b1af49948b01047b913ee170
+  - enabled: 1
     path: Assets/Scenes/Christian.unity
     guid: 851cd6eb5e57b0143852710f8af7266c
   - enabled: 1
@@ -17,4 +20,13 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Networking scenes/MainMenu.unity
     guid: b720b59774e7d4f4ca0c798957f7dc9e
+  - enabled: 0
+    path: Assets/Scenes/Lobby.unity
+    guid: 2d669c87cf0824c488d4dfd49667a18c
+  - enabled: 1
+    path: Assets/Scenes/Arena.unity
+    guid: 84e08b563db584c6b99b1bfb7df10250
+  - enabled: 1
+    path: Assets/Scenes/AdTest.unity
+    guid: e76c768926a7d42428e3afc8cae2359d
   m_configObjects: {}

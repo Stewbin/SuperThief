@@ -7,6 +7,7 @@ using Unity.Notifications.iOS;
 
 public class NotificationController : MonoBehaviour
 {
+    #if UNITY_IOS
     [SerializeField] private iOSNotifications iosNotifications; 
 
     private void Start()
@@ -18,7 +19,8 @@ public class NotificationController : MonoBehaviour
     {
         if (focus == false)
         {
-            iosNotifications.SendNotification("SUPERTHIEF", "Notification now works", "Lunexis", 1);
+            iosNotifications.SendNotification("SUPERTHIEF", "Pablo Escobar has invited you to a team heist. Join now and plan the perfect heist together!", "Team Heist", 59);
         }
     }
+    #endif
 }
