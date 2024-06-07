@@ -31,11 +31,22 @@ public class UIController : MonoBehaviour
 
   public TMP_Text respawnText; 
 
+  public TMP_Text currentAmmo; 
+  public TMP_Text magazineSize; 
+  
+  public TMP_Text timerText; 
+ 
+
+
   public GameObject waitingScreen;
 
    public GameObject healthComponent;
    public GameObject leaderboardComponent;
    public GameObject statsComponent;
+
+    public GameObject timeComponent;
+
+   public GameObject GunComponent;
 
   public Leaderboard leaderboardPlayerDisplay; 
 

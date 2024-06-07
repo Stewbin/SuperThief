@@ -1,3 +1,4 @@
+using System.Security.AccessControl;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -36,6 +37,9 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
     public float waitAfterEnding = 5f;
     public float waitBeforeBegin = 5f;
 
+    public float matchLength = 60f; 
+    public float currentMatchTime; 
+
     public bool perpetual; 
 
     public List<PlayerInfo> allPlayers = new List<PlayerInfo>();
@@ -53,11 +57,35 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
         else
         {
             NewPlayerSend(PhotonNetwork.NickName);
+            state = GameState.Playing;
+            SetUpTimer();
 
-            if (PhotonNetwork.IsMasterClient)
+           
+        }
+    }
+
+    void Update() {
+        
+        if(currentMatchTime > 0f && state == GameState.Playing)
+        {
+            currentMatchTime -= Time.deltaTime; 
+
+            if(currentMatchTime <= 0f)
             {
-                StartCoroutine(StartGameCoroutine());
+                currentMatchTime = 0f;
+
+                state = GameState.Ending; 
+
+                if (PhotonNetwork.IsMasterClient)
+            {
+                ListPlayersSend();
+
+                StateCheck(); 
             }
+
+
+            }
+            UpdateTimerDisplay();
         }
     }
 
@@ -71,6 +99,8 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
         UIController.instance.leaderboardComponent.SetActive(false);
         UIController.instance.healthComponent.SetActive(false);
         UIController.instance.statsComponent.SetActive(false);
+        UIController.instance.GunComponent.SetActive(false);
+        UIController.instance.timeComponent.SetActive(false);
         yield return new WaitForSeconds(1f);
         countdownTime--;
     }
@@ -81,6 +111,8 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
     UIController.instance.leaderboardComponent.SetActive(true);
     UIController.instance.healthComponent.SetActive(true);
     UIController.instance.statsComponent.SetActive(true);
+    UIController.instance.GunComponent.SetActive(true);
+    UIController.instance.timeComponent.SetActive(true);
     state = GameState.Playing;
     ListPlayersSend();
 }
@@ -401,6 +433,9 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
         UIController.instance.healthComponent.SetActive(false);
         UIController.instance.statsComponent.SetActive(false);
         UIController.instance.leaderboardComponent.SetActive(false);
+        UIController.instance.GunComponent.SetActive(false);
+        UIController.instance.timeComponent.SetActive(false);
+
         ShowLeaderBoard(); 
 
         StartCoroutine(EndGameCoroutine());
@@ -437,6 +472,9 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
         UIController.instance.healthComponent.SetActive(true);
         UIController.instance.statsComponent.SetActive(true);
         UIController.instance.leaderboardComponent.SetActive(true);
+        UIController.instance.GunComponent.SetActive(true);
+        UIController.instance.timeComponent.SetActive(true);
+
 
         foreach(PlayerInfo player in allPlayers){
             player.kills = 0; 
@@ -446,6 +484,24 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
 
         UpdateStatsDisplay();
         PlayerSpawner.instance.SpawnPlayer(); 
+        SetUpTimer();
+    }
+
+    public void SetUpTimer() {
+
+        if(matchLength > 0)
+        {
+            currentMatchTime = matchLength;
+            UpdateTimerDisplay();
+        }
+    }
+
+    
+    public void UpdateTimerDisplay() {
+
+        var timeToDisplay = System.TimeSpan.FromSeconds(currentMatchTime);
+        UIController.instance.timerText.text = timeToDisplay.Minutes.ToString("00") + ":" + timeToDisplay.Seconds.ToString("00"); 
+
     }
 
 }

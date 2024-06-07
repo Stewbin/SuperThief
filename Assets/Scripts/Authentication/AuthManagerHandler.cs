@@ -6,63 +6,78 @@ using Unity.Services.Core;
 using Unity.Services.Authentication;
 using System.Threading.Tasks;
 using static System.Net.Mime.MediaTypeNames;
-using System.Diagnostics;
 using System;
 using TMPro;
+using Firebase.Auth;
+using Firebase.Extensions;
 
 public class AuthManagerHandler : MonoBehaviour
 {
-    public TextMeshProUGUI loginText;
+    public TMP_Text logText;
+    public Button signInButton, signUpButton;
+    public TMP_InputField email, password;
 
-    async void Start()
+    public virtual void Start()
     {
-        await InitializeUnityServices();
-    }
-
-    public async void SignIn()
-    {
-        await SignInAnonymous();
-    }
-
-    async Task InitializeUnityServices()
-    {
-        try
+        Firebase.FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task =>
         {
-            await UnityServices.InitializeAsync();
-            print("Unity Services Initialized Successfully");
-        }
-        catch (Exception ex)
-        {
-            print("Failed to initialize Unity Services");
-             print(ex);
-        }
-    }
+            Firebase.DependencyStatus dependencyStatus = task.Result;
 
-    async Task SignInAnonymous()
-    {
-        try
-        {
-            if (AuthenticationService.Instance != null)
+            if (dependencyStatus == Firebase.DependencyStatus.Available)
             {
-                await AuthenticationService.Instance.SignInAnonymouslyAsync();
-                print("Sign In Success");
-                print("Player ID: " + AuthenticationService.Instance.PlayerId);
-                loginText.text = "Player ID: " + AuthenticationService.Instance.PlayerId;
+                print("Firebase working");
             }
             else
             {
-                print("AuthenticationService instance is null");
+                print("Firebase not working because " + dependencyStatus);
             }
-        }
-        catch (AuthenticationException ex)
-        {
-            print("Sign In Failed");
-            print(ex);
-        }
-        catch (Exception ex)
-        {
-            print("An unexpected error occurred during sign in");
-            print(ex);
-        }
+        });
     }
+
+public void OnClickSignIn()
+{
+    FirebaseAuth.DefaultInstance.SignInWithEmailAndPasswordAsync(email.text, password.text)
+        .ContinueWithOnMainThread(task =>
+        {
+            if (task.IsCanceled)
+            {
+                Debug.LogError("SignInWithEmailAndPasswordAsync was canceled.");
+                return;
+            }
+            if (task.IsFaulted)
+            {
+                Debug.LogError("SignInWithEmailAndPasswordAsync encountered an error: " + task.Exception);
+                return;
+            }
+
+            Firebase.Auth.AuthResult authResult = task.Result;
+            Firebase.Auth.FirebaseUser newUser = authResult.User;
+            Debug.LogFormat("User signed in successfully: {0} ({1})",
+                newUser.DisplayName, newUser.UserId);
+        });
+}
+
+public void OnClickSignUp()
+{
+    FirebaseAuth.DefaultInstance.CreateUserWithEmailAndPasswordAsync(email.text, password.text)
+        .ContinueWithOnMainThread(task =>
+        {
+            if (task.IsCanceled)
+            {
+                Debug.LogError("CreateUserWithEmailAndPasswordAsync was canceled.");
+                return;
+            }
+            if (task.IsFaulted)
+            {
+                Debug.LogError("CreateUserWithEmailAndPasswordAsync encountered an error: " + task.Exception);
+                return;
+            }
+
+            Firebase.Auth.AuthResult authResult = task.Result;
+            Firebase.Auth.FirebaseUser newUser = authResult.User;
+            Debug.LogFormat("Firebase user created successfully: {0} ({1})",
+                newUser.DisplayName, newUser.UserId);
+        });
+}
+
 }

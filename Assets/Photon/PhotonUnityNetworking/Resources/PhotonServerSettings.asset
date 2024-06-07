@@ -39,6 +39,11 @@ MonoBehaviour:
   - DealDamage
   - SetGun
   - SetNicknameUI
+  - TakeDamage
+  - UpdateHealthBarRPC
+  - SyncLootCollection
+  - SyncLootRespawn
+  - Heal
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0
