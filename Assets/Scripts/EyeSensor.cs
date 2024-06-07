@@ -11,7 +11,7 @@ public class EyeSensor : MonoBehaviour
     public float ConeRadius = 2f;
     public float ConeOffset = 3f;
     [SerializeField] private LayerMask _ignoreMask;
-    private Transform playerTransform; // DON'T link in inspector! 
+    private Transform lastSeenPlayer; // DON'T link in inspector! 
 
     /// <summary>
     /// Draws a circle of physics raycasts of radius ConeRadius, and
@@ -35,7 +35,7 @@ public class EyeSensor : MonoBehaviour
             {
                 if(hit.collider.CompareTag("Player"))
                 {
-                    playerTransform = hit.transform;
+                    lastSeenPlayer = hit.transform;
                     return true;
                 }
             }
@@ -43,8 +43,8 @@ public class EyeSensor : MonoBehaviour
         return false;
     }
 
-    public Transform GetPlayerTransform()
+    public Transform GetLastSeenPlayer()
     {
-        return playerTransform;
+        return lastSeenPlayer;
     }
 }

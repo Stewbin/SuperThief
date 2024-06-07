@@ -23,7 +23,7 @@ public class PatrolPoints : MonoBehaviour
 
         if(_index > WayPoints.Length)
         {
-            _index
+            _index = 0;
         }
     }
 }

@@ -6,8 +6,7 @@ using System.Collections.Generic;
 public class BaseStateMachine : MonoBehaviour 
     {
         [SerializeField] private BaseState _initialState;
-        [SerializeField] private FSMGraph _graph;
-        public BaseStateNode CurrentState { get; set; }
+        public BaseState CurrentState { get; set; }
         private Dictionary<Type, Component> _cachedComponents;
         
         void Awake()
@@ -18,17 +17,17 @@ public class BaseStateMachine : MonoBehaviour
 
         void Update()
         {
-            Execute(this);
+            Execute();
         }
 
-        public void Init()
+        public virtual void Init()
         {
-            CurrentState = _graph.InitialState;
+            CurrentState = _initialState;
         }
 
-        public void Execute()
+        public virtual void Execute()
         {
-            ((StateNode)CurrentState).Execute(this);
+            CurrentState.Execute(this);
         }
 
         /// <summary>

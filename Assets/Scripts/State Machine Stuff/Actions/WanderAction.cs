@@ -1,18 +1,31 @@
 using UnityEngine;
 using UnityEngine.AI;
 using FiniteStateMachine;
+using Unity.VisualScripting;
 
 [CreateAssetMenu(menuName = "FSM/Actions/Wander")]
 public class WanderAction : FSMAction
 {
     public float WanderDistance = 3f;
-    Vector3 HomePoint;
+    public float MoveSpeed = 10f;
+    public Vector3? homePoint = null;
     
     public override void Execute(BaseStateMachine stateMachine)
     {
         // Initializations
         NavMeshAgent agent = stateMachine.GetComponent<NavMeshAgent>(); 
-        agent.SetDestination(RandomPointFrom(HomePoint));
+        agent.speed = MoveSpeed;
+        if(homePoint == null)
+        {
+            homePoint = stateMachine.transform.position;
+        } 
+
+        if(agent.remainingDistance <= agent.stoppingDistance)
+        {
+            agent.SetDestination(RandomPointFrom((Vector3)homePoint));
+            stateMachine.transform.LookAt(agent.velocity);
+        }
+        // Debug.Log($"Random point: {agent.destination}");
     }
 
     /// <summary>
