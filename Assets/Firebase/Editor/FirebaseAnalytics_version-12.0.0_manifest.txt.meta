@@ -1,10 +1,3 @@
-fileFormatVersion: 2
-guid: fd1985c3b3f94d62a89292d705c52527
-labels:
-- gvh
-- gvh_manifest
-- gvh_version-12.0.0
-- gvhp_exportpath-Firebase/Editor/FirebaseAnalytics_version-12.0.0_manifest.txt
-- gvhp_manifestname-0Google Analytics
-- gvhp_manifestname-1FirebaseAnalytics
-timeCreated: 0
+version https://git-lfs.github.com/spec/v1
+oid sha256:e7b6225a9660f45bea0fd2d6b37068d3c67975731b05a0ece0554b8c6df31d95
+size 282

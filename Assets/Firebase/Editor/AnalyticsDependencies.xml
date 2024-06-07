@@ -1,20 +1,3 @@
-<!-- Copyright (C) 2019 Google Inc. All Rights Reserved.
-
-FirebaseAnalytics iOS and Android Dependencies.
--->
-
-<dependencies>
-  <iosPods>
-    <iosPod name="Firebase/Analytics" version="10.25.0" minTargetSdk="8.0">
-    </iosPod>
-  </iosPods>
-  <androidPackages>
-    <androidPackage spec="com.google.firebase:firebase-analytics:22.0.0">
-    </androidPackage>
-    <androidPackage spec="com.google.firebase:firebase-analytics-unity:12.0.0">
-      <repositories>
-        <repository>Assets/Firebase/m2repository</repository>
-      </repositories>
-    </androidPackage>
-  </androidPackages>
-</dependencies>
+version https://git-lfs.github.com/spec/v1
+oid sha256:97954837d9fbb46930fb963f8aa3e81c68971eade181c914b0e8802c83ee716b
+size 621
