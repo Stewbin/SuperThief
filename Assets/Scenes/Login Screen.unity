@@ -1460,7 +1460,6 @@ GameObject:
   - component: {fileID: 860000170}
   - component: {fileID: 860000169}
   - component: {fileID: 860000168}
-  - component: {fileID: 860000167}
   m_Layer: 0
   m_Name: Notifications
   m_TagString: Untagged
@@ -1468,18 +1467,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &860000167
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 860000166}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e6d828bb33bdda142bfe6b6e764dca23, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &860000168
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1504,6 +1491,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b616ad19c6b0642da8a9cbd0cd95ebbe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  iosNotifications: {fileID: 860000168}
 --- !u!4 &860000170
 Transform:
   m_ObjectHideFlags: 0
