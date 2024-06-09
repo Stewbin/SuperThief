@@ -16,6 +16,8 @@ public class Loot : MonoBehaviourPunCallbacks
      public static Loot instance;
     public int amount;
 
+    public GameObject medkitMesh; 
+
     private bool isCollected = false;
 
     void Awake(){
@@ -33,7 +35,7 @@ public class Loot : MonoBehaviourPunCallbacks
             if (playerController != null)
             {
                 CollectLoot(playerController);
-                photonView.RPC("SyncLootCollection", RpcTarget.All);
+                //photonView.RPC("SyncLootCollection", RpcTarget.All);
             }
             else
             {
@@ -51,6 +53,8 @@ public class Loot : MonoBehaviourPunCallbacks
                 break;
             case LootType.Healing:
                 playerController.photonView.RPC("Heal", RpcTarget.All, amount);
+                print("Succesfully healed"); 
+                Destroy(medkitMesh);
                 break;
             case LootType.Explosive:
                 playerController.photonView.RPC("AddExplosive", RpcTarget.All, amount);

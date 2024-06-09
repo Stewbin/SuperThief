@@ -1,3 +1,4 @@
+using System.Xml.Linq;
 using System.Data;
 using UnityEngine;
 using Photon.Pun;
@@ -43,6 +44,8 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
     {
         instance = this;
     }
+
+    
 
    private void Start()
     {
@@ -305,6 +308,8 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
         {
             currentHealth = Mathf.Min(currentHealth + healAmount, maxHealth);
             UpdateHealthBar();
+            Destroy(Loot.instance.medkitMesh);
+            
         }
     }
 }

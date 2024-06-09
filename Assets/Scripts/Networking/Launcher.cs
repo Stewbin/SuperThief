@@ -58,7 +58,11 @@ public class Launcher : MonoBehaviourPunCallbacks
         
        
         //Connect using settings we set up for photon netwrok 
-        PhotonNetwork.ConnectUsingSettings(); 
+    
+
+        if(!PhotonNetwork.IsConnected){
+                PhotonNetwork.ConnectUsingSettings();
+        }
 
 #if UNITY_EDITOR
     roomTestButton.SetActive(true);
