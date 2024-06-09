@@ -13,16 +13,10 @@ public class Loot : MonoBehaviourPunCallbacks
     }
 
     public LootType lootType;
-     public static Loot instance;
     public int amount;
-
-    public GameObject medkitMesh; 
-
+    public GameObject medkitMesh;
+    public GameObject ammoMesh;
     private bool isCollected = false;
-
-    void Awake(){
-        instance = this;
-    }
 
     private void OnTriggerEnter(Collider other)
     {
@@ -35,7 +29,14 @@ public class Loot : MonoBehaviourPunCallbacks
             if (playerController != null)
             {
                 CollectLoot(playerController);
-                //photonView.RPC("SyncLootCollection", RpcTarget.All);
+                if (photonView != null)
+                {
+                    photonView.RPC("SyncLootCollection", RpcTarget.All);
+                }
+                else
+                {
+                    Debug.LogError("PhotonView component not found on the Loot object.");
+                }
             }
             else
             {
@@ -50,10 +51,10 @@ public class Loot : MonoBehaviourPunCallbacks
         {
             case LootType.Ammo:
                 playerController.photonView.RPC("AddAmmo", RpcTarget.All, amount);
+                Destroy(ammoMesh);
                 break;
             case LootType.Healing:
                 playerController.photonView.RPC("Heal", RpcTarget.All, amount);
-                print("Succesfully healed"); 
                 Destroy(medkitMesh);
                 break;
             case LootType.Explosive:
@@ -66,22 +67,34 @@ public class Loot : MonoBehaviourPunCallbacks
     private void SyncLootCollection()
     {
         isCollected = true;
-        gameObject.SetActive(false);
         StartCoroutine(RespawnLoot());
     }
 
-    private System.Collections.IEnumerator RespawnLoot()
+    private IEnumerator RespawnLoot()
     {
-        yield return new WaitForSeconds(30f); // Adjust the respawn time as needed
-        photonView.RPC("SyncLootRespawn", RpcTarget.All);
+        gameObject.SetActive(false);
+        yield return new WaitForSeconds(5f); // Adjust the respawn time as needed
+
+        if (PhotonNetwork.IsMasterClient)
+        {
+            Transform spawnPoint = LootSpawnManager.instance.GetRandomSpawnPoint();
+            if (spawnPoint != null)
+            {
+                transform.position = spawnPoint.position;
+                gameObject.SetActive(true);
+                photonView.RPC("SyncLootRespawn", RpcTarget.All);
+            }
+            else
+            {
+                Debug.LogError("No valid spawn point found in LootSpawnManager.");
+            }
+        }
     }
 
     [PunRPC]
     private void SyncLootRespawn()
     {
         isCollected = false;
-        Transform spawnPoint = LootSpawnManager.instance.GetRandomSpawnPoint();
-        transform.position = spawnPoint.position;
         gameObject.SetActive(true);
     }
 }

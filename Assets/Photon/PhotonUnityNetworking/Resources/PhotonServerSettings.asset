@@ -44,6 +44,7 @@ MonoBehaviour:
   - SyncLootCollection
   - SyncLootRespawn
   - Heal
+  - AddAmmo
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0

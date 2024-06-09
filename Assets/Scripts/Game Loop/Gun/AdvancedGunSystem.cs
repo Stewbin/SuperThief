@@ -308,8 +308,24 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
         {
             currentHealth = Mathf.Min(currentHealth + healAmount, maxHealth);
             UpdateHealthBar();
-            Destroy(Loot.instance.medkitMesh);
+           
             
         }
     }
+
+
+     [PunRPC]
+    public void AddAmmo(int ammoAmount)
+    {
+    if (photonView.IsMine)
+    {
+        int currentAmmo = allGuns[selectedGun].currentAmmoInClip;
+        int maxAmmo = allGuns[selectedGun].clipSize;
+        int ammoToAdd = Mathf.Min(ammoAmount, maxAmmo - currentAmmo);
+
+        allGuns[selectedGun].currentAmmoInClip += ammoToAdd;
+        UIController.instance.currentAmmo.text = allGuns[selectedGun].currentAmmoInClip.ToString();
+        print("Successfully added ammo amount of " + ammoToAdd);
+    }
+}
 }

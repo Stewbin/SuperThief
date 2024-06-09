@@ -12,7 +12,14 @@ public class LootSpawnManager : MonoBehaviourPunCallbacks
 
     private void Awake()
     {
-        instance = this;
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 
     private void Start()
@@ -28,14 +35,29 @@ public class LootSpawnManager : MonoBehaviourPunCallbacks
 
     public void SpawnRandomLoot(Transform spawnPoint)
     {
-        int randomIndex = Random.Range(0, lootPrefabs.Length);
-        GameObject lootPrefab = lootPrefabs[randomIndex];
-        PhotonNetwork.Instantiate(lootPrefab.name, spawnPoint.position, Quaternion.identity);
+        if (lootPrefabs.Length > 0 && spawnPoint != null)
+        {
+            int randomIndex = Random.Range(0, lootPrefabs.Length);
+            GameObject lootPrefab = lootPrefabs[randomIndex];
+            PhotonNetwork.Instantiate(lootPrefab.name, spawnPoint.position, Quaternion.identity);
+        }
+        else
+        {
+            Debug.LogError("No loot prefabs found or invalid spawn point.");
+        }
     }
 
     public Transform GetRandomSpawnPoint()
     {
-        int randomIndex = Random.Range(0, spawnPoints.Length);
-        return spawnPoints[randomIndex];
+        if (spawnPoints.Length > 0)
+        {
+            int randomIndex = Random.Range(0, spawnPoints.Length);
+            return spawnPoints[randomIndex];
+        }
+        else
+        {
+            Debug.LogError("No spawn points found in LootSpawnManager.");
+            return null;
+        }
     }
 }
