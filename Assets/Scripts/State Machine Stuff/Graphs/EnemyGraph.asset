@@ -49,6 +49,8 @@ MonoBehaviour:
   - {fileID: 8562054843884513890}
   - {fileID: 3165770868561725006}
   - {fileID: -4087430633487224106}
+  - {fileID: 3699469524585331702}
+  - {fileID: 6300549627376399820}
 --- !u!114 &2521408552017973351
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -88,6 +90,9 @@ MonoBehaviour:
       connections:
       - fieldName: InitialNode
         node: {fileID: 9021986578031834931}
+        reroutePoints: []
+      - fieldName: TrueState
+        node: {fileID: 3699469524585331702}
         reroutePoints: []
       _direction: 0
       _connectionType: 0
@@ -157,6 +162,97 @@ MonoBehaviour:
   Decision: {fileID: 11400000, guid: f88374a0684d5ad46a101491b718e6f4, type: 2}
   TrueState: {fileID: 0}
   FalseState: {fileID: 0}
+--- !u!114 &3699469524585331702
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ed03bc3cc8c44c4c9e6f7af68f8a4ab, type: 3}
+  m_Name: Transition
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: 152, y: -856}
+  ports:
+    keys:
+    - TrueState
+    - FalseState
+    - Entry
+    values:
+    - _fieldName: TrueState
+      _node: {fileID: 3699469524585331702}
+      _typeQualifiedName: FiniteStateMachine.BaseStateNode, Assembly-CSharp, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: Entry
+        node: {fileID: 2521408552017973351}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+    - _fieldName: FalseState
+      _node: {fileID: 3699469524585331702}
+      _typeQualifiedName: FiniteStateMachine.BaseStateNode, Assembly-CSharp, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: Entry
+        node: {fileID: 6300549627376399820}
+        reroutePoints: []
+      _direction: 1
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+    - _fieldName: Entry
+      _node: {fileID: 3699469524585331702}
+      _typeQualifiedName: FiniteStateMachine.FSMNode, Assembly-CSharp, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: Transitions
+        node: {fileID: 8562054843884513890}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+  Entry: {fileID: 0}
+  Decision: {fileID: 0}
+  TrueState: {fileID: 0}
+  FalseState: {fileID: 0}
+--- !u!114 &6300549627376399820
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce41d39a6a94ca145afc67c6f18c908a, type: 3}
+  m_Name: Remain In State
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: 360, y: -776}
+  ports:
+    keys:
+    - Entry
+    values:
+    - _fieldName: Entry
+      _node: {fileID: 6300549627376399820}
+      _typeQualifiedName: FiniteStateMachine.FSMNode, Assembly-CSharp, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: FalseState
+        node: {fileID: 3699469524585331702}
+        reroutePoints: []
+      _direction: 0
+      _connectionType: 0
+      _typeConstraint: 0
+      _dynamic: 0
+  Entry: {fileID: 0}
 --- !u!114 &8562054843884513890
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -181,7 +277,10 @@ MonoBehaviour:
       _typeQualifiedName: System.Collections.Generic.List`1[[FiniteStateMachine.TransitionNode,
         Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]],
         mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
-      connections: []
+      connections:
+      - fieldName: Entry
+        node: {fileID: 3699469524585331702}
+        reroutePoints: []
       _direction: 1
       _connectionType: 0
       _typeConstraint: 0
@@ -199,7 +298,8 @@ MonoBehaviour:
       _typeConstraint: 0
       _dynamic: 0
   Entry: {fileID: 0}
-  Actions: []
+  Actions:
+  - {fileID: 11400000, guid: db5cf9a8e003e27498df959699435a2e, type: 2}
   Transitions: []
 --- !u!114 &9021986578031834931
 MonoBehaviour:

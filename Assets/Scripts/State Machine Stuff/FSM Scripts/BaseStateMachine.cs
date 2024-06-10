@@ -5,7 +5,6 @@ using System.Collections.Generic;
 
 public class BaseStateMachine : MonoBehaviour 
     {
-        [SerializeField] private BaseState _initialState;
         public BaseState CurrentState { get; set; }
         private Dictionary<Type, Component> _cachedComponents;
         
@@ -22,7 +21,6 @@ public class BaseStateMachine : MonoBehaviour
 
         public virtual void Init()
         {
-            CurrentState = _initialState;
         }
 
         public virtual void Execute()

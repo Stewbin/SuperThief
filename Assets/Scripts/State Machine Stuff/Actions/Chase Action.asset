@@ -9,8 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b247e2a11ad5f294cb4c8c793e9163e5, type: 3}
-  m_Name: ChasePlayer
+  m_Script: {fileID: 11500000, guid: 7741dbb24f9f7b9428cd106aa4eb04e8, type: 3}
+  m_Name: Chase Action
   m_EditorClassIdentifier: 
-  Action: []
-  Transitions: []
+  MoveSpeed: 1
