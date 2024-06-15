@@ -4,12 +4,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 
+
 public class PlayerSpawner : MonoBehaviourPunCallbacks
 {
     public static PlayerSpawner instance;
 
     private GameObject player;
+
     public GameObject playerPrefab;
+
+    //public TMP_Text killFeedText;
 
 
  
@@ -52,6 +56,13 @@ public class PlayerSpawner : MonoBehaviourPunCallbacks
         MatchManager.instance.UpdateStatsSend(PhotonNetwork.LocalPlayer.ActorNumber, 1, 1); 
 
         if(player != null){
+            //string killerName = damager;
+            ///string victimName = player.GetComponent<PhotonView>().Owner.NickName;
+
+
+            // PhotonView photonView = PhotonView.Get(this);
+             ///photonView.RPC("UpdateKillFeed", RpcTarget.All, killerName, victimName);
+
             StartCoroutine(DieCoroutine());
         }
     }   

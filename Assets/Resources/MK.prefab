@@ -124,6 +124,7 @@ MonoBehaviour:
   amount: 25
   medkitMesh: {fileID: 194130976373204792}
   ammoMesh: {fileID: 0}
+  moneyMesh: {fileID: 0}
 --- !u!114 &159894063265090578
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -9,13 +9,17 @@ public class Loot : MonoBehaviourPunCallbacks
     {
         Ammo,
         Healing,
-        Explosive
+        Explosive, 
+
+        Money
     }
 
     public LootType lootType;
     public int amount;
     public GameObject medkitMesh;
     public GameObject ammoMesh;
+
+    public GameObject moneyMesh; 
     private bool isCollected = false;
 
     private void OnTriggerEnter(Collider other)
@@ -36,7 +40,7 @@ public class Loot : MonoBehaviourPunCallbacks
                 else
                 {
                     Debug.LogError("PhotonView component not found on the Loot object.");
-                }
+                } 
             }
             else
             {
@@ -59,6 +63,10 @@ public class Loot : MonoBehaviourPunCallbacks
                 break;
             case LootType.Explosive:
                 playerController.photonView.RPC("AddExplosive", RpcTarget.All, amount);
+                break;
+            case LootType.Money:
+                playerController.photonView.RPC("CollectMoney", RpcTarget.All, amount);
+                Destroy(moneyMesh); 
                 break;
         }
     }

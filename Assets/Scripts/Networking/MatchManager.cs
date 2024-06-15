@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Security.AccessControl;
 using System.Collections;
 using System.Collections.Generic;
@@ -21,7 +22,8 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
         NewPlayer,
         ListPlayers,
         UpdateStat,
-        NextMatch
+        NextMatch,
+        TimerSync
     }
 
     public enum GameState
@@ -39,6 +41,7 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
 
     public float matchLength = 60f; 
     public float currentMatchTime; 
+    private float sendTimer;
 
     public bool perpetual; 
 
@@ -60,12 +63,20 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
             state = GameState.Playing;
             SetUpTimer();
 
+        if(!PhotonNetwork.IsMasterClient)
+        {
+            UIController.instance.timerText.gameObject.SetActive(false);
+        }
            
         }
+
+       
     }
 
     void Update() {
         
+        if(PhotonNetwork.IsMasterClient)
+        {
         if(currentMatchTime > 0f && state == GameState.Playing)
         {
             currentMatchTime -= Time.deltaTime; 
@@ -75,17 +86,19 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
                 currentMatchTime = 0f;
 
                 state = GameState.Ending; 
-
-                if (PhotonNetwork.IsMasterClient)
-            {
                 ListPlayersSend();
 
                 StateCheck(); 
             }
-
-
-            }
             UpdateTimerDisplay();
+            sendTimer -= Time.deltaTime; 
+
+            if(sendTimer <= 0){
+                sendTimer += 1f; 
+
+                TimerSend();  
+            }
+        }
         }
     }
 
@@ -142,6 +155,9 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
                 case EventCodes.NextMatch:
                     NextMatchReceive();
                     break;
+                 case EventCodes.TimerSync:
+                    TimerReceive(data);
+                    break;
             }
         }
     }
@@ -158,11 +174,12 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
 
     public void NewPlayerSend(string username)
     {
-        object[] package = new object[4];
+        object[] package = new object[5];
         package[0] = username;
         package[1] = PhotonNetwork.LocalPlayer.ActorNumber;
         package[2] = 0;
         package[3] = 0;
+        package[4] = 0;
 
         PhotonNetwork.RaiseEvent(
             (byte)EventCodes.NewPlayer,
@@ -174,7 +191,7 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
 
     public void NewPlayerReceive(object[] dataReceived)
     {
-        PlayerInfo player = new PlayerInfo((string)dataReceived[0], (int)dataReceived[1], (int)dataReceived[2], (int)dataReceived[3]);
+        PlayerInfo player = new PlayerInfo((string)dataReceived[0], (int)dataReceived[1], (int)dataReceived[2], (int)dataReceived[3],(int)dataReceived[4]);
         allPlayers.Add(player);
 
         ListPlayersSend();
@@ -188,12 +205,14 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
 
         for (int i = 0; i < allPlayers.Count; i++)
         {
-            object[] piece = new object[4];
+            object[] piece = new object[5];
 
             piece[0] = allPlayers[i].name;
             piece[1] = allPlayers[i].actor;
             piece[2] = allPlayers[i].kills;
             piece[3] = allPlayers[i].deaths;
+            piece[4] = allPlayers[i].money;
+
 
             package[i + 1] = piece;
         }
@@ -220,7 +239,8 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
                 (string)piece[0],
                 (int)piece[1],
                 (int)piece[2],
-                (int)piece[3]
+                (int)piece[3], 
+                (int)piece[4] 
             );
 
             allPlayers.Add(player);
@@ -288,13 +308,16 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
     {
         if (allPlayers.Count > index)
         {
+            
             UIController.instance.killsText.text = "Kills: " + allPlayers[index].kills;
             UIController.instance.deathsText.text = "Deaths: " + allPlayers[index].deaths;
+            UIController.instance.moneyText.text = "Money: $" + allPlayers[index].money;
         }
         else
         {
             UIController.instance.killsText.text = "Kills: 0";
             UIController.instance.deathsText.text = "Deaths: 0";
+            UIController.instance.moneyText.text = "Money: $0";
         }
     }
 
@@ -315,7 +338,7 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
         {
             Leaderboard newPlayersDisplay = Instantiate(UIController.instance.leaderboardPlayerDisplay, UIController.instance.leaderboardPlayerDisplay.transform.parent);
 
-            newPlayersDisplay.SetDetails(player.name, player.kills, player.deaths);
+            newPlayersDisplay.SetDetails(player.name, player.kills, player.deaths, player.money);
             newPlayersDisplay.gameObject.SetActive(true);
 
             leaderboardPlayers.Add(newPlayersDisplay);
@@ -479,6 +502,7 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
         foreach(PlayerInfo player in allPlayers){
             player.kills = 0; 
             player.deaths = 0;
+            player.money = 0; 
 
         }
 
@@ -504,6 +528,33 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
 
     }
 
+    public void TimerSend()
+    {
+        object [] package = new object [] {(int)currentMatchTime, state};
+
+
+    PhotonNetwork.RaiseEvent(
+            (byte)EventCodes.TimerSync,
+            package,
+            new RaiseEventOptions { Receivers = ReceiverGroup.All },
+            new SendOptions { Reliability = true }
+        );
+    }
+
+    public void TimerReceive(object[] dataReceived)
+    {
+        currentMatchTime = (int) dataReceived[0]; 
+        state = (GameState) dataReceived[1]; 
+
+        UpdateTimerDisplay();
+//d
+
+        UIController.instance.timerText.gameObject.SetActive(true);
+
+    }
+
+    
+
 }
 
 [System.Serializable]
@@ -513,12 +564,14 @@ public class PlayerInfo
     public int actor;
     public int kills;
     public int deaths;
+    public int money; 
 
-    public PlayerInfo(string _name, int _actor, int _kills, int _deaths)
+    public PlayerInfo(string _name, int _actor, int _kills, int _deaths, int _money)
     {
         name = _name;
         actor = _actor;
         kills = _kills;
         deaths = _deaths;
+        money = _money; 
     }
 }

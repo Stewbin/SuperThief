@@ -739,7 +739,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!82 &426325257
 AudioSource:
   m_ObjectHideFlags: 0
@@ -1491,7 +1491,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b616ad19c6b0642da8a9cbd0cd95ebbe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  iosNotifications: {fileID: 860000168}
 --- !u!4 &860000170
 Transform:
   m_ObjectHideFlags: 0
