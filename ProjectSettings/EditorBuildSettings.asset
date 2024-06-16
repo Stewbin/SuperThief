@@ -29,4 +29,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/AdTest.unity
     guid: e76c768926a7d42428e3afc8cae2359d
+  - enabled: 1
+    path: Assets/Scenes/Level Blockout.unity
+    guid: c29575cd732530d43a5993e506c0c0f9
   m_configObjects: {}

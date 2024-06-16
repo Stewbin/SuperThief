@@ -7,6 +7,7 @@ using Photon.Pun;
 public class PlayerMove : MonoBehaviourPunCallbacks
 {
     
+    public static PlayerMove instance; 
     public FixedJoystick joystick;
     public float SpeedMove = 5f;
     public CharacterController controller;
@@ -32,6 +33,11 @@ public class PlayerMove : MonoBehaviourPunCallbacks
     public Transform modelGunPoint; 
     public Transform gunHolder; 
 
+    public Material[] allSkins; 
+
+    public int moneyCollected;
+
+
  [Header("Name On Player Implementations Test")]
     [SerializeField] public string nickname;
     [SerializeField] public TMP_Text nicknameUIText;
@@ -44,6 +50,9 @@ public class PlayerMove : MonoBehaviourPunCallbacks
         nicknameUIText.text = nickname;
     }
 
+    public void Awake(){
+        instance = this; 
+    }
     void Start()
 
     {
@@ -53,6 +62,7 @@ public class PlayerMove : MonoBehaviourPunCallbacks
         playerModel.SetActive(true);
         photonView.RPC("SetNicknameUI", RpcTarget.All, Launcher.instance.nameInput.text);
         nicknameUIText.transform.position = transform.position + nicknameOffset;
+        moneyCollected = 0; 
        } else {
         gunHolder.parent = modelGunPoint;
         gunHolder.localPosition = Vector3.zero; 
@@ -60,7 +70,8 @@ public class PlayerMove : MonoBehaviourPunCallbacks
        }
        
 
-        
+       playerModel.GetComponent<Renderer>().material = allSkins[photonView.Owner.ActorNumber % allSkins.Length];
+
        
         //Transform newTrans = SpawnManager.instance.GetSpawnPoints();
         //transform.position = newTrans.position;
@@ -97,6 +108,14 @@ public class PlayerMove : MonoBehaviourPunCallbacks
         }
 
        
+    }
+
+    [PunRPC]
+    public void CollectMoney(int amount)
+    {
+        moneyCollected = moneyCollected + amount; 
+        UIController.instance.currentMoneyAmount.text = "Money: $" + moneyCollected.ToString();
+        print("Successfully added money" + moneyCollected); 
     }
 
 

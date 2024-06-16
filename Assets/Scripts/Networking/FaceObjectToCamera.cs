@@ -8,14 +8,7 @@ public class FaceObjectToCamera : MonoBehaviour
 
     void Start()
     {
-        //
-        mainCamera = Camera.main;
-
-      
-        if (mainCamera == null)
-        {
-           print("Main camera not found. Make sure the camera is tagged as 'MainCamera' in the scene.");
-        }
+        
     }
 
     void Update()
