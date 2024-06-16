@@ -4,10 +4,23 @@ using UnityEngine;
 
 public class Gun : MonoBehaviour
 {
-   public bool isAutomatic; 
-   public float timeBetweenShots = 0.1f; 
-   public float heatPerShot = 1f;
+    public static Gun instance;
 
-   public GameObject muzzleFlash; 
-   public int shotDamage; 
+    private void Awake()
+    {
+        instance = this;
+    }
+
+    public bool isAutomatic;
+    public float fireRate = 0.1f;
+    [SerializeField] public int clipSize;
+    [SerializeField] public int reservedAmmoCapacity;
+    public GameObject muzzleFlash;
+    public int shotDamage;
+    public int currentAmmoInClip;
+
+    public void Start()
+    {
+        currentAmmoInClip = clipSize;
+    }
 }
