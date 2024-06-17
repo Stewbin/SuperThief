@@ -47,6 +47,8 @@ MonoBehaviour:
   - AddAmmo
   - CollectMoney
   - UpdateKillFeed
+  - PlayFootStepSFX_RPC
+  - PlayShootSFX_RPC
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0
