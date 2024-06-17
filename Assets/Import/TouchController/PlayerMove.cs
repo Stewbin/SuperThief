@@ -37,6 +37,7 @@ public class PlayerMove : MonoBehaviourPunCallbacks
 
     public int moneyCollected;
 
+ 
 
  [Header("Name On Player Implementations Test")]
     [SerializeField] public string nickname;
@@ -116,6 +117,10 @@ public class PlayerMove : MonoBehaviourPunCallbacks
         moneyCollected = moneyCollected + amount; 
         UIController.instance.currentMoneyAmount.text = "Money: $" + moneyCollected.ToString();
         print("Successfully added money" + moneyCollected); 
+    }
+
+    public void Aim(){
+        
     }
 
 

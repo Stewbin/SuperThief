@@ -18,6 +18,7 @@ public class Gun : MonoBehaviour
     public GameObject muzzleFlash;
     public int shotDamage;
     public int currentAmmoInClip;
+    public float adsZoom = 0.1f;
 
     public void Start()
     {

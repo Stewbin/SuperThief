@@ -1,5 +1,6 @@
-using System.Xml.Linq;
-using System.Data;
+
+using System;
+using System.Collections; 
 using UnityEngine;
 using Photon.Pun;
 using UnityEngine.UI;
@@ -37,6 +38,16 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
     public int selectedGun;
     private bool _isShootButtonPressed;
     private bool _isReloadButtonPressed;
+
+    public float adsSpeed = 5f; 
+    
+    public Transform adsOutPoint, adsInPoint;
+
+    [Header("SFX")]
+
+    public int shootSFXIndex = 0; 
+
+
 
     public static AdvancedGunSystem instance;
 
@@ -171,6 +182,9 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
         Ray ray = camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
         ray.origin = camera.transform.position;
 
+        //shoot sfx 
+        PlayerSoundManager.instance.PlayShootSFX_RPC(shootSFXIndex); 
+
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
             if (hit.collider.gameObject.CompareTag("Player") && !hit.collider.gameObject.GetPhotonView().IsMine)
@@ -261,6 +275,20 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
         SwitchGun();
     }
 
+    public void AimGun()
+    {
+        camera.fieldOfView = Mathf.Lerp(camera.fieldOfView, allGuns[selectedGun].adsZoom, adsSpeed * Time.deltaTime); 
+        //PlayerMove.instance.gunHolder.position = Vector3.Lerp(PlayerMove.instance.gunHolder.position, adsInPoint.position, adsSpeed * Time.deltaTime); 
+         
+    }
+
+    public void CancelAimGun()
+    {
+        camera.fieldOfView = Mathf.Lerp(camera.fieldOfView, 60f, adsSpeed * Time.deltaTime);
+        //PlayerMove.instance.gunHolder.position = Vector3.Lerp(PlayerMove.instance.gunHolder.position, adsOutPoint.position, adsSpeed * Time.deltaTime); 
+ 
+    }
+
     public void OnPointerDown(PointerEventData eventData)
     {
         if (eventData.pointerCurrentRaycast.gameObject.CompareTag("ShootButton"))
@@ -327,5 +355,7 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
         UIController.instance.currentAmmo.text = allGuns[selectedGun].currentAmmoInClip.ToString();
         print("Successfully added ammo amount of " + ammoToAdd);
     }
+
+ 
 }
 }
