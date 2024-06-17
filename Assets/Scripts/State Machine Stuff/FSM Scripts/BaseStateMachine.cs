@@ -5,22 +5,31 @@ using System.Collections.Generic;
 
 public class BaseStateMachine : MonoBehaviour 
     {
-        [SerializeField] private BaseState _initialState;
-        public BaseState CurrentState {get; set;}
+        public BaseState CurrentState { get; set; }
         private Dictionary<Type, Component> _cachedComponents;
-        void Start()
+        
+        void Awake()
         {
-            CurrentState = _initialState;
+            Init();
             _cachedComponents = new Dictionary<Type, Component>();
         }
 
-        public void Update()
+        void Update()
+        {
+            Execute();
+        }
+
+        public virtual void Init()
+        {
+        }
+
+        public virtual void Execute()
         {
             CurrentState.Execute(this);
         }
 
         /// <summary>
-        /// Custom GetComponent method that is memoized; will 
+        /// Custom GetComponent method that will 
         /// return previously fetched components from cache instead of 
         /// accessing like normal. (The tutorial recommends this).
         /// </summary>

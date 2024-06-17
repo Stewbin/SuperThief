@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 
-
 public class PlayerSpawner : MonoBehaviourPunCallbacks
 {
     public static PlayerSpawner instance;
