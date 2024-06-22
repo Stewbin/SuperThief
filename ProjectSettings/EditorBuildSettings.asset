@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/Production/Authentication.unity
+    guid: de7bd26a2819f7947b68c5fb9533ba4f
+  - enabled: 1
     path: Assets/Scenes/Login Screen.unity
     guid: f28bdcaffacf3d649a3d4e6d2e554c0c
   - enabled: 1
@@ -29,7 +32,25 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/AdTest.unity
     guid: e76c768926a7d42428e3afc8cae2359d
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Level Blockout.unity
     guid: c29575cd732530d43a5993e506c0c0f9
+  - enabled: 1
+    path: Assets/Scenes/FriendSystem.unity
+    guid: cee07117bd7ed0042aae032306b0efcc
+  - enabled: 1
+    path: Assets/Scenes/LoginPlayFabTest.unity
+    guid: 2e9d44b08cf754e43b0aceaf2fc40ffa
+  - enabled: 1
+    path: Assets/Scenes/DelayStartMenu.unity
+    guid: 2ec821d80b1ae074d8924249c275c850
+  - enabled: 1
+    path: Assets/Scenes/WaitingRoom.unity
+    guid: cdfaf6110530c504a981c395a8a71f85
+  - enabled: 1
+    path: Assets/Scenes/Shop.unity
+    guid: e43dd3bc3a53ab34592d48c3e2abd8da
+  - enabled: 1
+    path: Assets/Scenes/Construction.unity
+    guid: 6d26196f7cf0e6c428f8c72d4c3be843
   m_configObjects: {}

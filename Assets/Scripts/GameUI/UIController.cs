@@ -62,6 +62,15 @@ public class UIController : MonoBehaviour
   public TMP_Text killFeedText;
 
   public GameObject optionsScreen;
+  
+  public TMP_Text eliminationMessage; 
+
+  public float eliminationMessageDuration = 3f; 
+
+   [Header("Kill Feed")]
+    public GameObject killFeedItemPrefab; // Ensure this is set in the Inspector
+    public Transform killFeedContainer; // Ensure this is set in the Inspector
+    public float killFeedDisplayDuration = 3f;
 
   
   //public TMP_Text gameMessageText; 
@@ -105,8 +114,23 @@ public class UIController : MonoBehaviour
     optionsScreen.SetActive(false);
   }
 
+     public void ShowKillMessage(string killer, string victim)
+    {
+        GameObject killFeedItem = Instantiate(killFeedItemPrefab, killFeedContainer);
+        TMP_Text killFeedText = killFeedItem.GetComponent<TMP_Text>();
+        killFeedText.text = $"{killer} eliminated {victim}";
+        StartCoroutine(RemoveKillFeedItem(killFeedItem));
+    }
 
-  
+    public IEnumerator RemoveKillFeedItem(GameObject killFeedItem)
+    {
+        yield return new WaitForSeconds(killFeedDisplayDuration);
+        Destroy(killFeedItem);
+    }
+
+
+
+
 
 
 

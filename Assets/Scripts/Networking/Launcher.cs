@@ -3,13 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
+using System; 
 using TMPro; 
 using UnityEngine.UI; 
+using UnityEngine.SceneManagement;
 
 public class Launcher : MonoBehaviourPunCallbacks
 {
     // Start is called before the first frame update
     public static Launcher instance; 
+
+    // Get Photon Friends
+    public static Action GetPhotonFriends =  delegate{}; 
     public GameObject loadingScreen; 
     public TMP_Text loadingText; 
     public GameObject menuButtons; 
@@ -42,8 +47,7 @@ public class Launcher : MonoBehaviourPunCallbacks
 
    public GameObject roomTestButton; 
 
-
-
+  
  
 
     void Awake(){
@@ -54,7 +58,7 @@ public class Launcher : MonoBehaviourPunCallbacks
         CloseMenus(); 
 
         loadingScreen.SetActive(true);
-        loadingText.text = "Connecting To Network...";
+        loadingText.text = "Connecting To Server...";
         
        
         //Connect using settings we set up for photon netwrok 
@@ -118,7 +122,10 @@ public class Launcher : MonoBehaviourPunCallbacks
     public override void OnJoinedLobby(){
     CloseMenus(); 
     menuButtons.SetActive(true);
-    PhotonNetwork.NickName = Random.Range(0,1000).ToString();
+    PhotonNetwork.NickName = UnityEngine.Random.Range(0,1000).ToString();
+    print("You have succesfully connected to a Photon Lobby");
+
+    GetPhotonFriends?.Invoke(); 
 
 
 if(!hasSetUsername){
@@ -131,6 +138,7 @@ if(!hasSetUsername){
 } else {
     PhotonNetwork.NickName = PlayerPrefs.GetString("playerName");
 }
+
 
     }
 
@@ -210,15 +218,7 @@ ListAllPlayers();
 
 
 
-     public override void OnCreateRoomFailed(short returnCode, string message){
-
-        errorText.text = "Failed To Create Room " + message;
-        CloseMenus(); 
-        errorScreen.SetActive(true); 
-
-
-    }
-
+   
     public void CloseErrorScreen(){
 
         CloseMenus(); 
@@ -337,6 +337,21 @@ PhotonNetwork.LoadLevel(levelToPlay);
     public void Test(){
         print("succesfully touch the input"); 
     }
+
+    //test playfab friend system 
+
+    public void GoToPlayFabLogin()
+    {
+        SceneManager.LoadScene("LoginPlayFabTest");
+    }
+
+    public void GoToDelayMatchMaking()
+    {
+//hey
+    }
+   
+
+  
 
 
 

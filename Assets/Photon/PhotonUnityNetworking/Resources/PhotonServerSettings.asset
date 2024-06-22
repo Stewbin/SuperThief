@@ -15,7 +15,7 @@ MonoBehaviour:
   AppSettings:
     AppIdRealtime: c3f826b6-73fe-421f-a13f-151b828ec955
     AppIdFusion: 
-    AppIdChat: 
+    AppIdChat: a44f3849-728d-4394-bcbe-67a49a266547
     AppIdVoice: 
     AppVersion: 
     UseNameServer: 1
@@ -49,6 +49,9 @@ MonoBehaviour:
   - UpdateKillFeed
   - PlayFootStepSFX_RPC
   - PlayShootSFX_RPC
+  - SwitchGunForMobile
+  - DisplayEliminationMessage
+  - RPC_SendTimer
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0

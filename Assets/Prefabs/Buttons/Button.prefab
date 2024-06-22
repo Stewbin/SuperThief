@@ -98,7 +98,7 @@ MonoBehaviour:
   m_enableAutoSizing: 1
   m_fontSizeMin: 18
   m_fontSizeMax: 60
-  m_fontStyle: 16
+  m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -147,6 +147,7 @@ GameObject:
   - component: {fileID: 7990455191526581644}
   - component: {fileID: 4863440050432558408}
   - component: {fileID: 2307757718604164770}
+  - component: {fileID: 6585885754036125314}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -258,7 +259,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: Launcher, Assembly-CSharp
-        m_MethodName: OpenRoomBrowser
+        m_MethodName: OpenRoomCreate
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -283,3 +284,16 @@ MonoBehaviour:
   m_EffectColor: {r: 0.4811321, g: 0.4811321, b: 0.4811321, a: 0.5}
   m_EffectDistance: {x: 10, y: -10}
   m_UseGraphicAlpha: 1
+--- !u!114 &6585885754036125314
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8818739010229075010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb7326c35aa06d441a2934ca36f2aa03, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  buttonText: {fileID: 4846766966846249696}

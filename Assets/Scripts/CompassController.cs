@@ -1,8 +1,10 @@
-using System.Collections;
+/**using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.Timeline.Actions;
 using UnityEngine;
+**/
 
+/**
 public class CompassController : MonoBehaviour
 {
     public Transform[] Objectives;
@@ -67,10 +69,11 @@ public class CompassController : MonoBehaviour
         marker.localScale *= size;
         
         // Gizmos for testing
-        /*
+       
         Debug.Log($"{objective.name}: {percentage}");
         Debug.DrawRay(Player.transform.position, Player.transform.forward, Color.green);
         Debug.DrawRay(Player.transform.position, Direction, Color.red);
-        */
+     
     }
 }
+**/

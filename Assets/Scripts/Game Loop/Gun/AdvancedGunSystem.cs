@@ -28,10 +28,7 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
     public int currentHealth;
     public Image healthBarDisplay;
 
-    [Header("Kill Feed")]
-    public GameObject killFeedItemPrefab;
-    public Transform killFeedContainer;
-    public float killFeedDisplayDuration = 3f;
+    
 
     [Header("Gun Variables")]
     public Gun[] allGuns;
@@ -61,6 +58,7 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
    private void Start()
     {
         photonView.RPC("SetGun", RpcTarget.All, selectedGun);
+        photonView.RPC("SwitchGunForMobile", RpcTarget.All);
         currentHealth = maxHealth;
         UpdateHealthBar();
         UIController.instance.healthSlider.maxValue = maxHealth;
@@ -83,6 +81,7 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
             UIController.instance.currentHealthDisplay.text = currentHealth.ToString();
             UIController.instance.magazineSize.text = allGuns[selectedGun].clipSize.ToString();
             UIController.instance.currentAmmo.text = allGuns[selectedGun].currentAmmoInClip.ToString();
+            
 
             if (allGuns[selectedGun].muzzleFlash.activeInHierarchy)
             {
@@ -183,7 +182,7 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
         ray.origin = camera.transform.position;
 
         //shoot sfx 
-        PlayerSoundManager.instance.PlayShootSFX_RPC(shootSFXIndex); 
+       // PlayerSoundManager.instance.PlayShootSFX_RPC(shootSFXIndex); 
 
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
@@ -217,9 +216,13 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
                 currentHealth = 0;
                 PlayerSpawner.instance.Die(damager);
                 MatchManager.instance.UpdateStatsSend(actor, 0, 1);
+                //Elimination text
+             
+                UIController.instance.ShowKillMessage(damager, photonView.Owner.NickName);
+
+                UIController.instance.healthSlider.value = currentHealth;
+                photonView.RPC("UpdateHealthBarRPC", RpcTarget.All, currentHealth);
             }
-            UIController.instance.healthSlider.value = currentHealth;
-            photonView.RPC("UpdateHealthBarRPC", RpcTarget.All, currentHealth);
         }
     }
 
@@ -265,6 +268,8 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
         UIController.instance.magazineSize.text = allGuns[selectedGun].clipSize.ToString();
     }
 
+
+    [PunRPC]
     public void SwitchGunForMobile()
     {
         selectedGun++;
@@ -345,17 +350,26 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
      [PunRPC]
     public void AddAmmo(int ammoAmount)
     {
+        
     if (photonView.IsMine)
     {
         int currentAmmo = allGuns[selectedGun].currentAmmoInClip;
         int maxAmmo = allGuns[selectedGun].clipSize;
         int ammoToAdd = Mathf.Min(ammoAmount, maxAmmo - currentAmmo);
 
+        
         allGuns[selectedGun].currentAmmoInClip += ammoToAdd;
         UIController.instance.currentAmmo.text = allGuns[selectedGun].currentAmmoInClip.ToString();
-        print("Successfully added ammo amount of " + ammoToAdd);
+        print("Successfully added ammo amount of " + ammoToAdd); 
+
+    }
+ 
     }
 
- 
-}
+    //stuff
+  
+
+
+  
+
 }
