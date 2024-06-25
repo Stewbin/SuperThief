@@ -7,7 +7,7 @@ namespace FiniteStateMachine
     {
         public List<FSMAction> Actions;
         [Output] public List<TransitionNode> Transitions;
-        public void Execute(BaseStateMachineGraph baseStateMachine)
+        public void Execute(BaseStateMachine baseStateMachine)
         {
             foreach (var action in Actions)
                 action.Execute(baseStateMachine);

@@ -9,7 +9,7 @@ namespace FiniteStateMachine
         public BaseState TrueState;
         public BaseState FalseState;
 
-        public void Execute(BaseStateMachine stateMachine)
+        public void Execute(global::BaseStateMachine stateMachine)
         {
             if(Decision.Decide(stateMachine) && !(TrueState is RemainInState))
                 stateMachine.CurrentState = TrueState;
