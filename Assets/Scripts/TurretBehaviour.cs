@@ -1,11 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using PlayFab.GroupsModels;
 using UnityEngine;
 
 public class TurretBehaviour : EnemyBehaviour
 {
     [SerializeField] private LineRenderer lineRenderer;
-    [SerializeField] private GameObject turretHead;
+    [SerializeField] private Transform turretHead;
     [SerializeField] private AdvancedGunSystem advancedGunSystem;
     [SerializeField] private State state;
     public float RayLength = 5f;
@@ -32,8 +33,8 @@ public class TurretBehaviour : EnemyBehaviour
     // Update is called once per frame
     void Update()
     {
-        Ray ray = new(turretHead.transform.position, turretHead.transform.forward);
-        Debug.DrawRay(ray.origin, ray.direction, Color.red);
+        Ray ray = new(turretHead.position, turretHead.forward);
+        Debug.DrawRay(ray.origin, RayLength * ray.direction, Color.red);
         // Set the positions of the LineRenderer
         lineRenderer.SetPosition(0, ray.origin);
         lineRenderer.SetPosition(1, ray.origin + ray.direction * RayLength);  
@@ -45,19 +46,24 @@ public class TurretBehaviour : EnemyBehaviour
             turretHead.transform.rotation = Quaternion.Euler(0, targetRotation, 0);
 
             // Fire Physics Raycasts
-            Physics.Raycast(ray, out RaycastHit hit, RayLength);
-            Debug.Log("Something found");
-            if(hit.collider.CompareTag("Player"))
+            if(Physics.Raycast(ray, out RaycastHit hit, RayLength, ~LayerMask.GetMask("Enemy")))
             {
-                Debug.Log("Player found");
-                TargetPlayer = hit.transform;
-                state = State.Hunting;
+                Debug.Log($"{hit.collider.name} hit.");
+                if(hit.collider.CompareTag("Player"))
+                {
+                    Debug.Log("Player found");
+                    TargetPlayer = hit.transform;
+                    state = State.Hunting;
+                }
             }
         } 
-        else
+        else if (state == State.Hunting)
         {
             // Look in direction of player
-            Quaternion.LookRotation(TargetPlayer.position, transform.up);
+            Vector3 directionToPlayer = TargetPlayer.position - turretHead.position;
+            Quaternion lookRotation = Quaternion.LookRotation(directionToPlayer.normalized, transform.up);
+            turretHead.eulerAngles = new Vector3(0, lookRotation.eulerAngles.y, 0);
+            
             // Shoot
             advancedGunSystem.Shoot();
             Debug.Log("Pew.");

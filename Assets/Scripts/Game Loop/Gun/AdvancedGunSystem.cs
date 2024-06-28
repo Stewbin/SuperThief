@@ -10,11 +10,14 @@ using UnityEngine.EventSystems;
 public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointerUpHandler
 {
     [Header("Main Camera for Ray Cast")]
-    public Camera camera;
+    public new Camera camera;
+    [Header("Gun VFX")]
     public GameObject bulletImpact;
     public float muzzleDisplayTime;
     public float muzzleCounter;
     public GameObject playerHitImpact;
+    public GameObject BulletTrail;
+    public float BulletSpeed = 100f;
 
     [Header("Heat Gun Settings")]
     public float maxHeat = 10f;
@@ -51,6 +54,7 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
     public void Awake()
     {
         instance = this;
+        PhotonNetwork.OfflineMode = true;
     }
 
     
@@ -181,11 +185,13 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
         Ray ray = camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
         ray.origin = camera.transform.position;
 
-        //shoot sfx 
-       // PlayerSoundManager.instance.PlayShootSFX_RPC(shootSFXIndex); 
+        #region ShootFX 
+        // PlayerSoundManager.instance.PlayShootSFX_RPC(shootSFXIndex); 
 
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
+            StartCoroutine(SpawnTrail(ray.origin, hit.point, BulletSpeed));
+
             if (hit.collider.gameObject.CompareTag("Player") && !hit.collider.gameObject.GetPhotonView().IsMine)
             {
                 PhotonNetwork.Instantiate(playerHitImpact.name, hit.point, Quaternion.identity);
@@ -197,6 +203,7 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
                 Destroy(bulletImpactObject, 5f);
             }
         }
+        #endregion
 
       allGuns[selectedGun].currentAmmoInClip--;
         heatCounter += allGuns[selectedGun].shotDamage;
@@ -351,24 +358,39 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
     public void AddAmmo(int ammoAmount)
     {
         
-    if (photonView.IsMine)
-    {
-        int currentAmmo = allGuns[selectedGun].currentAmmoInClip;
-        int maxAmmo = allGuns[selectedGun].clipSize;
-        int ammoToAdd = Mathf.Min(ammoAmount, maxAmmo - currentAmmo);
+        if (photonView.IsMine)
+        {
+            int currentAmmo = allGuns[selectedGun].currentAmmoInClip;
+            int maxAmmo = allGuns[selectedGun].clipSize;
+            int ammoToAdd = Mathf.Min(ammoAmount, maxAmmo - currentAmmo);
 
-        
-        allGuns[selectedGun].currentAmmoInClip += ammoToAdd;
-        UIController.instance.currentAmmo.text = allGuns[selectedGun].currentAmmoInClip.ToString();
-        print("Successfully added ammo amount of " + ammoToAdd); 
+            
+            allGuns[selectedGun].currentAmmoInClip += ammoToAdd;
+            UIController.instance.currentAmmo.text = allGuns[selectedGun].currentAmmoInClip.ToString();
+            print("Successfully added ammo amount of " + ammoToAdd); 
 
-    }
+        }
  
     }
 
     //stuff
-  
+    
+    private IEnumerator SpawnTrail(Vector3 SpawnPoint, Vector3 HitDestination, float BulletSpeed)
+    {
+        GameObject trail = Instantiate(BulletTrail, SpawnPoint, Quaternion.identity);
+        TrailRenderer tr = trail.GetComponent<TrailRenderer>();
+        Vector3 startPosition = camera.transform.position;
+        float hitDistance = Vector3.Distance(startPosition, HitDestination);
+        float remainingDistance = hitDistance;
 
+        while(remainingDistance > 0)
+        {
+            trail.transform.position = Vector3.Lerp(startPosition, HitDestination, 1 - (remainingDistance / hitDistance));
+            remainingDistance -= Time.deltaTime * BulletSpeed;
+            yield return null;
+        }
+        Destroy(trail, tr.time);
+    }
 
   
 
