@@ -798,7 +798,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f885d0bd01d4cec4da659b5d89f40ffb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  waitingRoomSceneIndex: 10
+  waitingRoomSceneIndex: 11
 --- !u!1 &1315000830
 GameObject:
   m_ObjectHideFlags: 0

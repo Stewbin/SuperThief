@@ -9,13 +9,13 @@ public class Menu : MonoBehaviour
   
     [SerializeField] public string instagramUrl; 
 
-    [SerializeField] public TMP_Text playerUsernameDisplay; 
+    public TMP_Text playerUsernameDisplay; 
 
     [SerializeField] public string playerUsername; 
 
-    public void Start() {
+    public void Awake() {
 
-        playerUsername = PlayFabManager.PFC.userName; 
+        playerUsername = PlayerPrefs.GetString("USERNAME"); 
         playerUsernameDisplay.text = playerUsername;
         print("The player username is " + playerUsername);
     }
@@ -42,7 +42,7 @@ public class Menu : MonoBehaviour
     }
 
     public void OpenSinglePlayerScene(){
-        SceneManager.LoadScene(8);
+        SceneManager.LoadScene("Local");
     }
 
      public void LeaveSinglePlayer(){
@@ -54,9 +54,12 @@ public class Menu : MonoBehaviour
     }
 
      public void OpenShop(){
-        SceneManager.LoadScene("Construction");
+        SceneManager.LoadScene("Shop");
     }
 
+
+//menu is 
+ 
 
 
     

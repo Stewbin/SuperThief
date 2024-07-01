@@ -9,6 +9,12 @@ EditorBuildSettings:
     path: Assets/Scenes/Production/Authentication.unity
     guid: de7bd26a2819f7947b68c5fb9533ba4f
   - enabled: 1
+    path: Assets/Scenes/Production/Menu.unity
+    guid: 6e4f39e136afe2f4983994f681cfc919
+  - enabled: 1
+    path: Assets/Scenes/Shop.unity
+    guid: e43dd3bc3a53ab34592d48c3e2abd8da
+  - enabled: 1
     path: Assets/Scenes/Login Screen.unity
     guid: f28bdcaffacf3d649a3d4e6d2e554c0c
   - enabled: 1
@@ -48,9 +54,9 @@ EditorBuildSettings:
     path: Assets/Scenes/WaitingRoom.unity
     guid: cdfaf6110530c504a981c395a8a71f85
   - enabled: 1
-    path: Assets/Scenes/Shop.unity
-    guid: e43dd3bc3a53ab34592d48c3e2abd8da
-  - enabled: 1
     path: Assets/Scenes/Construction.unity
     guid: 6d26196f7cf0e6c428f8c72d4c3be843
+  - enabled: 1
+    path: Assets/Scenes/Production/Local.unity
+    guid: d30aa4263dcab864e8c8d27bb66383dd
   m_configObjects: {}

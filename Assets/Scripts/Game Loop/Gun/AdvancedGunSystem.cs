@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections; 
 using UnityEngine;
@@ -42,7 +41,33 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
 
     [Header("SFX")]
 
-    public int shootSFXIndex = 0; 
+    public AudioSource gunShootSource; 
+
+    [Header("Testing")]
+
+    public string damagerText; 
+
+    public bool isPlayerDead = false; 
+
+    [Header("Hitmarker Implementation")]
+
+    public GameObject hitMarker; 
+
+    public AudioSource hitMarkerAudioSource; 
+    public bool playHitMarker; 
+
+    public TMP_Text damageIndicator; 
+
+    [SerializeField] public int damageTest; 
+
+ 
+
+    [Header("Damage Floating Text Implementation")]
+
+    
+
+    [SerializeField] public string  targetPlayerName; 
+    [SerializeField] public PhotonView targetPhotonView;
 
 
 
@@ -64,6 +89,12 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
         UIController.instance.healthSlider.maxValue = maxHealth;
         UIController.instance.healthSlider.value = currentHealth;
         UIController.instance.currentHealthDisplay.text = currentHealth.ToString();
+        //Disable hit marker 
+
+        hitMarker.SetActive(false);
+        damageIndicator.gameObject.SetActive(false); 
+        
+        playHitMarker = false; 
 
         if (photonView.IsMine)
         {
@@ -82,6 +113,8 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
             UIController.instance.magazineSize.text = allGuns[selectedGun].clipSize.ToString();
             UIController.instance.currentAmmo.text = allGuns[selectedGun].currentAmmoInClip.ToString();
             
+            //test
+          
 
             if (allGuns[selectedGun].muzzleFlash.activeInHierarchy)
             {
@@ -181,6 +214,10 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
         Ray ray = camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
         ray.origin = camera.transform.position;
 
+
+        photonView.RPC("ShootSFX", RpcTarget.All);
+        
+
         //shoot sfx 
        // PlayerSoundManager.instance.PlayShootSFX_RPC(shootSFXIndex); 
 
@@ -190,15 +227,36 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
             {
                 PhotonNetwork.Instantiate(playerHitImpact.name, hit.point, Quaternion.identity);
                 hit.collider.gameObject.GetPhotonView().RPC("TakeDamage", RpcTarget.All, photonView.Owner.NickName, allGuns[selectedGun].shotDamage, PhotonNetwork.LocalPlayer.ActorNumber);
+
+                //Show Hit Marker
+                HitMarkerActive(); 
+                Invoke("HitMarkerInActive", 0.1f);
+                playHitMarker = true;
+                PlayHitMarkerSoundFX(); 
+
+                UIController.instance.damageTextAmount.text = allGuns[selectedGun].shotDamage.ToString(); 
+
+                damageIndicator.text = allGuns[selectedGun].shotDamage.ToString();
+
+        
+                
+                
+
+                //get opponent photon view and name dd
+                targetPhotonView = hit.collider.gameObject.GetPhotonView(); 
+                targetPlayerName = targetPhotonView.Owner.NickName;
+                
             }
             else
             {
                 GameObject bulletImpactObject = Instantiate(bulletImpact, hit.point + hit.normal * 0.002f, Quaternion.LookRotation(hit.normal, Vector3.up));
                 Destroy(bulletImpactObject, 5f);
+                playHitMarker = false;
+                
             }
         }
 
-      allGuns[selectedGun].currentAmmoInClip--;
+        allGuns[selectedGun].currentAmmoInClip--;
         heatCounter += allGuns[selectedGun].shotDamage;
 
         allGuns[selectedGun].muzzleFlash.SetActive(true);
@@ -211,19 +269,46 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
         if (photonView.IsMine)
         {
             currentHealth -= damageAmount;
+
+            //display damage anmount 
+           
+           
+            print(damageAmount + "" + damageTest); 
             if (currentHealth <= 0)
             {
                 currentHealth = 0;
                 PlayerSpawner.instance.Die(damager);
                 MatchManager.instance.UpdateStatsSend(actor, 0, 1);
-                //Elimination text
-             
-                UIController.instance.ShowKillMessage(damager, photonView.Owner.NickName);
+                //Elimination text     
+                //UIController.instance.ShowKillMessage(damager, photonView.Owner.NickName);
+
+            string victimName = photonView.Owner.NickName;
+            // Send RPC to show elimination message on all clients
+            PhotonView.Find(actor).RPC("ShowEliminationMessageRPC", RpcTarget.All, damager, victimName);
+
+              
+
+                
+               
+            // Display who the player just killed
+            // This ensures only the shooter sees this message
+            
+                UIController.instance.debugMessage.text = "ELIMINATED: " + isPlayerDead;
+            
+
+
+               damagerText = photonView.Owner.NickName; 
+               
+                photonView.RPC("ShowEliminationMessage", RpcTarget.All, damager, photonView.Owner.NickName);
+
+               //
 
                 UIController.instance.healthSlider.value = currentHealth;
                 photonView.RPC("UpdateHealthBarRPC", RpcTarget.All, currentHealth);
-            }
-        }
+
+               
+            }  
+        } 
     }
 
     [PunRPC]
@@ -278,6 +363,11 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
             selectedGun = 0;
         }
         SwitchGun();
+        
+        //testing something
+         
+
+      
     }
 
     public void AimGun()
@@ -366,10 +456,85 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
  
     }
 
-    //stuff
-  
+
+#region Show Elimination Message (Only For Killer)
+[PunRPC]
+private void ShowEliminationMessage(string killer, string victim)
+{
+    if (photonView.IsMine && killer == photonView.Owner.NickName)
+    {
+        StartCoroutine(DisplayEliminationMessage(victim));
+        print("Eliminated " + victim);
+    }
+}
+
+private IEnumerator DisplayEliminationMessage(string victim)
+{
+    UIController.instance.eliminationMessage.gameObject.SetActive(true);
+    UIController.instance.eliminationMessage.text = "Eliminated " + victim;
+    print("Eliminated " + victim);
+
+    yield return new WaitForSeconds(5f);
+
+    UIController.instance.eliminationMessage.gameObject.SetActive(false);
+}
+
+[PunRPC]
+private void ShowEliminationMessageRPC(string damager, string victim)
+{
+    // Display elimination message on all clients
+    UIController.instance.ShowEliminationMessage(damager, victim);
+    
+    // Check if the local player is the damager
+    if (photonView.Owner.NickName == damager)
+    {
+        UIController.instance.ShowLocalEliminationMessage(victim);
+    }
+}
 
 
-  
+#endregion Show Elimination Message (Only For Killer)
+
+
+#region Show Hit Marker
+
+public void HitMarkerActive()
+{
+hitMarker.SetActive(true); 
+damageIndicator.gameObject.SetActive(true); 
+}
+public void HitMarkerInActive()
+{
+
+hitMarker.SetActive(false); 
+damageIndicator.gameObject.SetActive(false); 
+ 
+
+}
+
+public void PlayHitMarkerSoundFX(){
+
+if(playHitMarker == true)
+{
+    hitMarkerAudioSource.Play(); 
+} 
+else 
+{
+hitMarkerAudioSource.Stop(); 
+}
+
+}
+
+     [PunRPC]
+    public void ShootSFX()
+    {
+        gunShootSource.Play(); 
+    }
+
+
+#endregion Show Hit Marker
+
+
+
 
 }

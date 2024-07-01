@@ -289,7 +289,7 @@ ListAllPlayers();
         loadingScreen.SetActive(true);
     }
 
-
+ 
     public  void  SetNickname(){
 
         if(!string.IsNullOrEmpty(nameInput.text)){

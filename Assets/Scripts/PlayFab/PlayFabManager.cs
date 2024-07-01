@@ -1,11 +1,10 @@
-using System.Runtime.InteropServices;
-using System.IO;
 using System;
 using PlayFab;
 using PlayFab.ClientModels;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic; 
+using System.Collections; 
 //using PlayFab.PfEditor.Json;
 using PlayFab.Json;
 using JsonObject = PlayFab.Json.JsonObject;
@@ -73,7 +72,7 @@ public class PlayFabManager : MonoBehaviour
         }
 
         //for testing purposes
-      // PlayerPrefs.DeleteAll(); 
+        // PlayerPrefs.DeleteAll(); 
        //Auto Create An Accout for user
        AttemptAutoLogin();
     }
@@ -205,7 +204,7 @@ public class PlayFabManager : MonoBehaviour
          GetPlayerData(); 
 
          //open game menu
-        LaunchGameMenu();
+       LaunchGameMenu();
     }
 
     private void SaveCredentials()
@@ -296,6 +295,8 @@ public int playerDamage;
 public int playerKills;
 public int playerDeaths;
 public int gamePlayed;
+
+public int dailyLogin;
   
 public int playerThiefCoins;
 public int playerHeistDiamonds;
@@ -313,6 +314,7 @@ public void SetStatistics()
             new StatisticUpdate { StatisticName = "GameLevel", Value = gameLevel },
             new StatisticUpdate { StatisticName = "PlayerThiefCoins", Value = playerThiefCoins },
             new StatisticUpdate { StatisticName = "PlayerHeistDiamonds", Value = playerHeistDiamonds },
+            
         }
     },
     result => { print("User Statistics Updated"); },
@@ -482,5 +484,121 @@ public void SetDataFailure(PlayFabError error)
 }
 
 #endregion Player Data
+
+#region Friends System
+
+public Transform friendScrollView;
+List<FriendInfo> myFriends;
+
+void DisplayFriends(List<FriendInfo> friendsCache)
+{
+    if (friendsCache == null || friendsCache.Count == 0)
+    {
+        Debug.Log("No friends to display.");
+        return;
+    }
+
+    foreach (FriendInfo friend in friendsCache)
+    {
+        bool isFound = false;
+        
+        if (!isFound)
+        {
+            GameObject listing = Instantiate(listingPrefab, friendScrollView);
+            LeaderboardListing tempListing = listing.GetComponent<LeaderboardListing>();
+            
+            if (tempListing != null && tempListing.playerNameText != null)
+            {
+                tempListing.playerNameText.text = friend.TitleDisplayName;
+                Debug.Log($"Added friend: {friend.TitleDisplayName}");
+            }
+            else
+            {
+                Debug.LogError("LeaderboardListing component or playerNameText is null.");
+            }
+        }
+    }
+
+    myFriends = friendsCache;
+}
+
+List<FriendInfo> _friends = null;
+
+public void GetFriends()
+{
+    PlayFabClientAPI.GetFriendsList(new GetFriendsListRequest
+    {
+        //IncludeSteamFriends = false,
+        //IncludeFacebookFriends = false
+    }, result => {
+        _friends = result.Friends;
+        DisplayFriends(_friends);
+    }, DisplayPlayFabError);
+}
+
+public void DisplayPlayFabError(PlayFabError error)
+{
+    print(error.ErrorMessage);
+}
+
+enum FriendIdType { PlayFabId, Username, Email, DisplayName };
+
+void AddFriend(FriendIdType idType, string friendId)
+{
+    var request = new AddFriendRequest();
+    switch (idType)
+    {
+        case FriendIdType.PlayFabId:
+            request.FriendPlayFabId = friendId;
+            break;
+        case FriendIdType.Username:
+            request.FriendUsername = friendId;
+            break;
+        case FriendIdType.Email:
+            request.FriendEmail = friendId;
+            break;
+        case FriendIdType.DisplayName:
+            request.FriendTitleDisplayName = friendId;
+            break;
+    }
+    // Execute request and update friends when we are done
+    PlayFabClientAPI.AddFriend(request, result => {
+        Debug.Log("Friend added successfully!");
+    }, DisplayPlayFabError);
+}
+
+string friendSearch;
+[SerializeField] GameObject friendPanel;
+
+public void InputFriendID(string id)
+{
+    friendSearch = id;
+}
+
+public void SubmitFriendRequest()
+{
+    AddFriend(FriendIdType.Username, friendSearch);
+}
+
+public void OpenCloseFriends()
+{
+    friendPanel.SetActive(!friendPanel.activeInHierarchy);
+}
+
+IEnumerator WaitForFriend()
+{
+
+yield return new WaitForSeconds(2f);
+GetFriends(); 
+
+}
+
+public void RunWaitFunction()
+{
+    StartCoroutine(WaitForFriend());
+}
+
+#endregion Friends System
+
 
 }

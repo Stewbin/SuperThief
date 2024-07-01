@@ -6,8 +6,4 @@ public class SendAnimationEventToSFX : MonoBehaviour
 {
    public PlayerSoundManager playerSoundManager; 
 
-   public void TriggerFootStepSFX()
-   {
-        playerSoundManager.PlayFootStepSFX();
-   }
 }

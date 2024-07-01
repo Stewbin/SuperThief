@@ -31,6 +31,11 @@ public class DelayStartWaitingRoomManager : MonoBehaviourPunCallbacks
     private float notFullGameTimer;
     private float fullGameTimer;
 
+    public TMP_Text playerNameLabel ;
+
+    public TMP_Text playerLeftOrJoinText; 
+   private List<TMP_Text> allPlayerNames = new List<TMP_Text>();
+
     [SerializeField] private float maxWaitTime;
     [SerializeField] private float maxFullGameWaitTime;
 
@@ -69,10 +74,32 @@ public class DelayStartWaitingRoomManager : MonoBehaviourPunCallbacks
     {
         PlayerCountUpdate();
 
+            //Added player Nickname UI
+
+            string savedUsername = PlayerPrefs.GetString("USERNAME");
+            PhotonNetwork.NickName = savedUsername;
+
+            newPlayer.NickName = savedUsername; 
+    
+            if (playerNameLabel != null)
+            {
+        playerNameLabel.text = savedUsername;
+        }
+        else
+        {
+         print("playerNameLabel is not assigned!");
+        }
+           
+            //Added player Nickname UI
+
+
         if (PhotonNetwork.IsMasterClient)
         {
             myPhotonView.RPC("RPC_SendTimer", RpcTarget.Others, timerToStartGame);
         }
+
+        print("This player has joined the room" + newPlayer.NickName); 
+        StartCoroutine(DisplayPlayerJointUI(newPlayer.NickName)); 
     }
 
     [PunRPC]
@@ -87,10 +114,29 @@ public class DelayStartWaitingRoomManager : MonoBehaviourPunCallbacks
         }
     }
 
-    public override void OnPlayerLeftRoom(Player otherPlayer)
-    {
-        PlayerCountUpdate();
-    }
+public override void OnPlayerLeftRoom(Player otherPlayer)
+{
+    PlayerCountUpdate();
+    StartCoroutine(DisplayPlayerLeftUI(otherPlayer.NickName));
+}
+
+IEnumerator DisplayPlayerLeftUI(string playerName)
+{
+    playerLeftOrJoinText.gameObject.SetActive(true);
+    playerLeftOrJoinText.text = playerName + " has left the room";
+    yield return new WaitForSeconds(3f);
+    playerLeftOrJoinText.gameObject.SetActive(false);
+}
+
+IEnumerator DisplayPlayerJointUI(string playerName)
+{
+    playerLeftOrJoinText.gameObject.SetActive(true);
+    playerLeftOrJoinText.text = playerName + " has joined the room";
+    yield return new WaitForSeconds(3f);
+    playerLeftOrJoinText.gameObject.SetActive(false);
+}
+
+
 
     private void Update()
     {
@@ -162,4 +208,19 @@ public class DelayStartWaitingRoomManager : MonoBehaviourPunCallbacks
         PhotonNetwork.LeaveRoom();
         SceneManager.LoadScene(menuSceneIndex);
     }
+
+  public void SetNickname()
+{
+    string savedUsername = PlayerPrefs.GetString("USERNAME");
+    PhotonNetwork.NickName = savedUsername;
+    
+    if (playerNameLabel != null)
+    {
+        playerNameLabel.text = savedUsername;
+    }
+    else
+    {
+       print("playerNameLabel is not assigned!");
+    }
+}
 }

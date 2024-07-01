@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028331, g: 0.2257133, b: 0.3069217, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028334, g: 0.22571328, b: 0.3069217, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1227,11 +1227,6 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: 3044a7f2f024b7f4588a26ee3e06850d, type: 3}
---- !u!4 &338493053 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 8914664444554958771, guid: 3044a7f2f024b7f4588a26ee3e06850d, type: 3}
-  m_PrefabInstance: {fileID: 338493052}
-  m_PrefabAsset: {fileID: 0}
 --- !u!43 &404971404
 Mesh:
   m_ObjectHideFlags: 0
@@ -3146,7 +3141,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1537145894}
-  m_Father: {fileID: 162338586}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &589908511
 GameObject:
@@ -3178,10 +3173,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isAutomatic: 1
-  timeBetweenShots: 0.2
-  heatPerShot: 1
+  fireRate: 0.1
+  clipSize: 0
+  reservedAmmoCapacity: 0
   muzzleFlash: {fileID: 919132149155446097, guid: 198102fde069568459d5c53a6ec14211, type: 3}
   shotDamage: 10
+  currentAmmoInClip: 0
+  adsZoom: 0.1
 --- !u!4 &589908513
 Transform:
   m_ObjectHideFlags: 0
@@ -3196,7 +3194,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1722451543}
-  m_Father: {fileID: 162338586}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &596094335
 GameObject:
@@ -3721,6 +3719,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   instagramUrl: 
+  playerUsernameDisplay: {fileID: 0}
+  playerUsername: 
 --- !u!43 &697685028
 Mesh:
   m_ObjectHideFlags: 0
@@ -3886,11 +3886,6 @@ Mesh:
     offset: 0
     size: 0
     path: 
---- !u!4 &719207308 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 8914664444554958771, guid: 3044a7f2f024b7f4588a26ee3e06850d, type: 3}
-  m_PrefabInstance: {fileID: 338493052}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &721458012
 GameObject:
   m_ObjectHideFlags: 0
@@ -26374,7 +26369,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d662692f56d4e474fb27686178858b05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Target: {fileID: 719207308}
+  Target: {fileID: 0}
   CameraHeight: 16
   FollowYRotation: 1
   FollowPosition: 1
@@ -26699,11 +26694,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 345078cb966899f4b8a04ba0d20c2b67, type: 3}
---- !u!4 &1766846752 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 1812809101095703740, guid: 345078cb966899f4b8a04ba0d20c2b67, type: 3}
-  m_PrefabInstance: {fileID: 1766846751}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1799330852
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -38181,3 +38171,5 @@ SceneRoots:
   - {fileID: 1603892028}
   - {fileID: 1799330852}
   - {fileID: 1291296392}
+  - {fileID: 563242922}
+  - {fileID: 589908513}

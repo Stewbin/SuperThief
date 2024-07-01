@@ -452,6 +452,9 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
             PhotonNetwork.DestroyAll();
         }
 
+           // Clear the allPlayers list
+          
+
         UIController.instance.endScreen.SetActive(true);
         UIController.instance.healthComponent.SetActive(false);
         UIController.instance.statsComponent.SetActive(false);
@@ -489,6 +492,14 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
     }
 
     public void NextMatchReceive(){
+       
+        
+            // Show ad every 3 games
+            AdManager.Instance.ShowAd();
+        
+        
+
+        //
         state = GameState.Playing; 
         UIController.instance.endScreen.SetActive(false);
         UIController.instance.leaderboard.SetActive(false);
@@ -551,6 +562,11 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
 
         UIController.instance.timerText.gameObject.SetActive(true);
 
+    }
+
+     public void ResetGamesPlayedCounter()
+    {
+        gamesPlayed = 0;
     }
 
     
