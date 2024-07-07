@@ -18,7 +18,7 @@ public class ChaseAction : FSMAction
 
         if (!agent.pathPending) // Agent completed path or stuck
         {
-            agent.SetDestination(eyeSensor.GetLastSeenPlayer().position);
+            agent.SetDestination(eyeSensor.lastSeenPlayer.position);
         }
     }    
 }

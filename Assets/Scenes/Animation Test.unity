@@ -183,6 +183,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: boy_rig
       objectReference: {fileID: 0}
+    - target: {fileID: 5361409432195056836, guid: e3acc002be046884b9fdc28964e99034, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 0b963d67a10cef54f97de107cf21259a, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -642,10 +646,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 9122411431617770267, guid: 3044a7f2f024b7f4588a26ee3e06850d, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3044a7f2f024b7f4588a26ee3e06850d, type: 3}
 --- !u!1 &1855594224
 GameObject:

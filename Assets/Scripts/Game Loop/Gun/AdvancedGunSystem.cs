@@ -374,10 +374,11 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
     }
 
     //stuff
-    
+
     private IEnumerator SpawnTrail(Vector3 SpawnPoint, Vector3 HitDestination, float BulletSpeed)
     {
         GameObject trail = Instantiate(BulletTrail, SpawnPoint, Quaternion.identity);
+        Debug.Assert(trail != null);
         TrailRenderer tr = trail.GetComponent<TrailRenderer>();
         Vector3 startPosition = camera.transform.position;
         float hitDistance = Vector3.Distance(startPosition, HitDestination);
@@ -391,7 +392,5 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
         }
         Destroy(trail, tr.time);
     }
-
-  
-
+    
 }
