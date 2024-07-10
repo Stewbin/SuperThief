@@ -643,22 +643,29 @@ public void GetVirtualCurrencies()
 
 public void OnGetUserInventorySuccess(GetUserInventoryResult result)
 {
-    //Thief Coins
-    int coins = result.VirtualCurrency["TC"];
-    ThiefCoinsValuesText.text = coins.ToString(); 
+    // Thief Coins
+    if (result.VirtualCurrency.ContainsKey("TC"))
+    {
+        int coins = result.VirtualCurrency["TC"];
+        ThiefCoinsValuesText.text = coins.ToString();
+        print("You currently have " + coins + " coins");
+    }
+    else
+    {
+        Debug.LogWarning("TC currency not found in the inventory");
+    }
 
-      //Heist Diamonds
-    int diamonds = result.VirtualCurrency["HD"];
-    HeistDiamondsValuesText.text = diamonds.ToString(); 
-
-    print("You currently have" + diamonds);
-
-    //ThiefCoinsValuesText.text = "T"
-
-
-    print("You currently have" + coins);
-
-
+    // Heist Diamonds
+    if (result.VirtualCurrency.ContainsKey("HD"))
+    {
+        int diamonds = result.VirtualCurrency["HD"];
+        HeistDiamondsValuesText.text = diamonds.ToString();
+        print("You currently have " + diamonds + " diamonds");
+    }
+    else
+    {
+        Debug.LogWarning("HD currency not found in the inventory");
+    }
 }
 
 public void OnGetUserInventoryError(PlayFabError error)

@@ -58,7 +58,7 @@ public class Launcher : MonoBehaviourPunCallbacks
         CloseMenus(); 
 
         loadingScreen.SetActive(true);
-        loadingText.text = "Connecting To Server...";
+        loadingText.text = "Connecting To Network...";
         
        
         //Connect using settings we set up for photon netwrok 
