@@ -72,9 +72,13 @@ public class PlayFabManager : MonoBehaviour
         }
 
         //for testing purposes
-        // PlayerPrefs.DeleteAll(); 
+        //PlayerPrefs.DeleteAll(); 
        //Auto Create An Accout for user
        AttemptAutoLogin();
+
+       //get player currenciesnns
+       GetVirtualCurrencies(); 
+    
     }
 
     private void AttemptAutoLogin()
@@ -176,6 +180,9 @@ public class PlayFabManager : MonoBehaviour
 
         //open game menu
         LaunchGameMenu();
+
+        //Get Virtual Currency
+        GetVirtualCurrencies();
     }
     
     public void OnLoginSuccess(LoginResult result)
@@ -192,6 +199,12 @@ public class PlayFabManager : MonoBehaviour
 
         //open game menu
         LaunchGameMenu();
+
+        //Get Virtual Currency
+        GetVirtualCurrencies();
+
+        // try to display inverntory
+        
     }
 
     public void OnLoginMobileSuccess(LoginResult result)
@@ -205,6 +218,10 @@ public class PlayFabManager : MonoBehaviour
 
          //open game menu
        LaunchGameMenu();
+
+
+       //Get Virtual Currency
+        GetVirtualCurrencies();
     }
 
     private void SaveCredentials()
@@ -279,6 +296,9 @@ public class PlayFabManager : MonoBehaviour
 
          //open game menu
         LaunchGameMenu();
+
+        //Get Virtual Currency
+        GetVirtualCurrencies();
     }
 
     public void LaunchGameMenu()
@@ -600,5 +620,57 @@ public void RunWaitFunction()
 
 #endregion Friends System
 
+
+#region Daily Rewards
+#endregion Daily Rewards
+
+#region Currency System
+public const string COINS_KEY = "Coins";
+public const string DIAMONDS_KEY = "Diamonds";
+
+[Header("Coins UI")]
+
+public TMP_Text ThiefCoinsValuesText; 
+
+public TMP_Text HeistDiamondsValuesText; 
+
+
+public void GetVirtualCurrencies()
+{
+    PlayFabClientAPI.GetUserInventory(new GetUserInventoryRequest(), OnGetUserInventorySuccess, OnGetUserInventoryError);
+}
+
+
+public void OnGetUserInventorySuccess(GetUserInventoryResult result)
+{
+    //Thief Coins
+    int coins = result.VirtualCurrency["TC"];
+    ThiefCoinsValuesText.text = coins.ToString(); 
+
+      //Heist Diamonds
+    int diamonds = result.VirtualCurrency["HD"];
+    HeistDiamondsValuesText.text = diamonds.ToString(); 
+
+    print("You currently have" + diamonds);
+
+    //ThiefCoinsValuesText.text = "T"
+
+
+    print("You currently have" + coins);
+
+
+}
+
+public void OnGetUserInventoryError(PlayFabError error)
+{
+    print(error.ErrorMessage);
+}
+
+
+//public void GrantVirtualCurrency()
+//{
+  
+//}
+#endregion Currency System
 
 }

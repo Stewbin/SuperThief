@@ -50,11 +50,17 @@ public class Menu : MonoBehaviour
     }
 
      public void DelayMatchMaking(){
-        SceneManager.LoadScene(10);
+        SceneManager.LoadScene(12);
     }
 
      public void OpenShop(){
         SceneManager.LoadScene("Shop");
+    }
+
+
+    public void CustomRoom()
+    {
+        SceneManager.LoadScene("Custom");
     }
 
 
