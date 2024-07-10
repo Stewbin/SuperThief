@@ -63,6 +63,11 @@ public class Menu : MonoBehaviour
         SceneManager.LoadScene("Custom");
     }
 
+    public void GoBackToMenu()
+    {
+        SceneManager.LoadScene("Menu");
+    }
+
 
 //menu is 
  
