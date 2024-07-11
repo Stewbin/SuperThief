@@ -2950,6 +2950,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b616ad19c6b0642da8a9cbd0cd95ebbe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  iosNotifications: {fileID: 0}
 --- !u!1 &1295250282
 GameObject:
   m_ObjectHideFlags: 0
@@ -3088,6 +3089,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   instagramUrl: 
   playerUsernameDisplay: {fileID: 1741580300}
+  HeistDiamondsValuesText: {fileID: 786961078}
   playerUsername: 
 --- !u!4 &1447833618
 Transform:
@@ -3415,6 +3417,8 @@ MonoBehaviour:
   userName: 
   userEmail: 
   userPassword: 
+  diamonds: 0
+  coins: 0
   myID: 
   sceneIndex: 0
   loginPanel: {fileID: 0}

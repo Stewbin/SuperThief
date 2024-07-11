@@ -21,6 +21,8 @@ public class PlayFabManager : MonoBehaviour
     [SerializeField] private string userEmail;
     [SerializeField] private string userPassword;
 
+    [SerializeField] private int diamonds;
+     [SerializeField] private int coins;
     [SerializeField] private string myID;
 
     [SerializeField] private int sceneIndex;
@@ -33,6 +35,10 @@ public class PlayFabManager : MonoBehaviour
     private const string EMAIL_KEY = "EMAIL";
     private const string PASSWORD_KEY = "PASSWORD";
     private const string USERNAME_KEY = "USERNAME";
+
+    private const string  DIAMONDS_KEY = "DIAMONDS"; 
+
+    private const string COINS_KEY = "COINS"; 
 
     public TMP_Text errorTextMessage; 
 
@@ -228,6 +234,8 @@ public class PlayFabManager : MonoBehaviour
     {
         PlayerPrefs.SetString(EMAIL_KEY, userEmail);
         PlayerPrefs.SetString(PASSWORD_KEY, userPassword);
+        PlayerPrefs.SetInt(DIAMONDS_KEY, diamonds); 
+        PlayerPrefs.SetInt(COINS_KEY, coins); 
         //myID =result.PlayFabId;
     }
 
@@ -625,8 +633,7 @@ public void RunWaitFunction()
 #endregion Daily Rewards
 
 #region Currency System
-public const string COINS_KEY = "Coins";
-public const string DIAMONDS_KEY = "Diamonds";
+
 
 [Header("Coins UI")]
 

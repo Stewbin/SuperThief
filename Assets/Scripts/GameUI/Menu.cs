@@ -11,11 +11,13 @@ public class Menu : MonoBehaviour
 
     public TMP_Text playerUsernameDisplay; 
 
+     public TMP_Text HeistDiamondsValuesText; 
     [SerializeField] public string playerUsername; 
 
     public void Awake() {
 
-        playerUsername = PlayerPrefs.GetString("USERNAME"); 
+        playerUsername = PlayerPrefs.GetString("USERNAME");
+        HeistDiamondsValuesText.text = PlayerPrefs.GetInt("Diamonds").ToString(); 
         playerUsernameDisplay.text = playerUsername;
         print("The player username is " + playerUsername);
     }

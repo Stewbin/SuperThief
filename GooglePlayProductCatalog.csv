@@ -1,0 +1,3 @@
+Product ID,Published State,Purchase Type,Auto Translate,Locale; Title; Description,Auto Fill Prices,Price,Pricing Template ID
+skin_test,published,managed_by_android,false,en_US;Unlock a new skin;Get a legendary brand new skins,true,1990000,
+diamonds_pack_one,published,managed_by_android,false,"en_US;100 Heist Diamonds;Heist Diamonds let you purchase cosmetics like skins, masks, and gadgets.",true,990000,
