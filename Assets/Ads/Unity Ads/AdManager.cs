@@ -90,16 +90,28 @@ public class AdManager : MonoBehaviour, IUnityAdsInitializationListener, IUnityA
         // Optional: Add any logic to handle a click on an ad
     }
 
+
+    public void ShowAd(){
+        Advertisement.Load(adUnitId, this); 
+    }
+
+    public delegate void RewardedAdCompletedCallback();
+    private RewardedAdCompletedCallback rewardedAdCallback;
+
+   
+
+    public void ShowRewardedAd(RewardedAdCompletedCallback callback)
+    {
+        rewardedAdCallback = callback;
+        Advertisement.Load(adUnitId, this);
+    }
+
     public void OnUnityAdsShowComplete(string placementId, UnityAdsShowCompletionState showCompletionState)
     {
         if (placementId.Equals(adUnitId) && showCompletionState.Equals(UnityAdsShowCompletionState.COMPLETED))
         {
-            // Reward the player for completing the ad
-            print("You won the lottery");
+            rewardedAdCallback?.Invoke();
+            rewardedAdCallback = null;
         }
-    }
-
-    public void ShowAd(){
-        Advertisement.Load(adUnitId, this); 
     }
 }

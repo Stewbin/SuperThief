@@ -32,6 +32,24 @@ public class ShopManager : MonoBehaviour, IStoreListener
     
     public const string COINS_KEY = "Coins";
 
+    [SerializeField]
+    private int diamondsRewardForAd = 50;
+
+    [SerializeField]
+    private Button watchAdButton;
+
+    private void Start()
+    {
+        if (watchAdButton != null)
+        {
+            watchAdButton.onClick.AddListener(OnWatchAdButtonClicked);
+        }
+        else
+        {
+            print("Watch Ad Button is not assigned in the inspector!");
+        }
+    }
+
     private async void Awake()
     {
         //shows player how many diamonds they already have
@@ -267,4 +285,16 @@ public void OnGetUserInventorySuccess(GetUserInventoryResult result)
         print("HD currency not found in the inventory");
     }
 }
+
+public void OnWatchAdButtonClicked()
+    {
+        Debug.Log("Watch Ad button clicked");
+        AdManager.Instance.ShowRewardedAd(OnRewardedAdCompleted);
+    }
+
+    private void OnRewardedAdCompleted()
+    {
+        Debug.Log("Rewarded ad completed. Awarding diamonds.");
+        AddVirtualCurrency(diamondsRewardForAd);
+    }
 }
