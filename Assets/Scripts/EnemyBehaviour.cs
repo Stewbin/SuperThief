@@ -8,8 +8,8 @@ public abstract class EnemyBehaviour : MonoBehaviour
 {    
     private State _state;
     public Transform TargetPlayer {get; protected set;}
-    public static readonly HashSet<EnemyBehaviour> instances = new HashSet<EnemyBehaviour>(); // Property
-    public static HashSet<EnemyBehaviour> Instances => new HashSet<EnemyBehaviour>(instances); // Field
+    private static readonly HashSet<EnemyBehaviour> _instances = new HashSet<EnemyBehaviour>(); // Property
+    public static HashSet<EnemyBehaviour> Instances => new HashSet<EnemyBehaviour>(_instances); // Field
 
     public virtual void SwitchToHuntingState(Transform Player)
     {
@@ -18,11 +18,11 @@ public abstract class EnemyBehaviour : MonoBehaviour
     }
     protected virtual void Awake() 
     {
-        instances.Add(this);
+        _instances.Add(this);
     }
     protected virtual void OnDestroy()
     {
-        instances.Remove(this);
+        _instances.Remove(this);
     }
 }
 

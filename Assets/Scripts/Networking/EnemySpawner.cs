@@ -25,12 +25,12 @@ public class EnemySpawner : MonoBehaviourPunCallbacks
     {
         while(true)
         {
-            if(EnemyBehaviour.instances.Count < MaxEnemies)
+            if(EnemyBehaviour.Instances.Count < MaxEnemies)
             {
                 int randSpawn = Random.Range(0, SpawnPoints.Length);
                 Transform spawnPoint = SpawnPoints[randSpawn];
                 
-                int randEnemy = Random.Range(0, EnemyBehaviour.instances.Count);
+                int randEnemy = Random.Range(0, EnemyBehaviour.Instances.Count);
                 var enemyPrefab = EnemyPrefabs[randEnemy];
                 PhotonNetwork.Instantiate(enemyPrefab.name, spawnPoint.position, spawnPoint.rotation);
                 

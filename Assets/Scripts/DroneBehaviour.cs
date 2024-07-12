@@ -7,11 +7,14 @@ public class DroneBehaviour : EnemyBehaviour
     [Header("Shooting & Aiming")]
     [SerializeField] private Transform _gunBase;
     [SerializeField] private AdvancedGunSystem _advancedGunSystem;
+    private Transform _targetPlayer;
     
     [Header("Movement")]
-    public float MoveSpeed;
+    public float MoveAcceleration;
+    [Range(0, 90)] 
+    public float MaxTilt;
     [Header("Path Finding")]
-    private EyeSensor eyeSensor;
+    private EyeSensor _eyeSensor;
     public float DroneSize;
     public float MaxDistance;
     public float Range;
@@ -27,56 +30,78 @@ public class DroneBehaviour : EnemyBehaviour
     // Update is called once per frame
     void Update()
     {
-        // Patrol
+        // Aim at target
+        if(Aim(TargetPlayer))
+        {
+            _advancedGunSystem.Shoot();
+        }
 
-        //
-
-        #region Movement VFX
-
-        #endregion
+        // Movement
+        transform.localPosition =  Vector3.forward;
     }
 
-
-    #region Path Finding
-
-    private Vector3 FindUnobstructedDirection()
+    public bool Aim(Transform target)
     {
-        List<Vector3> openDirections = new(RayCount);
-        
-        for (int i = 0; i < RayCount; i++)
+        if(target.position.y < transform.position.y)
         {
-            float phi = Mathf.Acos(1 - 2 * ((float) i / RayCount)) / 2;
-            float theta = Mathf.PI * ((1 - Mathf.Sqrt(5)) / 2) * i;
-
-            // Convert from spherical to cartesian coordinates
-            float z = Mathf.Cos(phi);
-            float x = Mathf.Sin(phi) * Mathf.Cos(theta);
-            float y = Mathf.Sin(phi) * Mathf.Sin(theta);
-
-            Ray ray = new(transform.position, new Vector3(x, y, z));
-
-            // Shoot ray
-            if(!Physics.SphereCast(ray, DroneSize / 2, MaxDistance))
-            {
-                openDirections.Add(ray.direction);
-            }
+            _gunBase.rotation = Quaternion.LookRotation(target.position, transform.up);
+            return true;
         }
-
-        float bestAlign = -1;
-        Vector3 bestDir = transform.forward;
-        foreach(var dir in openDirections)
-        {
-            float cosTheta = Vector3.Dot(dir, transform.forward);
-            Debug.Assert(cosTheta <= 1);
-            if(cosTheta > bestAlign)
-            {
-                bestDir = dir;
-                bestAlign = cosTheta; 
-            }
-        }
-        return bestDir;
+        return false;
     }
 
+    public void Move(Vector3 destination)
+    {
+        // Move towards destination
+        transform.position = Vector3.MoveTowards(transform.position, destination, MoveAcceleration * Time.time * Time.time);
+
+        // Tilt in opposite direction of acceleration
+        Quaternion maxTilt = Quaternion.Euler(0, -MaxTilt, 0);
+        transform.rotation = Quaternion.Slerp(Quaternion.identity, maxTilt, MoveAcceleration * Time.time);
+    }
+
+
+    // #region Path Finding
+
+    // private Vector3 FindUnobstructedDirection()
+    // {
+    //     List<Vector3> openDirections = new(RayCount);
+        
+    //     for (int i = 0; i < RayCount; i++)
+    //     {
+    //         float phi = Mathf.Acos(1 - 2 * ((float) i / RayCount)) / 2;
+    //         float theta = Mathf.PI * ((1 - Mathf.Sqrt(5)) / 2) * i;
+
+    //         // Convert from spherical to cartesian coordinates
+    //         float z = Mathf.Cos(phi);
+    //         float x = Mathf.Sin(phi) * Mathf.Cos(theta);
+    //         float y = Mathf.Sin(phi) * Mathf.Sin(theta);
+
+    //         Ray ray = new(transform.position, new Vector3(x, y, z));
+
+    //         // Shoot ray
+    //         if(!Physics.SphereCast(ray, DroneSize / 2, MaxDistance))
+    //         {
+    //             openDirections.Add(ray.direction);
+    //         }
+    //     }
+
+    //     float bestAlign = -1;
+    //     Vector3 bestDir = transform.forward;
+    //     foreach(var dir in openDirections)
+    //     {
+    //         float cosTheta = Vector3.Dot(dir, transform.forward);
+    //         Debug.Assert(cosTheta <= 1);
+    //         if(cosTheta > bestAlign)
+    //         {
+    //             bestDir = dir;
+    //             bestAlign = cosTheta; 
+    //         }
+    //     }
+    //     return bestDir;
+    // }
+
+    // #endregion
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.green;
@@ -86,7 +111,5 @@ public class DroneBehaviour : EnemyBehaviour
             Gizmos.color = Color.red;
         }
     }
-
-    #endregion
 
 }

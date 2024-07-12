@@ -9,7 +9,7 @@ public class InLineOfSightDecision : Decision
     public override bool Decide(BaseStateMachine stateMachine)
     {
         EyeSensor eyeSensor = stateMachine.GetComponent<EyeSensor>();
-        return true;
+        return eyeSensor.DetectPlayerInCone();
     }
 
 }
