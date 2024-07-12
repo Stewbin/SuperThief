@@ -93,7 +93,7 @@ public class PlayerMove : MonoBehaviourPunCallbacks
         {
             controller = GetComponent<CharacterController>();
             playerModel.SetActive(true);
-            photonView.RPC("SetNicknameUI", RpcTarget.All, Launcher.instance.nameInput.text);
+            photonView.RPC("SetNicknameUI", RpcTarget.All, PlayerPrefs.GetString("USERNAME"));
             nicknameUIText.transform.position = transform.position + nicknameOffset;
             moneyCollected = 0;
             crosshairB.SetActive(false); 
@@ -155,7 +155,7 @@ public class PlayerMove : MonoBehaviourPunCallbacks
     public void SetNicknameUI(string _name)
     {
         nickname = _name;
-        nicknameUIText.text = nickname;
+        nicknameUIText.text = PlayerPrefs.GetString("USERNAME");
     }
 
     [PunRPC]

@@ -14,12 +14,30 @@ public class Menu : MonoBehaviour
      public TMP_Text HeistDiamondsValuesText; 
     [SerializeField] public string playerUsername; 
 
+    [Header("UI Panels")]
+
+    public GameObject shopPanel; 
+
+
+    private void Start()
+    {
+        // Show banner ad when main menu loads
+        AdManager.Instance.ShowBannerAd();
+    }
+
+    private void OnDisable()
+    {
+        // Hide banner ad when leaving main menu
+        AdManager.Instance.HideBannerAd();
+    }
     public void Awake() {
 
         playerUsername = PlayerPrefs.GetString("USERNAME");
         HeistDiamondsValuesText.text = PlayerPrefs.GetInt("Diamonds").ToString(); 
         playerUsernameDisplay.text = playerUsername;
         print("The player username is " + playerUsername);
+
+        shopPanel.SetActive(false); 
     }
     public void Play(){
         //CLick Play to start playing
@@ -55,8 +73,12 @@ public class Menu : MonoBehaviour
         SceneManager.LoadScene(12);
     }
 
-     public void OpenShop(){
-        SceneManager.LoadScene("Shop");
+    public void OpenShop(){
+        shopPanel.SetActive(true); 
+    }
+
+    public void CloseShop(){
+        shopPanel.SetActive(false); 
     }
 
 

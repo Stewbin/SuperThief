@@ -77,13 +77,13 @@ public class DelayStartWaitingRoomManager : MonoBehaviourPunCallbacks
             //Added player Nickname UI
 
             string savedUsername = PlayerPrefs.GetString("USERNAME");
-            PhotonNetwork.NickName = savedUsername;
+            PhotonNetwork.NickName = PlayerPrefs.GetString("USERNAME");
 
-            newPlayer.NickName = savedUsername; 
+            newPlayer.NickName = PlayerPrefs.GetString("USERNAME"); 
     
             if (playerNameLabel != null)
             {
-        playerNameLabel.text = savedUsername;
+        playerNameLabel.text = PlayerPrefs.GetString("USERNAME");
         }
         else
         {
@@ -212,11 +212,11 @@ IEnumerator DisplayPlayerJointUI(string playerName)
   public void SetNickname()
 {
     string savedUsername = PlayerPrefs.GetString("USERNAME");
-    PhotonNetwork.NickName = savedUsername;
+    PhotonNetwork.NickName = PlayerPrefs.GetString("USERNAME");
     
     if (playerNameLabel != null)
     {
-        playerNameLabel.text = savedUsername;
+        playerNameLabel.text = PlayerPrefs.GetString("USERNAME");
     }
     else
     {

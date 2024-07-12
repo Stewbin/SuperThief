@@ -152,7 +152,7 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
                 }
             }
 
-            if (_isShootButtonPressed && !overHeated)
+            if (_isShootButtonPressed)
             {
                 if (allGuns[selectedGun].isAutomatic)
                 {
@@ -164,10 +164,14 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
                 }
                 else
                 {
-                    if (Input.GetMouseButtonDown(0))
-                    {
-                        Shoot();
-                    }
+                    if (_isShootButtonPressed)
+{
+    if (Time.time > allGuns[selectedGun].fireRate)
+    {
+        Shoot();
+        allGuns[selectedGun].fireRate = Time.time + allGuns[selectedGun].fireRate;
+    }
+}
                 }
             }
 
@@ -386,10 +390,10 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        if (eventData.pointerCurrentRaycast.gameObject.CompareTag("ShootButton"))
-        {
-            _isShootButtonPressed = true;
-        }
+       if (eventData.pointerCurrentRaycast.gameObject.CompareTag("ShootButton"))
+    {
+        _isShootButtonPressed = true;
+    }
         else if (eventData.pointerCurrentRaycast.gameObject.CompareTag("ReloadButton"))
         {
             _isReloadButtonPressed = true;
@@ -398,10 +402,10 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        if (eventData.pointerCurrentRaycast.gameObject.CompareTag("ShootButton"))
-        {
-            _isShootButtonPressed = false;
-        }
+       if (eventData.pointerCurrentRaycast.gameObject.CompareTag("ShootButton"))
+    {
+        _isShootButtonPressed = false;
+    }
         else if (eventData.pointerCurrentRaycast.gameObject.CompareTag("ReloadButton"))
         {
             _isReloadButtonPressed = false;

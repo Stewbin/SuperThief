@@ -1,7 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine.Advertisements;
 using UnityEngine;
+using UnityEngine.Advertisements;
 
 public class AdManager : MonoBehaviour, IUnityAdsInitializationListener, IUnityAdsLoadListener, IUnityAdsShowListener
 {
@@ -12,13 +10,22 @@ public class AdManager : MonoBehaviour, IUnityAdsInitializationListener, IUnityA
     [Header("Test Mode (Deactivate For Production)")]
     [SerializeField] private bool testMode = true;
 
+    [Header("Ad Unit Ids")]
     [SerializeField] private string androidAdUnitId;
     [SerializeField] private string iOSAdUnitId;
+    [SerializeField] private string androidBannerAdUnitId;
+    [SerializeField] private string iOSBannerAdUnitId;
 
     public static AdManager Instance;
 
     private string gameId;
     private string adUnitId;
+    private string bannerAdUnitId;
+    private bool isAdReady = false;
+    [SerializeField] private BannerPosition bannerPosition = BannerPosition.BOTTOM_CENTER;
+
+    public delegate void RewardedAdCompletedCallback();
+    private RewardedAdCompletedCallback rewardedAdCallback;
 
     private void Awake()
     {
@@ -37,16 +44,19 @@ public class AdManager : MonoBehaviour, IUnityAdsInitializationListener, IUnityA
 
     private void InitializeAds()
     {
-#if UNITY_IOS
-        gameId = iOSGameId;
-        adUnitId = iOSAdUnitId;
-#elif UNITY_ANDROID
-        gameId = androidGameId;
-        adUnitId = androidAdUnitId;
-#elif UNITY_EDITOR
-        gameId = iOSGameId;
-        adUnitId = iOSAdUnitId;
-#endif
+        #if UNITY_IOS
+            gameId = iOSGameId;
+            adUnitId = iOSAdUnitId;
+            bannerAdUnitId = iOSBannerAdUnitId;
+        #elif UNITY_ANDROID
+            gameId = androidGameId;
+            adUnitId = androidAdUnitId;
+            bannerAdUnitId = androidBannerAdUnitId;
+        #elif UNITY_EDITOR
+            gameId = androidGameId;
+            adUnitId = androidAdUnitId;
+            bannerAdUnitId = androidBannerAdUnitId;
+        #endif
 
         if (!Advertisement.isInitialized)
         {
@@ -56,62 +66,123 @@ public class AdManager : MonoBehaviour, IUnityAdsInitializationListener, IUnityA
 
     public void OnInitializationComplete()
     {
-        print("Unity Ads initialization successful");
-        Advertisement.Load(adUnitId, this);
+        Debug.Log("Unity Ads initialization successful");
+        LoadAd();
+        LoadBannerAd();
     }
 
     public void OnInitializationFailed(UnityAdsInitializationError error, string message)
     {
-        print($"Unity Ads failed to initialize: {error.ToString()} - {message}");
+        Debug.LogError($"Unity Ads failed to initialize: {error.ToString()} - {message}");
+    }
+
+    private void LoadAd()
+    {
+        Debug.Log($"Loading Ad: {adUnitId}");
+        Advertisement.Load(adUnitId, this);
     }
 
     public void OnUnityAdsAdLoaded(string placementId)
     {
-        Advertisement.Show(placementId, this);
+        if (placementId.Equals(adUnitId))
+        {
+            isAdReady = true;
+            Debug.Log($"Ad Unit {adUnitId} loaded successfully");
+        }
     }
 
     public void OnUnityAdsFailedToLoad(string placementId, UnityAdsLoadError error, string message)
     {
-        print($"Error loading Ad Unit: {adUnitId} - {error.ToString()} - {message}");
+        Debug.LogError($"Error loading Ad Unit {adUnitId}: {error.ToString()} - {message}");
+        isAdReady = false;
     }
 
-    public void OnUnityAdsShowFailure(string placementId, UnityAdsShowError error, string message)
+    public void ShowAd()
     {
-        print($"Error showing Ad Unit: {adUnitId} - {error.ToString()} - {message}");
+        if (isAdReady)
+        {
+            Advertisement.Show(adUnitId, this);
+            isAdReady = false;
+        }
+        else
+        {
+            Debug.Log("Ad not ready. Loading ad...");
+            LoadAd();
+        }
     }
-
-    public void OnUnityAdsShowStart(string placementId)
-    {
-        // Optional: Add any logic to handle the start of an ad show
-    }
-
-    public void OnUnityAdsShowClick(string placementId)
-    {
-        // Optional: Add any logic to handle a click on an ad
-    }
-
-
-    public void ShowAd(){
-        Advertisement.Load(adUnitId, this); 
-    }
-
-    public delegate void RewardedAdCompletedCallback();
-    private RewardedAdCompletedCallback rewardedAdCallback;
-
-   
 
     public void ShowRewardedAd(RewardedAdCompletedCallback callback)
     {
         rewardedAdCallback = callback;
-        Advertisement.Load(adUnitId, this);
+        ShowAd();
+    }
+
+    public void OnUnityAdsShowFailure(string placementId, UnityAdsShowError error, string message)
+    {
+        Debug.LogError($"Error showing Ad Unit {adUnitId}: {error.ToString()} - {message}");
+    }
+
+    public void OnUnityAdsShowStart(string placementId)
+    {
+        Debug.Log($"Ad Unit {adUnitId} show started");
+    }
+
+    public void OnUnityAdsShowClick(string placementId)
+    {
+        Debug.Log($"Ad Unit {adUnitId} clicked");
     }
 
     public void OnUnityAdsShowComplete(string placementId, UnityAdsShowCompletionState showCompletionState)
     {
         if (placementId.Equals(adUnitId) && showCompletionState.Equals(UnityAdsShowCompletionState.COMPLETED))
         {
+            Debug.Log("Unity Ads Rewarded Ad Completed");
             rewardedAdCallback?.Invoke();
             rewardedAdCallback = null;
+        }
+        LoadAd();  // Load the next ad
+    }
+
+    private void LoadBannerAd()
+    {
+        // Set banner position
+        Advertisement.Banner.SetPosition(bannerPosition);
+
+        // Load banner ad
+        Advertisement.Banner.Load(bannerAdUnitId,
+            new BannerLoadOptions
+            {
+                loadCallback = OnBannerLoaded,
+                errorCallback = OnBannerError
+            });
+    }
+
+    private void OnBannerLoaded()
+    {
+        Debug.Log("Banner loaded");
+    }
+
+    private void OnBannerError(string message)
+    {
+        Debug.LogError($"Banner Error: {message}");
+    }
+
+    public void ShowBannerAd()
+    {
+        Advertisement.Banner.Show(bannerAdUnitId);
+    }
+
+    public void HideBannerAd()
+    {
+        Advertisement.Banner.Hide();
+    }
+
+    public void SetBannerPosition(BannerPosition position)
+    {
+        bannerPosition = position;
+        if (Advertisement.Banner.isLoaded)
+        {
+            Advertisement.Banner.SetPosition(bannerPosition);
         }
     }
 }

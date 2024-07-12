@@ -38,17 +38,7 @@ public class ShopManager : MonoBehaviour, IStoreListener
     [SerializeField]
     private Button watchAdButton;
 
-    private void Start()
-    {
-        if (watchAdButton != null)
-        {
-            watchAdButton.onClick.AddListener(OnWatchAdButtonClicked);
-        }
-        else
-        {
-            print("Watch Ad Button is not assigned in the inspector!");
-        }
-    }
+
 
     private async void Awake()
     {

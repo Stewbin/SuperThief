@@ -3,183 +3,177 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
-using System; 
-using TMPro; 
-using UnityEngine.UI; 
+using TMPro;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class Launcher : MonoBehaviourPunCallbacks
 {
-    // Start is called before the first frame update
-    public static Launcher instance; 
+    public static Launcher instance;
 
-    // Get Photon Friends
-    public static Action GetPhotonFriends =  delegate{}; 
-    public GameObject loadingScreen; 
-    public TMP_Text loadingText; 
-    public GameObject menuButtons; 
-    
-    public GameObject createRoomScreen; 
-    public TMP_InputField roomNameInput; 
-
-    public GameObject roomScreen; 
-    public TMP_Text roomNameText; 
-
+    [Header("Screens")]
+    public GameObject loadingScreen;
+    public GameObject lobbyScreen;
+    public GameObject roomScreen;
     public GameObject errorScreen;
-    public TMP_Text errorText; 
-
     public GameObject roomBrowserScreen;
-    public RoomButton theRoomButton; 
 
-    public TMP_Text playerNameLabel; 
+    [Header("Loading Screen")]
+    public TMP_Text loadingText;
+
+    [Header("Lobby Screen")]
+    public Button findRoomButton;
+    public Button createRoomButton;
+    public Button quickJoinButton;
+    public Button singlePlayerButton;
+
+    [Header("Room Screen")]
+    public TMP_Text roomNameText;
+    public TMP_Text playerListText;
+
+    [Header("Error Screen")]
+    public TMP_Text errorText;
+
+    [Header("Room Browser Screen")]
+    public RoomButton theRoomButton;
+    public List<RoomButton> allRoomButtons = new List<RoomButton>();
+
+ public TMP_Text playerNameLabel; 
    private List<TMP_Text> allPlayerNames = new List<TMP_Text>();
 
-    public List<RoomButton> allRoomButtons = new List<RoomButton>(); 
-    
-   public GameObject nameInputScreen;
-   public TMP_InputField nameInput;
+    public string levelToPlay;
+    public GameObject startButton;
+    public GameObject roomTestButton;
 
-   private static bool hasSetUsername; 
+    private const string RoomNameChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    private const int RoomNameLength = 6;
 
-   public string levelToPlay;
-
-   public GameObject startButton; 
-
-   public GameObject roomTestButton; 
-
-  
- 
-
-    void Awake(){
-        instance = this; 
+    void Awake()
+    {
+        instance = this;
     }
+
     void Start()
     {
-        CloseMenus(); 
-
+        CloseAllScreens();
         loadingScreen.SetActive(true);
-        loadingText.text = "Connecting To Network...";
-        
-       
-        //Connect using settings we set up for photon netwrok 
-    
+        loadingText.text = "Connecting to server...";
 
-        if(!PhotonNetwork.IsConnected){
-                PhotonNetwork.ConnectUsingSettings();
+        PhotonNetwork.AutomaticallySyncScene = true;
+
+        if (!PhotonNetwork.IsConnected)
+        {
+            PhotonNetwork.ConnectUsingSettings();
         }
-
-#if UNITY_EDITOR
-    roomTestButton.SetActive(true);
-#endif
-       
     }
 
-    void CloseMenus(){
+    void CloseAllScreens()
+    {
         loadingScreen.SetActive(false);
-        menuButtons.SetActive(false);
-        createRoomScreen.SetActive(false); 
-        roomScreen.SetActive(false); 
-        errorScreen.SetActive(false); 
-        roomBrowserScreen.SetActive(false); 
-        nameInputScreen.SetActive(false);
+        lobbyScreen.SetActive(false);
+        roomScreen.SetActive(false);
+        errorScreen.SetActive(false);
+        roomBrowserScreen.SetActive(false);
     }
 
-    public void OpenMenusButtonsFromCreateScreen(){
-        menuButtons.SetActive(true);
-        createRoomScreen.SetActive(false); 
+    public override void OnConnectedToMaster()
+    {
+        Debug.Log("Connected to Master");
+        loadingText.text = "Joining Lobby...";
+        PhotonNetwork.JoinLobby();
     }
 
-       public void OpenMenusButtonsFromSelectRoomPanel(){
-        menuButtons.SetActive(true);
-        roomScreen.SetActive(false); 
-    }
+    public override void OnJoinedLobby()
+    {
+        CloseAllScreens();
+        lobbyScreen.SetActive(true);
+        Debug.Log("Joined Lobby");
 
-       public void OpenMenusButtonsFromRoomBrowserScreen(){
-        menuButtons.SetActive(true);
-        roomBrowserScreen.SetActive(false); 
-    }
-       public void OpenMenusButtonsFromErrorScreen(){
-        menuButtons.SetActive(true);
-        errorScreen.SetActive(false); 
-    }
+        PhotonNetwork.NickName = PlayerPrefs.GetString("USERNAME");
 
-
-
-    // Update is called once per frame
-
-    public override void OnConnectedToMaster(){
-        
-    
-    
-    PhotonNetwork.JoinLobby(); 
-
-    PhotonNetwork.AutomaticallySyncScene = true; 
-
-    loadingText.text = "Joining Lobby..."; 
+         print("You have succesfully connected to a Photon Lobby");
 
     }
 
-    public override void OnJoinedLobby(){
-    CloseMenus(); 
-    menuButtons.SetActive(true);
-    PhotonNetwork.NickName = UnityEngine.Random.Range(0,1000).ToString();
-    print("You have succesfully connected to a Photon Lobby");
+    public void CreateRoom()
+    {
+        string randomRoomName = GenerateRandomRoomName();
+        RoomOptions options = new RoomOptions { MaxPlayers = 8 };
+        PhotonNetwork.CreateRoom(randomRoomName, options);
 
-    GetPhotonFriends?.Invoke(); 
-
-
-if(!hasSetUsername){
-    CloseMenus();
-    nameInputScreen.SetActive(true);
-
-    if (PlayerPrefs.HasKey("playerName")){
-        nameInput.text =PlayerPrefs.GetString("playerName");
-    }
-} else {
-    PhotonNetwork.NickName = PlayerPrefs.GetString("playerName");
-}
-
-
+        CloseAllScreens();
+        loadingText.text = "Creating room...";
+        loadingScreen.SetActive(true);
     }
 
-   
-    public void OpenRoomCreate(){
-        CloseMenus();
-        createRoomScreen.SetActive(true);
-    }
-
-    public void CreateRoom(){
-
-        if(!string.IsNullOrEmpty(roomNameInput.text)){
-
-            RoomOptions options = new RoomOptions(); 
-            options.MaxPlayers = 8; 
-            PhotonNetwork.CreateRoom(roomNameInput.text, options); 
-            CloseMenus();
-            loadingText.text = "Creating Room...";
-            loadingScreen.SetActive(true); 
+    private string GenerateRandomRoomName()
+    {
+        char[] roomName = new char[RoomNameLength];
+        for (int i = 0; i < RoomNameLength; i++)
+        {
+            roomName[i] = RoomNameChars[Random.Range(0, RoomNameChars.Length)];
         }
+        return new string(roomName);
     }
 
-    public override void OnJoinedRoom(){
+    public void FindRoom()
+    {
+        CloseAllScreens();
+        roomBrowserScreen.SetActive(true);
+    }
 
-        CloseMenus();
-        roomScreen.SetActive(true); 
-        
-        roomNameText.text = PhotonNetwork.CurrentRoom.Name; 
+    public void JoinRandomRoom()
+    {
+        CloseAllScreens();
+        loadingText.text = "Joining random room...";
+        loadingScreen.SetActive(true);
+        PhotonNetwork.JoinRandomRoom();
+    }
 
-        ListAllPlayers(); 
+    public void StartSinglePlayerGame()
+    {
+        SceneManager.LoadScene("SinglePlayerScene");
+    }
 
-        if(PhotonNetwork.IsMasterClient){
+    public override void OnJoinedRoom()
+    {
+        CloseAllScreens();
+        roomScreen.SetActive(true);
+        roomNameText.text = "Room: " + PhotonNetwork.CurrentRoom.Name;
+        UpdatePlayerList();
+
+        if (PhotonNetwork.IsMasterClient)
+        {
             startButton.SetActive(true);
-        } else {
-            startButton.SetActive(false); 
+        }
+        else
+        {
+            startButton.SetActive(false);
         }
     }
 
-     public void ListAllPlayers(){
+    public override void OnPlayerEnteredRoom(Player newPlayer)
+    {
+        UpdatePlayerList();
+    }
 
-        foreach(TMP_Text player in allPlayerNames){
+    public override void OnPlayerLeftRoom(Player otherPlayer)
+    {
+        UpdatePlayerList();
+    }
+
+    void UpdatePlayerList()
+    {
+        /// <summary>
+        /// playerListText.text = "";
+        //foreach (Player player in PhotonNetwork.PlayerList)
+       // {
+        //    playerListText.text += player.NickName + "\n";
+       // }
+        /// </summary>
+        /// /// 
+       
+       foreach(TMP_Text player in allPlayerNames){
 
             Destroy(player.gameObject);
         }
@@ -195,165 +189,105 @@ if(!hasSetUsername){
             newPlayerLabel.gameObject.SetActive(true); 
 
             allPlayerNames.Add(newPlayerLabel);
-//dd
         }   
         
     }
 
-    public override void OnPlayerEnteredRoom(Player newPlayer){
-
-            TMP_Text newPlayerLabel = Instantiate(playerNameLabel,playerNameLabel.transform.parent);
-            newPlayerLabel.text = newPlayer.NickName;
-            newPlayerLabel.gameObject.SetActive(true); 
-
-            allPlayerNames.Add(newPlayerLabel);
-//
+    public override void OnCreateRoomFailed(short returnCode, string message)
+    {
+        errorText.text = "Room Creation Failed: " + message;
+        CloseAllScreens();
+        errorScreen.SetActive(true);
     }
 
-    public override void OnPlayerLeftRoom(Player otherPlayer){
-
-ListAllPlayers();
-
+    public override void OnJoinRandomFailed(short returnCode, string message)
+    {
+        errorText.text = "No rooms available. Creating a new room.";
+        CreateRoom();
     }
 
+    public void LeaveRoom()
+    {
+        PhotonNetwork.LeaveRoom();
+        CloseAllScreens();
+        loadingText.text = "Leaving Room...";
+        loadingScreen.SetActive(true);
 
-
-   
-    public void CloseErrorScreen(){
-
-        CloseMenus(); 
-        menuButtons.SetActive(true);
-    }
-
-    public void LeaveRoom(){
-        PhotonNetwork.LeaveRoom(); 
-        CloseMenus(); 
-        loadingText.text = "Leaving the Room...";
-        loadingScreen.SetActive(true); 
-    }
-
-    public override void OnLeftRoom(){
-        
-        CloseMenus(); 
-        menuButtons.SetActive(true); 
-    }
-
-
-    public void OpenRoomBrowser(){
-        CloseMenus();
-        roomBrowserScreen.SetActive(true);
-    }
-    public void CloseRoomBrowser(){
-        CloseMenus(); 
-        roomBrowserScreen.SetActive(false);
-        menuButtons.SetActive(true); 
+        lobbyScreen.SetActive(true);
 
 
     }
 
-    public override void OnRoomListUpdate(List<RoomInfo> roomList) {
-         
-         foreach(RoomButton rb in allRoomButtons){
-
-            Destroy(rb.gameObject);
-         }
-
-         allRoomButtons.Clear(); 
-
-         theRoomButton.gameObject.SetActive(false); 
-
-         for (int i  = 0; i < roomList.Count;  i++){
-
-            if (roomList[i].PlayerCount != roomList[i].MaxPlayers && !roomList[i].RemovedFromList){
-
-                RoomButton newButton = Instantiate(theRoomButton, theRoomButton.transform.parent);
-
-                newButton.SetButtonDetails(roomList[i]); 
-                newButton.gameObject.SetActive(true ); 
-
-                allRoomButtons.Add(newButton);
-
-
-            }
-        }
+    public override void OnLeftRoom()
+    {
+        CloseAllScreens();
+        lobbyScreen.SetActive(true);
     }
 
+    public void QuitGame()
+    {
+        Application.Quit();
+    }
 
-    public void JoinRoom (RoomInfo inputInfo){
-
-        PhotonNetwork.JoinRoom(inputInfo.Name); 
-
-        CloseMenus(); 
-
+    public void JoinRoom(RoomInfo info)
+    {
+        PhotonNetwork.JoinRoom(info.Name);
+        CloseAllScreens();
         loadingText.text = "Joining Room";
         loadingScreen.SetActive(true);
     }
 
- 
-    public  void  SetNickname(){
+    public override void OnRoomListUpdate(List<RoomInfo> roomList)
+    {
+        foreach (RoomButton rb in allRoomButtons)
+        {
+            Destroy(rb.gameObject);
+        }
 
-        if(!string.IsNullOrEmpty(nameInput.text)){
+        allRoomButtons.Clear();
 
-           PhotonNetwork.NickName = nameInput.text; 
+        theRoomButton.gameObject.SetActive(false);
 
-           PlayerPrefs.SetString("playerName", nameInput.text);
-           CloseMenus();
-           menuButtons.SetActive(true);
-
-           hasSetUsername = true;
+        for (int i = 0; i < roomList.Count; i++)
+        {
+            if (roomList[i].PlayerCount != roomList[i].MaxPlayers && !roomList[i].RemovedFromList)
+            {
+                RoomButton newButton = Instantiate(theRoomButton, theRoomButton.transform.parent);
+                newButton.SetButtonDetails(roomList[i]);
+                newButton.gameObject.SetActive(true);
+                allRoomButtons.Add(newButton);
+            }
         }
     }
 
-
-
-    public void StartGame(){
-
-PhotonNetwork.LoadLevel(levelToPlay);
+    public void StartGame()
+    {
+        PhotonNetwork.LoadLevel(levelToPlay);
     }
- 
-    public override void OnMasterClientSwitched(Player newMasterClient){
-         if(PhotonNetwork.IsMasterClient){
+
+    public override void OnMasterClientSwitched(Player newMasterClient)
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
             startButton.SetActive(true);
-        } else {
-            startButton.SetActive(false); 
+        }
+        else
+        {
+            startButton.SetActive(false);
         }
     }
 
-
-    public void QuickJoin(){
-        RoomOptions options = new RoomOptions(); 
-        options.MaxPlayers = 8; 
-        PhotonNetwork.CreateRoom("Test");
-        CloseMenus();
-        loadingText.text = "Creating Room";
-        loadingScreen.SetActive(true);
-    }
-    public void QuitGame(){
-        Application.Quit(); 
-    }
-
-
-
-    public void Test(){
-        print("succesfully touch the input"); 
-    }
-
-    //test playfab friend system 
-
-    public void GoToPlayFabLogin()
+    public void SetNickname()
     {
-        SceneManager.LoadScene("LoginPlayFabTest");
+        PhotonNetwork.NickName = PlayerPrefs.GetString("USERNAME");
     }
 
-    public void GoToDelayMatchMaking()
-    {
-//hey
+     public void CloseRoomBrowser(){
+        CloseAllScreens(); 
+        roomBrowserScreen.SetActive(false);
+        lobbyScreen.SetActive(true);
+        
+
+
     }
-   
-
-  
-
-
-
-    
 }
