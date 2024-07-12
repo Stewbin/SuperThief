@@ -46,7 +46,7 @@ public class PlayerSpawner : MonoBehaviourPunCallbacks
 
        
 
-        UIController.instance.deathText.text = "You were killed by " + damager;
+        UIController.instance.deathText.text = "Eliminated By " + damager;
         UIController.instance.respawnText.text = "Going Back In 5s "; 
         //PhotonNetwork.Destroy(player); 
        

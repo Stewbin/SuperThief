@@ -18,6 +18,8 @@ public class Menu : MonoBehaviour
 
     public GameObject shopPanel; 
 
+    public GameObject lobbyMusic; 
+
 
     private void Start()
     {
@@ -38,6 +40,8 @@ public class Menu : MonoBehaviour
         print("The player username is " + playerUsername);
 
         shopPanel.SetActive(false); 
+
+        lobbyMusic.SetActive(true);
     }
     public void Play(){
         //CLick Play to start playing
@@ -92,8 +96,20 @@ public class Menu : MonoBehaviour
         SceneManager.LoadScene("Menu");
     }
 
-
-//menu is 
+public void PlayStopMusic()
+{
+    bool newState = !lobbyMusic.activeSelf;
+    lobbyMusic.SetActive(newState);
+    
+    if (newState)
+    {
+        print("Lobby music started");
+    }
+    else
+    {
+        print("Lobby music stopped");
+    }
+}
  
 
 
