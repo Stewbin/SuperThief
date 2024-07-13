@@ -8,7 +8,6 @@ public class TurretBehaviour : EnemyBehaviour
     [SerializeField] private LineRenderer _lineRenderer;
     [SerializeField] private Transform _turretHead;
     [SerializeField] private AdvancedGunSystem _advancedGunSystem;
-    [SerializeField] private State _state;
     public float RayLength = 5f;
     public Color StartColor = Color.white;
     public Color EndColor = Color.red;
@@ -34,11 +33,12 @@ public class TurretBehaviour : EnemyBehaviour
     {
         Ray ray = new(_turretHead.position, _turretHead.forward);
         Debug.DrawRay(ray.origin, RayLength * ray.direction, Color.red);
+        
         // Set the positions of the LineRenderer
         _lineRenderer.SetPosition(0, ray.origin);
         _lineRenderer.SetPosition(1, ray.origin + ray.direction * RayLength);  
 
-        if(_state == State.Searching)
+        if(CurrentState == State.Searching)
         {
             // Rotate head
             float targetRotation = Mathf.Sin(Time.time * TurnSpeed) * (FOV / 2);
@@ -52,11 +52,11 @@ public class TurretBehaviour : EnemyBehaviour
                 {
                     Debug.Log("Player found");
                     TargetPlayer = hit.transform;
-                    _state = State.Hunting;
+                    CurrentState = State.Hunting;
                 }
             }
         } 
-        else if (_state == State.Hunting)
+        else if (CurrentState == State.Hunting)
         {
             // Look in direction of player
             Vector3 directionToPlayer = TargetPlayer.position - _turretHead.position;
@@ -67,11 +67,5 @@ public class TurretBehaviour : EnemyBehaviour
             _advancedGunSystem.Shoot();
             Debug.Log("Pew.");
         } 
-    }
-
-    public override void SwitchToHuntingState(Transform NewPlayer)
-    {
-        TargetPlayer = NewPlayer;
-        _state = State.Hunting;
     }
 }

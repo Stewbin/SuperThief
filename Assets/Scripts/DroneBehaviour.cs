@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
+using PlayFab.EconomyModels;
 using UnityEngine;
 
 public class DroneBehaviour : EnemyBehaviour
@@ -7,15 +9,19 @@ public class DroneBehaviour : EnemyBehaviour
     [Header("Shooting & Aiming")]
     [SerializeField] private Transform _gunBase;
     [SerializeField] private AdvancedGunSystem _advancedGunSystem;
-    private Transform _targetPlayer;
+    private EyeSensor _eyeSensor;
+    [Range(0, 90)] public float SensorAngle;
+    [SerializeField] private readonly float aggroTime;
+    private float _aggroTime;
     
     [Header("Movement")]
+    public Vector3 currentDestination;
+    public float MinHeight = 15f;
     public float MoveAcceleration;
-    [Range(0, 90)] 
-    public float MaxTilt;
+    [Range(0, 90)] public float MaxTilt;
+
     [Header("Path Finding")]
-    private EyeSensor _eyeSensor;
-    public float DroneSize;
+    public float DroneWidth;
     public float MaxDistance;
     public float Range;
     public int RayCount = 20;
@@ -24,20 +30,67 @@ public class DroneBehaviour : EnemyBehaviour
     // Start is called before the first frame update
     void Start()
     {
-         
+         _eyeSensor = GetComponent<EyeSensor>();
+        //  _advancedGunSystem = GetComponent<AdvancedGunSystem>();
+        currentDestination = transform.position;
     }
 
     // Update is called once per frame
     void Update()
     {
-        // Aim at target
-        if(Aim(TargetPlayer))
+        Vector3 nextDestination = currentDestination;
+        bool seenPlayer = _eyeSensor.DetectPlayerInCone(_gunBase.position, SensorAngle);
+        if(CurrentState == State.Searching)
         {
-            _advancedGunSystem.Shoot();
+            // Exit Searching state
+            if(seenPlayer)
+            {
+                TargetPlayer = _eyeSensor.LastSeenPlayer;
+                CurrentState = State.Hunting;
+            }
+
+            // Move to random point
+            Vector3 randomPoint = transform.position + (Random.insideUnitSphere * 10f); // Random point in a sphere            
+            nextDestination = randomPoint;
+
+            // Reset aggro meter
+            _aggroTime = aggroTime;
+        }
+        else if(CurrentState == State.Hunting)
+        {
+            // Aim at target
+            if(Aim(TargetPlayer))
+                {_advancedGunSystem.Shoot();}
+    
+            // Exit Hunting state
+            if(!seenPlayer)
+                {_aggroTime -= Time.deltaTime;}
+            if(aggroTime <= 0) 
+                {CurrentState = State.Searching;}
+
+            // Move to player
+            nextDestination = TargetPlayer.position;
         }
 
-        // Movement
-        transform.localPosition =  Vector3.forward;
+        // Drone must be above certain height at all times
+        if(currentDestination.y < MinHeight)
+        {
+            currentDestination += transform.up * (MinHeight - transform.position.y);
+        }
+
+        // Move to destination
+        if(MoveTo(currentDestination))
+        {
+            // Update to next destination if arrived at current one
+            currentDestination = nextDestination;
+            Debug.Log("Destination arrived.");
+        }
+
+        // Testing
+        Debug.Log($"State is {CurrentState}");
+
+        // Avoid obstacles
+        
     }
 
     public bool Aim(Transform target)
@@ -50,58 +103,62 @@ public class DroneBehaviour : EnemyBehaviour
         return false;
     }
 
-    public void Move(Vector3 destination)
+    public bool MoveTo(Vector3 destination)
     {
+        float vel = MoveAcceleration * Time.time;
         // Move towards destination
-        transform.position = Vector3.MoveTowards(transform.position, destination, MoveAcceleration * Time.time * Time.time);
+        transform.position = Vector3.MoveTowards(transform.position, destination, vel * Time.deltaTime);
 
         // Tilt in opposite direction of acceleration
-        Quaternion maxTilt = Quaternion.Euler(0, -MaxTilt, 0);
-        transform.rotation = Quaternion.Slerp(Quaternion.identity, maxTilt, MoveAcceleration * Time.time);
+        Quaternion maxTilt = Quaternion.Euler(-MaxTilt, 0, 0);
+        transform.rotation = Quaternion.Slerp(Quaternion.identity, maxTilt, vel * Time.deltaTime);
+
+        // Return if arrived
+        return Vector3.Distance(transform.position, destination) < 0.01f;
     }
 
 
-    // #region Path Finding
+    #region Path Finding
 
-    // private Vector3 FindUnobstructedDirection()
-    // {
-    //     List<Vector3> openDirections = new(RayCount);
+    private Vector3 FindUnobstructedDirection()
+    {
+        List<Vector3> openDirections = new(RayCount);
         
-    //     for (int i = 0; i < RayCount; i++)
-    //     {
-    //         float phi = Mathf.Acos(1 - 2 * ((float) i / RayCount)) / 2;
-    //         float theta = Mathf.PI * ((1 - Mathf.Sqrt(5)) / 2) * i;
+        for (int i = 0; i < RayCount; i++)
+        {
+            float phi = Mathf.Acos(1 - 2 * ((float) i / RayCount)) / 2;
+            float theta = Mathf.PI * ((1 - Mathf.Sqrt(5)) / 2) * i;
 
-    //         // Convert from spherical to cartesian coordinates
-    //         float z = Mathf.Cos(phi);
-    //         float x = Mathf.Sin(phi) * Mathf.Cos(theta);
-    //         float y = Mathf.Sin(phi) * Mathf.Sin(theta);
+            // Convert from spherical to cartesian coordinates
+            float z = Mathf.Cos(phi);
+            float x = Mathf.Sin(phi) * Mathf.Cos(theta);
+            float y = Mathf.Sin(phi) * Mathf.Sin(theta);
 
-    //         Ray ray = new(transform.position, new Vector3(x, y, z));
+            Ray ray = new(transform.position, new Vector3(x, y, z));
 
-    //         // Shoot ray
-    //         if(!Physics.SphereCast(ray, DroneSize / 2, MaxDistance))
-    //         {
-    //             openDirections.Add(ray.direction);
-    //         }
-    //     }
+            // Shoot ray
+            if(!Physics.SphereCast(ray, DroneWidth / 2, MaxDistance))
+            {
+                openDirections.Add(ray.direction);
+            }
+        }
 
-    //     float bestAlign = -1;
-    //     Vector3 bestDir = transform.forward;
-    //     foreach(var dir in openDirections)
-    //     {
-    //         float cosTheta = Vector3.Dot(dir, transform.forward);
-    //         Debug.Assert(cosTheta <= 1);
-    //         if(cosTheta > bestAlign)
-    //         {
-    //             bestDir = dir;
-    //             bestAlign = cosTheta; 
-    //         }
-    //     }
-    //     return bestDir;
-    // }
+        float bestAlign = -1;
+        Vector3 bestDir = transform.forward;
+        foreach(var dir in openDirections)
+        {
+            float cosTheta = Vector3.Dot(dir, transform.forward);
+            Debug.Assert(cosTheta <= 1);
+            if(cosTheta > bestAlign)
+            {
+                bestDir = dir;
+                bestAlign = cosTheta; 
+            }
+        }
+        return bestDir;
+    }
 
-    // #endregion
+    #endregion
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.green;
