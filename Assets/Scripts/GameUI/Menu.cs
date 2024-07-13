@@ -9,15 +9,39 @@ public class Menu : MonoBehaviour
   
     [SerializeField] public string instagramUrl; 
 
-    [SerializeField] public TMP_Text playerUsernameDisplay; 
+    public TMP_Text playerUsernameDisplay; 
 
+     public TMP_Text HeistDiamondsValuesText; 
     [SerializeField] public string playerUsername; 
 
-    public void Start() {
+    [Header("UI Panels")]
 
-        playerUsername = PlayFabManager.PFC.userName; 
+    public GameObject shopPanel; 
+
+    public GameObject lobbyMusic; 
+
+
+    private void Start()
+    {
+        // Show banner ad when main menu loads
+        AdManager.Instance.ShowBannerAd();
+    }
+
+    private void OnDisable()
+    {
+        // Hide banner ad when leaving main menu
+        AdManager.Instance.HideBannerAd();
+    }
+    public void Awake() {
+
+        playerUsername = PlayerPrefs.GetString("USERNAME");
+        HeistDiamondsValuesText.text = PlayerPrefs.GetInt("Diamonds").ToString(); 
         playerUsernameDisplay.text = playerUsername;
         print("The player username is " + playerUsername);
+
+        shopPanel.SetActive(false); 
+
+        lobbyMusic.SetActive(true);
     }
     public void Play(){
         //CLick Play to start playing
@@ -42,7 +66,7 @@ public class Menu : MonoBehaviour
     }
 
     public void OpenSinglePlayerScene(){
-        SceneManager.LoadScene(8);
+        SceneManager.LoadScene("Local");
     }
 
      public void LeaveSinglePlayer(){
@@ -50,13 +74,43 @@ public class Menu : MonoBehaviour
     }
 
      public void DelayMatchMaking(){
-        SceneManager.LoadScene(10);
+        SceneManager.LoadScene(12);
     }
 
-     public void OpenShop(){
-        SceneManager.LoadScene("Construction");
+    public void OpenShop(){
+        shopPanel.SetActive(true); 
     }
 
+    public void CloseShop(){
+        shopPanel.SetActive(false); 
+    }
+
+
+    public void CustomRoom()
+    {
+        SceneManager.LoadScene("Custom");
+    }
+
+    public void GoBackToMenu()
+    {
+        SceneManager.LoadScene("Menu");
+    }
+
+public void PlayStopMusic()
+{
+    bool newState = !lobbyMusic.activeSelf;
+    lobbyMusic.SetActive(newState);
+    
+    if (newState)
+    {
+        print("Lobby music started");
+    }
+    else
+    {
+        print("Lobby music stopped");
+    }
+}
+ 
 
 
     

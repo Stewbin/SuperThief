@@ -309,15 +309,15 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
         if (allPlayers.Count > index)
         {
             
-            UIController.instance.killsText.text = "Kills: " + allPlayers[index].kills;
-            UIController.instance.deathsText.text = "Deaths: " + allPlayers[index].deaths;
-            UIController.instance.moneyText.text = "Money: $" + allPlayers[index].money;
+            UIController.instance.killsText.text = allPlayers[index].kills.ToString();
+            UIController.instance.deathsText.text = allPlayers[index].deaths.ToString();
+            UIController.instance.moneyText.text = allPlayers[index].money.ToString();
         }
         else
         {
-            UIController.instance.killsText.text = "Kills: 0";
-            UIController.instance.deathsText.text = "Deaths: 0";
-            UIController.instance.moneyText.text = "Money: $0";
+            UIController.instance.killsText.text = "0";
+            UIController.instance.deathsText.text = "0";
+            UIController.instance.moneyText.text = "0";
         }
     }
 
@@ -452,6 +452,9 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
             PhotonNetwork.DestroyAll();
         }
 
+           // Clear the allPlayers list
+          
+
         UIController.instance.endScreen.SetActive(true);
         UIController.instance.healthComponent.SetActive(false);
         UIController.instance.statsComponent.SetActive(false);
@@ -489,6 +492,14 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
     }
 
     public void NextMatchReceive(){
+       
+        
+            // Show ad every 3 games
+           AdManager.Instance.ShowInterstitialAd();
+        
+        
+
+        //
         state = GameState.Playing; 
         UIController.instance.endScreen.SetActive(false);
         UIController.instance.leaderboard.SetActive(false);
@@ -551,6 +562,11 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
 
         UIController.instance.timerText.gameObject.SetActive(true);
 
+    }
+
+     public void ResetGamesPlayedCounter()
+    {
+        gamesPlayed = 0;
     }
 
     

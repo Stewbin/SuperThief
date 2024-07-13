@@ -1,11 +1,10 @@
-using System.Runtime.InteropServices;
-using System.IO;
 using System;
 using PlayFab;
 using PlayFab.ClientModels;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic; 
+using System.Collections; 
 //using PlayFab.PfEditor.Json;
 using PlayFab.Json;
 using JsonObject = PlayFab.Json.JsonObject;
@@ -22,6 +21,8 @@ public class PlayFabManager : MonoBehaviour
     [SerializeField] private string userEmail;
     [SerializeField] private string userPassword;
 
+    [SerializeField] private int diamonds;
+     [SerializeField] private int coins;
     [SerializeField] private string myID;
 
     [SerializeField] private int sceneIndex;
@@ -34,6 +35,10 @@ public class PlayFabManager : MonoBehaviour
     private const string EMAIL_KEY = "EMAIL";
     private const string PASSWORD_KEY = "PASSWORD";
     private const string USERNAME_KEY = "USERNAME";
+
+    private const string  DIAMONDS_KEY = "DIAMONDS"; 
+
+    private const string COINS_KEY = "COINS"; 
 
     public TMP_Text errorTextMessage; 
 
@@ -73,9 +78,13 @@ public class PlayFabManager : MonoBehaviour
         }
 
         //for testing purposes
-      // PlayerPrefs.DeleteAll(); 
+        //PlayerPrefs.DeleteAll(); 
        //Auto Create An Accout for user
        AttemptAutoLogin();
+
+       //get player currenciesnns
+       GetVirtualCurrencies(); 
+    
     }
 
     private void AttemptAutoLogin()
@@ -177,6 +186,9 @@ public class PlayFabManager : MonoBehaviour
 
         //open game menu
         LaunchGameMenu();
+
+        //Get Virtual Currency
+        GetVirtualCurrencies();
     }
     
     public void OnLoginSuccess(LoginResult result)
@@ -193,6 +205,12 @@ public class PlayFabManager : MonoBehaviour
 
         //open game menu
         LaunchGameMenu();
+
+        //Get Virtual Currency
+        GetVirtualCurrencies();
+
+        // try to display inverntory
+        
     }
 
     public void OnLoginMobileSuccess(LoginResult result)
@@ -205,13 +223,19 @@ public class PlayFabManager : MonoBehaviour
          GetPlayerData(); 
 
          //open game menu
-        LaunchGameMenu();
+       LaunchGameMenu();
+
+
+       //Get Virtual Currency
+        GetVirtualCurrencies();
     }
 
     private void SaveCredentials()
     {
         PlayerPrefs.SetString(EMAIL_KEY, userEmail);
         PlayerPrefs.SetString(PASSWORD_KEY, userPassword);
+        PlayerPrefs.SetInt(DIAMONDS_KEY, diamonds); 
+        PlayerPrefs.SetInt(COINS_KEY, coins); 
         //myID =result.PlayFabId;
     }
 
@@ -280,6 +304,9 @@ public class PlayFabManager : MonoBehaviour
 
          //open game menu
         LaunchGameMenu();
+
+        //Get Virtual Currency
+        GetVirtualCurrencies();
     }
 
     public void LaunchGameMenu()
@@ -296,6 +323,8 @@ public int playerDamage;
 public int playerKills;
 public int playerDeaths;
 public int gamePlayed;
+
+public int dailyLogin;
   
 public int playerThiefCoins;
 public int playerHeistDiamonds;
@@ -313,6 +342,7 @@ public void SetStatistics()
             new StatisticUpdate { StatisticName = "GameLevel", Value = gameLevel },
             new StatisticUpdate { StatisticName = "PlayerThiefCoins", Value = playerThiefCoins },
             new StatisticUpdate { StatisticName = "PlayerHeistDiamonds", Value = playerHeistDiamonds },
+            
         }
     },
     result => { print("User Statistics Updated"); },
@@ -482,5 +512,198 @@ public void SetDataFailure(PlayFabError error)
 }
 
 #endregion Player Data
+
+#region Friends System
+
+public Transform friendScrollView;
+List<FriendInfo> myFriends;
+
+void DisplayFriends(List<FriendInfo> friendsCache)
+{
+    if (friendsCache == null || friendsCache.Count == 0)
+    {
+        Debug.Log("No friends to display.");
+        return;
+    }
+
+    foreach (FriendInfo friend in friendsCache)
+    {
+        bool isFound = false;
+        
+        if (!isFound)
+        {
+            GameObject listing = Instantiate(listingPrefab, friendScrollView);
+            LeaderboardListing tempListing = listing.GetComponent<LeaderboardListing>();
+            
+            if (tempListing != null && tempListing.playerNameText != null)
+            {
+                tempListing.playerNameText.text = friend.TitleDisplayName;
+                Debug.Log($"Added friend: {friend.TitleDisplayName}");
+            }
+            else
+            {
+                Debug.LogError("LeaderboardListing component or playerNameText is null.");
+            }
+        }
+    }
+
+    myFriends = friendsCache;
+}
+
+List<FriendInfo> _friends = null;
+
+public void GetFriends()
+{
+    PlayFabClientAPI.GetFriendsList(new GetFriendsListRequest
+    {
+        //IncludeSteamFriends = false,
+        //IncludeFacebookFriends = false
+    }, result => {
+        _friends = result.Friends;
+        DisplayFriends(_friends);
+    }, DisplayPlayFabError);
+}
+
+public void DisplayPlayFabError(PlayFabError error)
+{
+    print(error.ErrorMessage);
+}
+
+enum FriendIdType { PlayFabId, Username, Email, DisplayName };
+
+void AddFriend(FriendIdType idType, string friendId)
+{
+    var request = new AddFriendRequest();
+    switch (idType)
+    {
+        case FriendIdType.PlayFabId:
+            request.FriendPlayFabId = friendId;
+            break;
+        case FriendIdType.Username:
+            request.FriendUsername = friendId;
+            break;
+        case FriendIdType.Email:
+            request.FriendEmail = friendId;
+            break;
+        case FriendIdType.DisplayName:
+            request.FriendTitleDisplayName = friendId;
+            break;
+    }
+    // Execute request and update friends when we are done
+    PlayFabClientAPI.AddFriend(request, result => {
+        Debug.Log("Friend added successfully!");
+    }, DisplayPlayFabError);
+}
+
+string friendSearch;
+[SerializeField] GameObject friendPanel;
+
+public void InputFriendID(string id)
+{
+    friendSearch = id;
+}
+
+public void SubmitFriendRequest()
+{
+    AddFriend(FriendIdType.Username, friendSearch);
+}
+
+public void OpenCloseFriends()
+{
+    friendPanel.SetActive(!friendPanel.activeInHierarchy);
+}
+
+IEnumerator WaitForFriend()
+{
+
+yield return new WaitForSeconds(2f);
+GetFriends(); 
+
+}
+
+public void RunWaitFunction()
+{
+    StartCoroutine(WaitForFriend());
+}
+
+#endregion Friends System
+
+
+#region Daily Rewards
+#endregion Daily Rewards
+
+#region Currency System
+
+
+[Header("Coins UI")]
+
+public TMP_Text ThiefCoinsValuesText; 
+
+public TMP_Text HeistDiamondsValuesText; 
+
+
+public void GetVirtualCurrencies()
+{
+    PlayFabClientAPI.GetUserInventory(new GetUserInventoryRequest(), OnGetUserInventorySuccess, OnGetUserInventoryError);
+}
+
+
+public void OnGetUserInventorySuccess(GetUserInventoryResult result)
+{
+    // Thief Coins
+    if (result.VirtualCurrency.ContainsKey("TC"))
+    {
+        int coins = result.VirtualCurrency["TC"];
+        ThiefCoinsValuesText.text = coins.ToString();
+        print("You currently have " + coins + " coins");
+    }
+    else
+    {
+        Debug.LogWarning("TC currency not found in the inventory");
+    }
+
+    // Heist Diamonds
+    if (result.VirtualCurrency.ContainsKey("HD"))
+    {
+        int diamonds = result.VirtualCurrency["HD"];
+        HeistDiamondsValuesText.text = diamonds.ToString();
+        print("You currently have " + diamonds + " diamonds");
+    }
+    else
+    {
+        Debug.LogWarning("HD currency not found in the inventory");
+    }
+}
+
+public void OnGetUserInventoryError(PlayFabError error)
+{
+    print(error.ErrorMessage);
+}
+
+
+//public void GrantVirtualCurrency()
+//{
+  
+//}
+#endregion Currency System
+
+
+#region Character Database System
+
+public CharacterManager [] character; 
+
+public int CharacterCount 
+{
+    get 
+    {
+        return character.Length;
+    }
+}
+
+public CharacterManager GetCharacter(int index)
+{
+    return character[index];
+}
+#endregion Character Database System
 
 }

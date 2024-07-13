@@ -52,6 +52,9 @@ MonoBehaviour:
   - SwitchGunForMobile
   - DisplayEliminationMessage
   - RPC_SendTimer
+  - ShowEliminationMessage
+  - ShootSFX
+  - ShowEliminationMessageRPC
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0

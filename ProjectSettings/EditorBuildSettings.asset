@@ -9,13 +9,19 @@ EditorBuildSettings:
     path: Assets/Scenes/Production/Authentication.unity
     guid: de7bd26a2819f7947b68c5fb9533ba4f
   - enabled: 1
+    path: Assets/Scenes/Production/Menu.unity
+    guid: 6e4f39e136afe2f4983994f681cfc919
+  - enabled: 1
+    path: Assets/Scenes/Production/Shop.unity
+    guid: e43dd3bc3a53ab34592d48c3e2abd8da
+  - enabled: 1
     path: Assets/Scenes/Login Screen.unity
     guid: f28bdcaffacf3d649a3d4e6d2e554c0c
   - enabled: 1
     path: Assets/Scenes/MutiplayerTest.unity
     guid: 2b2399d8b1af49948b01047b913ee170
   - enabled: 1
-    path: Assets/Scenes/Christian.unity
+    path: Assets/Scenes/Production/Christian.unity
     guid: 851cd6eb5e57b0143852710f8af7266c
   - enabled: 1
     path: Assets/Scenes/Networking scenes/Networking.unity
@@ -42,15 +48,18 @@ EditorBuildSettings:
     path: Assets/Scenes/LoginPlayFabTest.unity
     guid: 2e9d44b08cf754e43b0aceaf2fc40ffa
   - enabled: 1
-    path: Assets/Scenes/DelayStartMenu.unity
+    path: Assets/Scenes/Production/DelayStartMenu.unity
     guid: 2ec821d80b1ae074d8924249c275c850
   - enabled: 1
-    path: Assets/Scenes/WaitingRoom.unity
+    path: Assets/Scenes/Production/WaitingRoom.unity
     guid: cdfaf6110530c504a981c395a8a71f85
-  - enabled: 1
-    path: Assets/Scenes/Shop.unity
-    guid: e43dd3bc3a53ab34592d48c3e2abd8da
   - enabled: 1
     path: Assets/Scenes/Construction.unity
     guid: 6d26196f7cf0e6c428f8c72d4c3be843
+  - enabled: 1
+    path: Assets/Scenes/Production/Local.unity
+    guid: d30aa4263dcab864e8c8d27bb66383dd
+  - enabled: 1
+    path: Assets/Scenes/Production/Custom.unity
+    guid: a7ec5adeb55114900aa4df79551d244e
   m_configObjects: {}

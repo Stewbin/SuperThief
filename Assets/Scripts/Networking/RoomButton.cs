@@ -1,23 +1,20 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using TMPro; 
+using TMPro;
 using Photon.Realtime;
 
 public class RoomButton : MonoBehaviour
 {
-    // Start is called before the first frame update
-    public TMP_Text buttonText; 
-    private RoomInfo info; 
-    public void SetButtonDetails(RoomInfo inputInfo){
+    public TMP_Text buttonText;
+    private RoomInfo info;
 
-        info = inputInfo; 
-
+    public void SetButtonDetails(RoomInfo inputInfo)
+    {
+        info = inputInfo;
         buttonText.text = info.Name;
-
     }
 
-    public void OpenRoom(){
-        Launcher.instance.JoinRoom(info); 
+    public void OpenRoom()
+    {
+        Launcher.instance.JoinRoom(info);
     }
 }

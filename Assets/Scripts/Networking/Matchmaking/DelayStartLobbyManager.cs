@@ -18,15 +18,15 @@ public class DelayStartLobbyManager : MonoBehaviourPunCallbacks
 
       public override void OnConnectedToMaster()
     {
-        print ("Connected to Master");
+        print ("Connected to Master Ready for MatchMaking");
        delayStartButton.SetActive(true);
     }
 
 
     public void DelayStart()
     {
-        delayStartButton.SetActive(false);
-        delayCancelButton.SetActive(true);
+        //delayStartButton.SetActive(false);
+        //delayCancelButton.SetActive(true);
 
         PhotonNetwork.JoinRandomRoom(); // Initially Try to join an existing room
         print("Delay matchmaking started");
@@ -44,6 +44,9 @@ public class DelayStartLobbyManager : MonoBehaviourPunCallbacks
         RoomOptions roomOps = new RoomOptions() { IsVisible = true, IsOpen = true, MaxPlayers = 8 };
         PhotonNetwork.CreateRoom("Room" + randomRoomNumber, roomOps);
         print($"Room successfully created. The room name is Room{randomRoomNumber}");
+
+//testing stuff
+        Launcher.instance.roomScreen.SetActive(false);
     }
 
     public override void OnCreateRoomFailed(short returnCode, string message)

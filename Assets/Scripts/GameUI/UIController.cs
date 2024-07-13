@@ -40,6 +40,10 @@ public class UIController : MonoBehaviour
   public TMP_Text magazineSize; 
   
   public TMP_Text timerText; 
+
+  public TMP_Text localEliminationMessage;
+
+  
  
 
 
@@ -63,14 +67,25 @@ public class UIController : MonoBehaviour
 
   public GameObject optionsScreen;
   
-  public TMP_Text eliminationMessage; 
+  public TMP_Text eliminationMessage;
 
   public float eliminationMessageDuration = 3f; 
+
+  
+  public TMP_Text debugMessage;
 
    [Header("Kill Feed")]
     public GameObject killFeedItemPrefab; // Ensure this is set in the Inspector
     public Transform killFeedContainer; // Ensure this is set in the Inspector
     public float killFeedDisplayDuration = 3f;
+
+      public TMP_Text debugDeathMessage;
+
+    public TMP_Text damageTextAmount; 
+
+    [Header("Detect player")]
+
+     public TMP_Text detectPlayerText;
 
   
   //public TMP_Text gameMessageText; 
@@ -114,21 +129,25 @@ public class UIController : MonoBehaviour
     optionsScreen.SetActive(false);
   }
 
-     public void ShowKillMessage(string killer, string victim)
-    {
-        GameObject killFeedItem = Instantiate(killFeedItemPrefab, killFeedContainer);
-        TMP_Text killFeedText = killFeedItem.GetComponent<TMP_Text>();
-        killFeedText.text = $"{killer} eliminated {victim}";
-        StartCoroutine(RemoveKillFeedItem(killFeedItem));
-    }
+public void ShowEliminationMessage(string damager, string victim)
+{
+    // Display elimination message for all players
+    debugDeathMessage.text = $"{damager} eliminated {victim}";
+    StartCoroutine(ClearMessage(debugDeathMessage));
+}
 
-    public IEnumerator RemoveKillFeedItem(GameObject killFeedItem)
-    {
-        yield return new WaitForSeconds(killFeedDisplayDuration);
-        Destroy(killFeedItem);
-    }
+public void ShowLocalEliminationMessage(string victim)
+{
+    // Display local elimination message
+    localEliminationMessage.text = $"You eliminated {victim}";
+    StartCoroutine(ClearMessage(localEliminationMessage));
+}
 
-
+private IEnumerator ClearMessage(TMP_Text messageText)
+{
+    yield return new WaitForSeconds(3f); // Wait for 3 seconds
+    messageText.text = ""; // Clear the message
+}
 
 
 

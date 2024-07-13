@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028326, g: 0.22571333, b: 0.30692202, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028334, g: 0.22571328, b: 0.3069217, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -238,6 +238,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bdaf48a6b21ff54e9a48d8e663158c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  instagramUrl: 
+  playerUsernameDisplay: {fileID: 0}
+  playerUsername: 
 --- !u!1 &481510461
 GameObject:
   m_ObjectHideFlags: 0
@@ -576,7 +579,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b616ad19c6b0642da8a9cbd0cd95ebbe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  iosNotifications: {fileID: 1602738243}
 --- !u!4 &1602738245
 Transform:
   m_ObjectHideFlags: 0
