@@ -46,7 +46,7 @@ public class DelayStartLobbyManager : MonoBehaviourPunCallbacks
         print($"Room successfully created. The room name is Room{randomRoomNumber}");
 
 //testing stuff
-        Launcher.instance.roomScreen.SetActive(false);
+        
     }
 
     public override void OnCreateRoomFailed(short returnCode, string message)
