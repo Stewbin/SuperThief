@@ -88,11 +88,11 @@ MonoBehaviour:
       _typeQualifiedName: FiniteStateMachine.FSMNode, Assembly-CSharp, Version=0.0.0.0,
         Culture=neutral, PublicKeyToken=null
       connections:
-      - fieldName: InitialNode
-        node: {fileID: 9021986578031834931}
-        reroutePoints: []
       - fieldName: TrueState
         node: {fileID: 3699469524585331702}
+        reroutePoints: []
+      - fieldName: InitialNode
+        node: {fileID: 9021986578031834931}
         reroutePoints: []
       _direction: 0
       _connectionType: 0
@@ -175,7 +175,7 @@ MonoBehaviour:
   m_Name: Transition
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: 152, y: -856}
+  position: {x: 72, y: -568}
   ports:
     keys:
     - TrueState

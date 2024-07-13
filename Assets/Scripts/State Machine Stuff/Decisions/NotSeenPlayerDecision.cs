@@ -17,6 +17,6 @@ public class NotSeenPlayerDecision : Decision
             _coolDown = 0;
 
         // If have not seen player within CoolDown secs, return true
-        return !eyeSensor.SeePlayer() && _coolDown == CoolDown;
+        return true;
     }
 }
