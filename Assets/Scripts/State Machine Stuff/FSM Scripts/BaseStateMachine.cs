@@ -5,7 +5,9 @@ using System.Collections.Generic;
 
 public class BaseStateMachine : MonoBehaviour 
     {
-        public BaseState CurrentState { get; set; }
+        public BaseStateNode CurrentState { get; set; }
+        [SerializeField] private FSMGraph _graph;
+        
         private Dictionary<Type, Component> _cachedComponents;
         
         void Awake()
@@ -19,13 +21,14 @@ public class BaseStateMachine : MonoBehaviour
             Execute();
         }
 
-        public virtual void Init()
+        public void Init()
         {
+            CurrentState = _graph.InitialState;
         }
-
-        public virtual void Execute()
+        
+        public void Execute()
         {
-            CurrentState.Execute(this);
+            ((StateNode)CurrentState).Execute(this);
         }
 
         /// <summary>

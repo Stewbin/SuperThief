@@ -6,7 +6,7 @@ namespace FiniteStateMachine
         public Decision Decision;
         [Output] public BaseStateNode TrueState;
         [Output] public BaseStateNode FalseState;
-        public void Execute(BaseStateMachineGraph stateMachine)
+        public void Execute(BaseStateMachine stateMachine)
         {
             var trueState = GetFirst<BaseStateNode>(nameof(TrueState));
             var falseState = GetFirst<BaseStateNode>(nameof(FalseState));
