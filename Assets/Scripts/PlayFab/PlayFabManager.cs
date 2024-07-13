@@ -687,4 +687,23 @@ public void OnGetUserInventoryError(PlayFabError error)
 //}
 #endregion Currency System
 
+
+#region Character Database System
+
+public CharacterManager [] character; 
+
+public int CharacterCount 
+{
+    get 
+    {
+        return character.Length;
+    }
+}
+
+public CharacterManager GetCharacter(int index)
+{
+    return character[index];
+}
+#endregion Character Database System
+
 }

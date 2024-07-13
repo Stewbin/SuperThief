@@ -11,17 +11,21 @@ public class AdManager : MonoBehaviour, IUnityAdsInitializationListener, IUnityA
     [SerializeField] private bool testMode = true;
 
     [Header("Ad Unit Ids")]
-    [SerializeField] private string androidAdUnitId;
-    [SerializeField] private string iOSAdUnitId;
+    [SerializeField] private string androidRewardedAdUnitId;
+    [SerializeField] private string iOSRewardedAdUnitId;
+    [SerializeField] private string androidInterstitialAdUnitId;
+    [SerializeField] private string iOSInterstitialAdUnitId;
     [SerializeField] private string androidBannerAdUnitId;
     [SerializeField] private string iOSBannerAdUnitId;
 
     public static AdManager Instance;
 
     private string gameId;
-    private string adUnitId;
+    private string rewardedAdUnitId;
+    private string interstitialAdUnitId;
     private string bannerAdUnitId;
-    private bool isAdReady = false;
+    private bool isRewardedAdReady = false;
+    private bool isInterstitialAdReady = false;
     [SerializeField] private BannerPosition bannerPosition = BannerPosition.BOTTOM_CENTER;
 
     public delegate void RewardedAdCompletedCallback();
@@ -46,15 +50,18 @@ public class AdManager : MonoBehaviour, IUnityAdsInitializationListener, IUnityA
     {
         #if UNITY_IOS
             gameId = iOSGameId;
-            adUnitId = iOSAdUnitId;
+            rewardedAdUnitId = iOSRewardedAdUnitId;
+            interstitialAdUnitId = iOSInterstitialAdUnitId;
             bannerAdUnitId = iOSBannerAdUnitId;
         #elif UNITY_ANDROID
             gameId = androidGameId;
-            adUnitId = androidAdUnitId;
+            rewardedAdUnitId = androidRewardedAdUnitId;
+            interstitialAdUnitId = androidInterstitialAdUnitId;
             bannerAdUnitId = androidBannerAdUnitId;
         #elif UNITY_EDITOR
             gameId = androidGameId;
-            adUnitId = androidAdUnitId;
+            rewardedAdUnitId = androidRewardedAdUnitId;
+            interstitialAdUnitId = androidInterstitialAdUnitId;
             bannerAdUnitId = androidBannerAdUnitId;
         #endif
 
@@ -67,7 +74,8 @@ public class AdManager : MonoBehaviour, IUnityAdsInitializationListener, IUnityA
     public void OnInitializationComplete()
     {
         Debug.Log("Unity Ads initialization successful");
-        LoadAd();
+        LoadRewardedAd();
+        LoadInterstitialAd();
         LoadBannerAd();
     }
 
@@ -76,79 +84,22 @@ public class AdManager : MonoBehaviour, IUnityAdsInitializationListener, IUnityA
         Debug.LogError($"Unity Ads failed to initialize: {error.ToString()} - {message}");
     }
 
-    private void LoadAd()
+    private void LoadRewardedAd()
     {
-        Debug.Log($"Loading Ad: {adUnitId}");
-        Advertisement.Load(adUnitId, this);
+        Debug.Log($"Loading Rewarded Ad: {rewardedAdUnitId}");
+        Advertisement.Load(rewardedAdUnitId, this);
     }
 
-    public void OnUnityAdsAdLoaded(string placementId)
+    private void LoadInterstitialAd()
     {
-        if (placementId.Equals(adUnitId))
-        {
-            isAdReady = true;
-            Debug.Log($"Ad Unit {adUnitId} loaded successfully");
-        }
-    }
-
-    public void OnUnityAdsFailedToLoad(string placementId, UnityAdsLoadError error, string message)
-    {
-        Debug.LogError($"Error loading Ad Unit {adUnitId}: {error.ToString()} - {message}");
-        isAdReady = false;
-    }
-
-    public void ShowAd()
-    {
-        if (isAdReady)
-        {
-            Advertisement.Show(adUnitId, this);
-            isAdReady = false;
-        }
-        else
-        {
-            Debug.Log("Ad not ready. Loading ad...");
-            LoadAd();
-        }
-    }
-
-    public void ShowRewardedAd(RewardedAdCompletedCallback callback)
-    {
-        rewardedAdCallback = callback;
-        ShowAd();
-    }
-
-    public void OnUnityAdsShowFailure(string placementId, UnityAdsShowError error, string message)
-    {
-        Debug.LogError($"Error showing Ad Unit {adUnitId}: {error.ToString()} - {message}");
-    }
-
-    public void OnUnityAdsShowStart(string placementId)
-    {
-        Debug.Log($"Ad Unit {adUnitId} show started");
-    }
-
-    public void OnUnityAdsShowClick(string placementId)
-    {
-        Debug.Log($"Ad Unit {adUnitId} clicked");
-    }
-
-    public void OnUnityAdsShowComplete(string placementId, UnityAdsShowCompletionState showCompletionState)
-    {
-        if (placementId.Equals(adUnitId) && showCompletionState.Equals(UnityAdsShowCompletionState.COMPLETED))
-        {
-            Debug.Log("Unity Ads Rewarded Ad Completed");
-            rewardedAdCallback?.Invoke();
-            rewardedAdCallback = null;
-        }
-        LoadAd();  // Load the next ad
+        Debug.Log($"Loading Interstitial Ad: {interstitialAdUnitId}");
+        Advertisement.Load(interstitialAdUnitId, this);
     }
 
     private void LoadBannerAd()
     {
-        // Set banner position
+        Debug.Log($"Loading Banner Ad: {bannerAdUnitId}");
         Advertisement.Banner.SetPosition(bannerPosition);
-
-        // Load banner ad
         Advertisement.Banner.Load(bannerAdUnitId,
             new BannerLoadOptions
             {
@@ -157,14 +108,60 @@ public class AdManager : MonoBehaviour, IUnityAdsInitializationListener, IUnityA
             });
     }
 
-    private void OnBannerLoaded()
+    public void OnUnityAdsAdLoaded(string placementId)
     {
-        Debug.Log("Banner loaded");
+        if (placementId.Equals(rewardedAdUnitId))
+        {
+            isRewardedAdReady = true;
+            Debug.Log($"Rewarded Ad Unit {rewardedAdUnitId} loaded successfully");
+        }
+        else if (placementId.Equals(interstitialAdUnitId))
+        {
+            isInterstitialAdReady = true;
+            Debug.Log($"Interstitial Ad Unit {interstitialAdUnitId} loaded successfully");
+        }
     }
 
-    private void OnBannerError(string message)
+    public void OnUnityAdsFailedToLoad(string placementId, UnityAdsLoadError error, string message)
     {
-        Debug.LogError($"Banner Error: {message}");
+        Debug.LogError($"Error loading Ad Unit {placementId}: {error.ToString()} - {message}");
+        if (placementId.Equals(rewardedAdUnitId))
+        {
+            isRewardedAdReady = false;
+        }
+        else if (placementId.Equals(interstitialAdUnitId))
+        {
+            isInterstitialAdReady = false;
+        }
+    }
+
+    public void ShowRewardedAd(RewardedAdCompletedCallback callback)
+    {
+        if (isRewardedAdReady)
+        {
+            rewardedAdCallback = callback;
+            Advertisement.Show(rewardedAdUnitId, this);
+            isRewardedAdReady = false;
+        }
+        else
+        {
+            Debug.Log("Rewarded ad not ready. Loading ad...");
+            LoadRewardedAd();
+        }
+    }
+
+    public void ShowInterstitialAd()
+    {
+        if (isInterstitialAdReady)
+        {
+            Advertisement.Show(interstitialAdUnitId, this);
+            isInterstitialAdReady = false;
+        }
+        else
+        {
+            Debug.Log("Interstitial ad not ready. Loading ad...");
+            LoadInterstitialAd();
+        }
     }
 
     public void ShowBannerAd()
@@ -175,6 +172,50 @@ public class AdManager : MonoBehaviour, IUnityAdsInitializationListener, IUnityA
     public void HideBannerAd()
     {
         Advertisement.Banner.Hide();
+    }
+
+    public void OnUnityAdsShowFailure(string placementId, UnityAdsShowError error, string message)
+    {
+        Debug.LogError($"Error showing Ad Unit {placementId}: {error.ToString()} - {message}");
+    }
+
+    public void OnUnityAdsShowStart(string placementId)
+    {
+        Debug.Log($"Ad Unit {placementId} show started");
+    }
+
+    public void OnUnityAdsShowClick(string placementId)
+    {
+        Debug.Log($"Ad Unit {placementId} clicked");
+    }
+
+    public void OnUnityAdsShowComplete(string placementId, UnityAdsShowCompletionState showCompletionState)
+    {
+        if (placementId.Equals(rewardedAdUnitId) && showCompletionState.Equals(UnityAdsShowCompletionState.COMPLETED))
+        {
+            Debug.Log("Unity Ads Rewarded Ad Completed");
+            rewardedAdCallback?.Invoke();
+            rewardedAdCallback = null;
+        }
+        
+        if (placementId.Equals(rewardedAdUnitId))
+        {
+            LoadRewardedAd();
+        }
+        else if (placementId.Equals(interstitialAdUnitId))
+        {
+            LoadInterstitialAd();
+        }
+    }
+
+    private void OnBannerLoaded()
+    {
+        Debug.Log("Banner ad loaded successfully");
+    }
+
+    private void OnBannerError(string message)
+    {
+        Debug.LogError($"Banner ad error: {message}");
     }
 
     public void SetBannerPosition(BannerPosition position)

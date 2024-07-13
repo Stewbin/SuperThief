@@ -198,8 +198,11 @@ public class ShopManager : MonoBehaviour, IStoreListener
         case "com.superthief.diamonds.basic":
             diamondsToAdd = 500; 
             break;
+        case "com.superthief.diamonds.rare":
+            diamondsToAdd = 1200; 
+            break;
         case "com.superthief.diamonds.epic":
-            diamondsToAdd = 1000; 
+            diamondsToAdd = 2500; 
             break;
         default:
             print($"Unknown product ID: {purchaseEvent.purchasedProduct.definition.id}");

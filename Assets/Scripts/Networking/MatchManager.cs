@@ -495,7 +495,7 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
        
         
             // Show ad every 3 games
-            AdManager.Instance.ShowAd();
+           AdManager.Instance.ShowInterstitialAd();
         
         
 
