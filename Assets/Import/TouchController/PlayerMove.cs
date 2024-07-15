@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using Photon.Pun;
-using UnityEngine.UI; 
+using UnityEngine.UI;
+using System;
 
 public class PlayerMove : MonoBehaviourPunCallbacks
 {
@@ -20,7 +21,7 @@ public class PlayerMove : MonoBehaviourPunCallbacks
 
     public LayerMask layerMask;
 
-    public bool isGrounded;
+    public bool isGrounded = true;
     public bool Pressed;
 
     public Animator anim;
@@ -85,10 +86,12 @@ public class PlayerMove : MonoBehaviourPunCallbacks
     public void Awake()
     {
         instance = this;
+        Debug.Log($"Is mine?: {photonView.IsMine}");
     }
 
     void Start()
     {
+        Debug.Log($"Is mine?: {photonView.IsMine}");
         if (photonView.IsMine)
         {
             controller = GetComponent<CharacterController>();
@@ -111,10 +114,15 @@ public class PlayerMove : MonoBehaviourPunCallbacks
 
     void Update()
     {
+        UnityEngine.Debug.Log("Test");
+        UnityEngine.Debug.Log($"Is mine?: {photonView.IsMine}");       
+        print($"Is mine?: {photonView.IsMine}");
+        Console.WriteLine($"Is mine?: {photonView.IsMine}");
+
         if (photonView.IsMine)
         {
             isGrounded = Physics.CheckSphere(Ground.position, GroundDistance, layerMask);
-
+            Debug.Log(isGrounded);
             if (isGrounded && velocity.y < 0)
             {
                 velocity.y = -2f;

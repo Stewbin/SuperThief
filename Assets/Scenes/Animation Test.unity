@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028334, g: 0.22571328, b: 0.3069217, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028331, g: 0.2257133, b: 0.3069217, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -222,38 +222,6 @@ CharacterController:
   m_CorrespondingSourceObject: {fileID: 5401773341729225753, guid: da581e17ba6097c4aadb454fac211c69, type: 3}
   m_PrefabInstance: {fileID: 7089366033795616455}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &658632554
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 658632550}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ecc061f68cb7a4b17843322abdb8f30b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  joystick: {fileID: 692806081}
-  SpeedMove: 6
-  controller: {fileID: 658632553}
-  GroundDistance: 0.3
-  jumpHeight: 3
-  Ground: {fileID: 1542596357}
-  layerMask:
-    serializedVersion: 2
-    m_Bits: 64
-  isGrounded: 0
-  Pressed: 0
-  anim: {fileID: 832576157}
-  playerModel: {fileID: 832576156}
-  modelGunPoint: {fileID: 0}
-  gunHolder: {fileID: 0}
-  allSkins: []
-  moneyCollected: 0
-  nickname: 
-  nicknameUIText: {fileID: 0}
-  nicknameOffset: {x: 0, y: 2, z: 0}
 --- !u!114 &658632555
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -268,22 +236,56 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _FixedTouchField: {fileID: 1527709975}
   _CameraLook: {fileID: 354376556}
-  _PlayerMove: {fileID: 658632554}
+  _PlayerMove: {fileID: 0}
   _FixedButton: {fileID: 0}
---- !u!114 &692806081 stripped
+--- !u!114 &658632558
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8612095861200080986, guid: da581e17ba6097c4aadb454fac211c69, type: 3}
-  m_PrefabInstance: {fileID: 7089366033795616455}
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 658632550}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45977bbae16431c46a013576a1aea384, type: 3}
+  m_Script: {fileID: 11500000, guid: ecc061f68cb7a4b17843322abdb8f30b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &832576156 stripped
+  joystick: {fileID: 0}
+  SpeedMove: 5
+  controller: {fileID: 658632553}
+  GroundDistance: 0.3
+  jumpHeight: 3
+  Ground: {fileID: 1542596357}
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 64
+  isGrounded: 1
+  Pressed: 0
+  anim: {fileID: 832576157}
+  playerModel: {fileID: 0}
+  modelGunPoint: {fileID: 0}
+  gunHolder: {fileID: 0}
+  allSkins: []
+  moneyCollected: 0
+  camera: {fileID: 2044899160}
+  crosshairA: {fileID: 0}
+  crosshairB: {fileID: 0}
+  nickname: 
+  nicknameUIText: {fileID: 0}
+  nicknameOffset: {x: 0, y: 2, z: 0}
+  step: 0.01
+  maxStepDistance: 0.06
+  rotationStep: 4
+  maxRotationStep: 5
+  smooth: 10
+  speedCurve: 0
+  travelLimit: {x: 0.025, y: 0.025, z: 0.025}
+  bobLimit: {x: 0.01, y: 0.01, z: 0.01}
+  bobExaggeration: 0
+  multiplier: {x: 0, y: 0, z: 0}
+--- !u!1 &751788275 stripped
 GameObject:
-  m_CorrespondingSourceObject: {fileID: 5178081988103532261, guid: da581e17ba6097c4aadb454fac211c69, type: 3}
+  m_CorrespondingSourceObject: {fileID: 9197159966156086572, guid: da581e17ba6097c4aadb454fac211c69, type: 3}
   m_PrefabInstance: {fileID: 7089366033795616455}
   m_PrefabAsset: {fileID: 0}
 --- !u!95 &832576157 stripped
@@ -728,6 +730,48 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4396217105545859567, guid: da581e17ba6097c4aadb454fac211c69, type: 3}
   m_PrefabInstance: {fileID: 7089366033795616455}
   m_PrefabAsset: {fileID: 0}
+--- !u!23 &1542596358
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 751788275}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &1855594224
 GameObject:
   m_ObjectHideFlags: 0
@@ -1032,6 +1076,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!20 &2044899160 stripped
+Camera:
+  m_CorrespondingSourceObject: {fileID: 3501234935341599495, guid: da581e17ba6097c4aadb454fac211c69, type: 3}
+  m_PrefabInstance: {fileID: 7089366033795616455}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &7089366033795616455
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1058,11 +1107,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4396217105545859567, guid: da581e17ba6097c4aadb454fac211c69, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.991
+      value: -1.08
       objectReference: {fileID: 0}
     - target: {fileID: 5178081988103532261, guid: da581e17ba6097c4aadb454fac211c69, type: 3}
       propertyPath: m_Name
       value: boy_rig2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6351366156601705662, guid: da581e17ba6097c4aadb454fac211c69, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7723648201158377226, guid: da581e17ba6097c4aadb454fac211c69, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1070,7 +1123,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7723648201158377226, guid: da581e17ba6097c4aadb454fac211c69, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.007
+      value: 1.9
       objectReference: {fileID: 0}
     - target: {fileID: 7723648201158377226, guid: da581e17ba6097c4aadb454fac211c69, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1110,11 +1163,14 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 3687946088743617073, guid: da581e17ba6097c4aadb454fac211c69, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 658632554}
+      insertIndex: 2
+      addedObject: {fileID: 658632558}
     - targetCorrespondingSourceObject: {fileID: 3687946088743617073, guid: da581e17ba6097c4aadb454fac211c69, type: 3}
       insertIndex: -1
       addedObject: {fileID: 658632555}
+    - targetCorrespondingSourceObject: {fileID: 9197159966156086572, guid: da581e17ba6097c4aadb454fac211c69, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1542596358}
   m_SourcePrefab: {fileID: 100100000, guid: da581e17ba6097c4aadb454fac211c69, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
