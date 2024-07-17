@@ -114,8 +114,8 @@ public class PlayerMove : MonoBehaviourPunCallbacks
 
     void Update()
     {
-        UnityEngine.Debug.Log("Test");
-        UnityEngine.Debug.Log($"Is mine?: {photonView.IsMine}");       
+        Debug.Log("Test");
+        Debug.Log($"Is mine?: {photonView.IsMine}");       
         print($"Is mine?: {photonView.IsMine}");
         Console.WriteLine($"Is mine?: {photonView.IsMine}");
 
