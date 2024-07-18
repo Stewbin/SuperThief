@@ -13,25 +13,25 @@ public class Test_PlayerHUD : MonoBehaviour, IPointerDownHandler, IPointerUpHand
     [Header("Gun Settings")]
     [SerializeField] public int ReservedAmmoCapacity = 270;
 
-    [SerializeField]  public TextMeshProUGUI currentAmmoInClipText;
-    [SerializeField]  public TextMeshProUGUI currentAmmoText;
+    // [SerializeField]  public TextMeshProUGUI currentAmmoInClipText;
+    // [SerializeField]  public TextMeshProUGUI currentAmmoText;
 
     // Variables that change throughout the core game loop
     private int _currentAmmoInClip;
     private int _ammoInReserve;
 
     // Boolz
-    private bool _isShootButtonDown;
-    private bool _isShootButtonUp;
-    private bool _isReloadButtonPressed;
-    private bool _isHitscan;
+    [SerializeField] private bool _isShootButtonPressed;
+    [SerializeField] private bool _wasShootButtonDown; 
+    // True if pressed last frame ^^^
+    [SerializeField] private bool _isReloadButtonPressed;
+    
 
     void Start()
     {
         _currentAmmoInClip = GunSystem.CurrentAmmo;
         _ammoInReserve = ReservedAmmoCapacity;
 
-        _isHitscan = GunSystem.SelectedGun.IsHitscan;
     }
 
     void Update()
@@ -43,19 +43,19 @@ public class Test_PlayerHUD : MonoBehaviour, IPointerDownHandler, IPointerUpHand
         {
             case FireType.FullyAutomatic:
             {
-                if(_isShootButtonDown)
+                if(_isShootButtonPressed)
                     GunSystem.StartFiring();
 
                 if(GunSystem.IsFiring)
                     GunSystem.UpdateFiring();
 
-                if(_isShootButtonUp)
+                if(!_isShootButtonPressed && _wasShootButtonDown)
                     GunSystem.StopFiring();
                 break;
             }
             case FireType.SemiAutomatic:
             {
-                if(_isShootButtonDown)
+                if(_isShootButtonPressed && !_wasShootButtonDown)
                     GunSystem.StartFiring();
 
                 if(GunSystem.IsFiring)
@@ -67,7 +67,7 @@ public class Test_PlayerHUD : MonoBehaviour, IPointerDownHandler, IPointerUpHand
             }
             case FireType.SingleShot:
             {
-                if(_isShootButtonDown)
+                if(_isShootButtonPressed && !_wasShootButtonDown)
                 {
                     GunSystem.StartFiring();
                     GunSystem.StopFiring();
@@ -84,12 +84,14 @@ public class Test_PlayerHUD : MonoBehaviour, IPointerDownHandler, IPointerUpHand
             Reload();
         }
         //Display UI Info about ammo in clip and reserve; 
-        currentAmmoInClipText.text = _currentAmmoInClip.ToString();
-        currentAmmoText.text = _ammoInReserve.ToString();
+    //     currentAmmoInClipText.text = _currentAmmoInClip.ToString();
+    //     currentAmmoText.text = _ammoInReserve.ToString();
     }
 
     public void Reload()
     {
+        print("rElOaDiNg");
+
         int amountNeeded = GunSystem.SelectedGun.ClipSize - _currentAmmoInClip;
         if (amountNeeded >= _ammoInReserve)
         {
@@ -105,8 +107,10 @@ public class Test_PlayerHUD : MonoBehaviour, IPointerDownHandler, IPointerUpHand
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        _isShootButtonDown = eventData.pointerCurrentRaycast.gameObject.CompareTag("ShootButton");
-        
+        // Shoot button
+        _wasShootButtonDown = _isShootButtonPressed;
+        _isShootButtonPressed = eventData.pointerCurrentRaycast.gameObject.CompareTag("ShootButton");
+
         if (eventData.pointerCurrentRaycast.gameObject.CompareTag("ReloadButton"))
         {
             _isReloadButtonPressed = true;
@@ -115,8 +119,10 @@ public class Test_PlayerHUD : MonoBehaviour, IPointerDownHandler, IPointerUpHand
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        _isShootButtonUp = eventData.pointerCurrentRaycast.gameObject.CompareTag("ShootButton");
+        // Shoot button
+        _isShootButtonPressed = !eventData.pointerCurrentRaycast.gameObject.CompareTag("ShootButton");
         
+
         if (eventData.pointerCurrentRaycast.gameObject.CompareTag("ReloadButton"))
         {
             _isReloadButtonPressed = false;
