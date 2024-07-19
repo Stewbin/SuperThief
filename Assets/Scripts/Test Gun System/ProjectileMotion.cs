@@ -18,6 +18,8 @@ public class ProjectileMotion : MonoBehaviour
         // Proper directions
         y_Velocity = Vector3.up * transform.forward.y;
         xz_Velocity = transform.forward - y_Velocity;
+        Debug.Assert(Vector3.Dot(xz_Velocity, transform.forward) > 0);
+
         // Angle
         float theta = Vector3.Angle(xz_Velocity, transform.forward);
 
@@ -29,7 +31,7 @@ public class ProjectileMotion : MonoBehaviour
     private void Update()
     {
         Vector3 targetPosition = transform.position;
-        
+
         // Forward motion
         targetPosition += xz_Velocity * Time.deltaTime;
         
@@ -44,6 +46,7 @@ public class ProjectileMotion : MonoBehaviour
     
     private void OnCollisionEnter()
     {
+        print("Touched something, gunna die now!");
         Destroy(gameObject);
         // TODO: Add back bullet to pool instead of destroying
     }
@@ -52,4 +55,16 @@ public class ProjectileMotion : MonoBehaviour
     // {
     //     // TODO: Implement playing sounds while the projectile flies
     // }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.blue;
+        Gizmos.DrawRay(transform.position, transform.forward);
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawRay(transform.position, y_Velocity - (this.Gravity * Vector3.up));
+
+        Gizmos.color = Color.green;
+        Gizmos.DrawRay(transform.position, xz_Velocity);
+    }
 }

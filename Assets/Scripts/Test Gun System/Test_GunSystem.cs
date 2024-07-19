@@ -71,6 +71,7 @@ public class Test_GunSystem : MonoBehaviourPunCallbacks
     public void StopFiring()
     {
         IsFiring = false;
+        print("Stop pewing");
     }
 
     private void FireBullet()
