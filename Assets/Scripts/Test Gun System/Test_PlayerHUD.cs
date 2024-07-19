@@ -21,8 +21,8 @@ public class Test_PlayerHUD : MonoBehaviour, IPointerDownHandler, IPointerUpHand
     private int _ammoInReserve;
 
     // Boolz
-    [SerializeField] private bool _isShootButtonPressed;
-    [SerializeField] private bool _wasShootButtonDown; 
+    [SerializeField] private bool _shootDownPress;
+    [SerializeField] private bool _shootUpPress; 
     // True if pressed last frame ^^^
     [SerializeField] private bool _isReloadButtonPressed;
     
@@ -43,19 +43,19 @@ public class Test_PlayerHUD : MonoBehaviour, IPointerDownHandler, IPointerUpHand
         {
             case FireType.FullyAutomatic:
             {
-                if(_isShootButtonPressed)
+                if(_shootDownPress)
                     GunSystem.StartFiring();
 
                 if(GunSystem.IsFiring)
                     GunSystem.UpdateFiring();
 
-                if(!_isShootButtonPressed && _wasShootButtonDown)
+                if(_shootUpPress)
                     GunSystem.StopFiring();
                 break;
             }
             case FireType.SemiAutomatic:
             {
-                if(_isShootButtonPressed && !_wasShootButtonDown)
+                if(_shootDownPress)
                     GunSystem.StartFiring();
 
                 if(GunSystem.IsFiring)
@@ -67,7 +67,7 @@ public class Test_PlayerHUD : MonoBehaviour, IPointerDownHandler, IPointerUpHand
             }
             case FireType.SingleShot:
             {
-                if(_isShootButtonPressed && !_wasShootButtonDown)
+                if(_shootDownPress)
                 {
                     GunSystem.StartFiring();
                     GunSystem.StopFiring();
@@ -76,6 +76,9 @@ public class Test_PlayerHUD : MonoBehaviour, IPointerDownHandler, IPointerUpHand
             }
             
         }
+
+        _shootDownPress = false;
+        _shootUpPress = false;;
         #endregion
 
         // Check for reload button press
@@ -108,8 +111,11 @@ public class Test_PlayerHUD : MonoBehaviour, IPointerDownHandler, IPointerUpHand
     public void OnPointerDown(PointerEventData eventData)
     {
         // Shoot button
-        _wasShootButtonDown = _isShootButtonPressed;
-        _isShootButtonPressed = eventData.pointerCurrentRaycast.gameObject.CompareTag("ShootButton");
+        if(eventData.pointerCurrentRaycast.gameObject.CompareTag("ShootButton"))
+        {
+            _shootDownPress = true;
+            _shootUpPress = false;
+        }
 
         if (eventData.pointerCurrentRaycast.gameObject.CompareTag("ReloadButton"))
         {
@@ -120,7 +126,11 @@ public class Test_PlayerHUD : MonoBehaviour, IPointerDownHandler, IPointerUpHand
     public void OnPointerUp(PointerEventData eventData)
     {
         // Shoot button
-        _isShootButtonPressed = !eventData.pointerCurrentRaycast.gameObject.CompareTag("ShootButton");
+        if(eventData.pointerCurrentRaycast.gameObject.CompareTag("ShootButton"))
+        {
+            _shootDownPress = false;
+            _shootUpPress = true;
+        }
         
 
         if (eventData.pointerCurrentRaycast.gameObject.CompareTag("ReloadButton"))

@@ -39,10 +39,10 @@ public class PlayerMove : MonoBehaviourPunCallbacks
 
     [Header("Detect Player Implementation")]
 
-    public Camera camera; 
+    public Camera camera;
 
-    public GameObject crosshairA; 
-    public GameObject crosshairB; 
+    public GameObject crosshairA;
+    public GameObject crosshairB;
 
     [Header("Name On Player Implementations Test")]
     [SerializeField] public string nickname;
@@ -86,12 +86,11 @@ public class PlayerMove : MonoBehaviourPunCallbacks
     public void Awake()
     {
         instance = this;
-        Debug.Log($"Is mine?: {photonView.IsMine}");
+
     }
 
     void Start()
     {
-        Debug.Log($"Is mine?: {photonView.IsMine}");
         if (photonView.IsMine)
         {
             controller = GetComponent<CharacterController>();
@@ -99,8 +98,8 @@ public class PlayerMove : MonoBehaviourPunCallbacks
             photonView.RPC("SetNicknameUI", RpcTarget.All, PlayerPrefs.GetString("USERNAME"));
             nicknameUIText.transform.position = transform.position + nicknameOffset;
             moneyCollected = 0;
-            crosshairB.SetActive(false); 
-            crosshairA.SetActive(true); 
+            crosshairB.SetActive(false);
+            crosshairA.SetActive(true);
         }
         else
         {
@@ -114,15 +113,11 @@ public class PlayerMove : MonoBehaviourPunCallbacks
 
     void Update()
     {
-        Debug.Log("Test");
-        Debug.Log($"Is mine?: {photonView.IsMine}");       
-        print($"Is mine?: {photonView.IsMine}");
-        Console.WriteLine($"Is mine?: {photonView.IsMine}");
 
         if (photonView.IsMine)
         {
             isGrounded = Physics.CheckSphere(Ground.position, GroundDistance, layerMask);
-            Debug.Log(isGrounded);
+            Debug.Log($"Is grounded is {isGrounded}");
             if (isGrounded && velocity.y < 0)
             {
                 velocity.y = -2f;
@@ -155,7 +150,7 @@ public class PlayerMove : MonoBehaviourPunCallbacks
 
             CompositePositionRotation();
             //detect [layer raycast
-            DetectPlayer(); 
+            DetectPlayer();
         }
     }
 
@@ -224,24 +219,25 @@ public class PlayerMove : MonoBehaviourPunCallbacks
         bobEulerRotation.z = (walkInput != Vector2.zero ? multiplier.z * curveCos * walkInput.x : 0);
     }
 
-    public void DetectPlayer() 
+    public void DetectPlayer()
     {
 
         Ray ray = camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
         ray.origin = camera.transform.position;
 
-          if (Physics.Raycast(ray, out RaycastHit hit))
+        if (Physics.Raycast(ray, out RaycastHit hit))
         {
             if (hit.collider.gameObject.CompareTag("Player") && !hit.collider.gameObject.GetPhotonView().IsMine)
             {
-                UIController.instance.detectPlayerText.text = "Player has been detected"; 
-                crosshairB.SetActive(true); 
-                crosshairA.SetActive(false); 
-            } else 
+                UIController.instance.detectPlayerText.text = "Player has been detected";
+                crosshairB.SetActive(true);
+                crosshairA.SetActive(false);
+            }
+            else
             {
-                UIController.instance.detectPlayerText.text = "Player has not been detected yet"; 
-                crosshairB.SetActive(false); 
-                crosshairA.SetActive(true); 
+                UIController.instance.detectPlayerText.text = "Player has not been detected yet";
+                crosshairB.SetActive(false);
+                crosshairA.SetActive(true);
             }
 
         }
