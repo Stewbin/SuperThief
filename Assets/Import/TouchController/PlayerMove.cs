@@ -91,7 +91,6 @@ public class PlayerMove : MonoBehaviourPunCallbacks
 
     void Start()
     {
-        Debug.Log($"Is mine?: {photonView.IsMine}");
         if (photonView.IsMine)
         {
             controller = GetComponent<CharacterController>();
@@ -114,10 +113,6 @@ public class PlayerMove : MonoBehaviourPunCallbacks
 
     void Update()
     {
-        UnityEngine.Debug.Log("Test");
-        UnityEngine.Debug.Log($"Is mine?: {photonView.IsMine}");       
-        print($"Is mine?: {photonView.IsMine}");
-        Console.WriteLine($"Is mine?: {photonView.IsMine}");
 
         if (photonView.IsMine)
         {
