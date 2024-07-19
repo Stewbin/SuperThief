@@ -224,15 +224,16 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
 
 
         photonView.RPC("ShootSFX", RpcTarget.All);
-        
 
         //shoot sfx 
        // PlayerSoundManager.instance.PlayShootSFX_RPC(shootSFXIndex); 
 
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
-            StartCoroutine(SpawnTrail(ray.origin, hit.point, BulletSpeed));
-
+            // Bullet VFX
+            Transform currentGun = allGuns[selectedGun].transform;
+            photonView.RPC(nameof(ShootVFX), RpcTarget.All, currentGun.position, hit.point);
+            
             if (hit.collider.gameObject.CompareTag("Player") && !hit.collider.gameObject.GetPhotonView().IsMine)
             {
                 PhotonNetwork.Instantiate(playerHitImpact.name, hit.point, Quaternion.identity);
@@ -410,9 +411,9 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
     public void OnPointerUp(PointerEventData eventData)
     {
        if (eventData.pointerCurrentRaycast.gameObject.CompareTag("ShootButton"))
-    {
+        {
         _isShootButtonPressed = false;
-    }
+        }
         else if (eventData.pointerCurrentRaycast.gameObject.CompareTag("ReloadButton"))
         {
             _isReloadButtonPressed = false;
@@ -468,100 +469,109 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
     }
 
 
-#region Show Elimination Message (Only For Killer)
-[PunRPC]
-private void ShowEliminationMessage(string killer, string victim)
-{
-    if (photonView.IsMine && killer == photonView.Owner.NickName)
+    #region Show Elimination Message (Only For Killer)
+    [PunRPC]
+    private void ShowEliminationMessage(string killer, string victim)
     {
-        StartCoroutine(DisplayEliminationMessage(victim));
+        if (photonView.IsMine && killer == photonView.Owner.NickName)
+        {
+            StartCoroutine(DisplayEliminationMessage(victim));
+            print("Eliminated " + victim);
+        }
+    }
+
+    private IEnumerator DisplayEliminationMessage(string victim)
+    {
+        UIController.instance.eliminationMessage.gameObject.SetActive(true);
+        UIController.instance.eliminationMessage.text = "Eliminated " + victim;
         print("Eliminated " + victim);
+
+        yield return new WaitForSeconds(5f);
+
+        UIController.instance.eliminationMessage.gameObject.SetActive(false);
     }
-}
 
-private IEnumerator DisplayEliminationMessage(string victim)
-{
-    UIController.instance.eliminationMessage.gameObject.SetActive(true);
-    UIController.instance.eliminationMessage.text = "Eliminated " + victim;
-    print("Eliminated " + victim);
-
-    yield return new WaitForSeconds(5f);
-
-    UIController.instance.eliminationMessage.gameObject.SetActive(false);
-}
-
-[PunRPC]
-private void ShowEliminationMessageRPC(string damager, string victim)
-{
-    // Display elimination message on all clients
-    UIController.instance.ShowEliminationMessage(damager, victim);
-    
-    // Check if the local player is the damager
-    if (photonView.Owner.NickName == damager)
+    [PunRPC]
+    private void ShowEliminationMessageRPC(string damager, string victim)
     {
-        UIController.instance.ShowLocalEliminationMessage(victim);
+        // Display elimination message on all clients
+        UIController.instance.ShowEliminationMessage(damager, victim);
+        
+        // Check if the local player is the damager
+        if (photonView.Owner.NickName == damager)
+        {
+            UIController.instance.ShowLocalEliminationMessage(victim);
+        }
     }
-}
 
 
-#endregion Show Elimination Message (Only For Killer)
+    #endregion Show Elimination Message (Only For Killer)
 
 
-#region Show Hit Marker
+    #region Show Hit Marker
 
-public void HitMarkerActive()
-{
-hitMarker.SetActive(true); 
-damageIndicator.gameObject.SetActive(true); 
-}
-public void HitMarkerInActive()
-{
+    public void HitMarkerActive()
+    {
+    hitMarker.SetActive(true); 
+    damageIndicator.gameObject.SetActive(true); 
+    }
+    public void HitMarkerInActive()
+    {
 
-hitMarker.SetActive(false); 
-damageIndicator.gameObject.SetActive(false); 
- 
+    hitMarker.SetActive(false); 
+    damageIndicator.gameObject.SetActive(false); 
+    
 
-}
+    }
 
-public void PlayHitMarkerSoundFX(){
+    public void PlayHitMarkerSoundFX(){
 
-if(playHitMarker == true)
-{
-    hitMarkerAudioSource.Play(); 
-} 
-else 
-{
-hitMarkerAudioSource.Stop(); 
-}
+    if(playHitMarker == true)
+    {
+        hitMarkerAudioSource.Play(); 
+    } 
+    else 
+    {
+        hitMarkerAudioSource.Stop(); 
+    }
 
-}
+    }
 
-     [PunRPC]
+    [PunRPC]
     public void ShootSFX()
     {
         gunShootSource.Play(); 
     }
 
 
-#endregion Show Hit Marker
+    #endregion Show Hit Marker
 
-    #region Create and Move Bullet Trail
-    private IEnumerator SpawnTrail(Vector3 SpawnPoint, Vector3 HitDestination, float BulletSpeed)
+    #region Shoot VFX
+    
+    [PunRPC]
+    public void ShootVFX(Vector3 spawnPoint, Vector3 hitDestination)
     {
-        GameObject trail = Instantiate(BulletTrail, SpawnPoint, Quaternion.identity);
+        StartCoroutine(SpawnTrail(spawnPoint, hitDestination, BulletSpeed));
+    }
+
+    #region Bullet Trail
+    private IEnumerator SpawnTrail(Vector3 spawnPoint, Vector3 hitDestination, float bulletSpeed)
+    {
+        GameObject trail = Instantiate(BulletTrail, spawnPoint, Quaternion.identity);
         Debug.Assert(trail != null);
-        TrailRenderer tr = trail.GetComponent<TrailRenderer>();
-        Vector3 startPosition = camera.transform.position;
-        float hitDistance = Vector3.Distance(startPosition, HitDestination);
+        TrailRenderer renderer = trail.GetComponent<TrailRenderer>();
+        float hitDistance = Vector3.Distance(spawnPoint, hitDestination);
         float remainingDistance = hitDistance;
 
         while(remainingDistance > 0)
         {
-            trail.transform.position = Vector3.Lerp(startPosition, HitDestination, 1 - (remainingDistance / hitDistance));
-            remainingDistance -= Time.deltaTime * BulletSpeed;
+            trail.transform.position = Vector3.Lerp(spawnPoint, hitDestination, 1 - (remainingDistance / hitDistance));
+            remainingDistance -= Time.deltaTime * bulletSpeed;
             yield return null;
         }
-        Destroy(trail, tr.time);
+        Destroy(trail, renderer.time);
     }
     #endregion
+
+    #endregion 
 }
