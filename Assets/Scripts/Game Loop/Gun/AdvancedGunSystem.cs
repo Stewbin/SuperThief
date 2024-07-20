@@ -551,6 +551,7 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
     [PunRPC]
     public void ShootVFX(Vector3 spawnPoint, Vector3 hitDestination)
     {
+        print("Peewww---Kabooosh!");
         StartCoroutine(SpawnTrail(spawnPoint, hitDestination, BulletSpeed));
     }
 

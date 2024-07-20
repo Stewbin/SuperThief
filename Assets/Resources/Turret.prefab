@@ -127,6 +127,7 @@ GameObject:
   - component: {fileID: 1542332840061911162}
   - component: {fileID: 2059524738617506577}
   - component: {fileID: 3285692416628020865}
+  - component: {fileID: 2303123319649424921}
   m_Layer: 0
   m_Name: Bottom - bottom_1_high_bottom_1_0
   m_TagString: Untagged
@@ -199,6 +200,28 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &2303123319649424921
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5730360046247614764}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 2225788921896173467, guid: 95c2f8250c46c3c4b9e7a4115962b3e5, type: 3}
 --- !u!1 &5907566231499382906
 GameObject:
   m_ObjectHideFlags: 0
@@ -210,6 +233,7 @@ GameObject:
   - component: {fileID: 64206452743751069}
   - component: {fileID: 3945413631351231641}
   - component: {fileID: 7256372202475440564}
+  - component: {fileID: 1937473519031065685}
   m_Layer: 0
   m_Name: Head - high_turret_1_0
   m_TagString: Untagged
@@ -225,7 +249,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5907566231499382906}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
   m_LocalPosition: {x: -0.10400011, y: 1.2150002, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -283,6 +307,28 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &1937473519031065685
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5907566231499382906}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -8099705334291674580, guid: 95c2f8250c46c3c4b9e7a4115962b3e5, type: 3}
 --- !u!1 &6215102997143404739
 GameObject:
   m_ObjectHideFlags: 0
@@ -377,11 +423,9 @@ MonoBehaviour:
   _shootOrigin: {fileID: 2469682193838296346}
   _advancedGunSystem: {fileID: 7207960205750531284}
   RayLength: 5
-  StartColor: {r: 1, g: 1, b: 1, a: 1}
-  EndColor: {r: 1, g: 0, b: 0, a: 1}
-  FOV: 360
+  FOV: 60
   TurnSpeed: 2
-  AggroTime: 0
+  AggroTime: 5
 --- !u!114 &7207960205750531284
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -394,7 +438,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56928e5c3cecb344596cfdea7d9e71b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  camera: {fileID: 4046264382887669243, guid: e4d280b49a833fb45ab55d2e81dc9f68, type: 3}
+  camera: {fileID: 8717419405488362542}
   bulletImpact: {fileID: 8520776430649704606, guid: 22c69eb8035d2e146b10bfea805102cf, type: 3}
   muzzleDisplayTime: 0
   muzzleCounter: 0
@@ -470,8 +514,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7124032222901970271}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.4120003, y: 0.01639998, z: 0.011299852}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 1.4080955, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -572,12 +616,12 @@ LineRenderer:
       m_NumAlphaKeys: 2
     numCornerVertices: 0
     numCapVertices: 0
-    alignment: 0
+    alignment: 1
     textureMode: 0
     textureScale: {x: 1, y: 1}
     shadowBias: 0.5
     generateLightingData: 0
   m_MaskInteraction: 0
-  m_UseWorldSpace: 1
+  m_UseWorldSpace: 0
   m_Loop: 0
   m_ApplyActiveColorSpace: 1
