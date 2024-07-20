@@ -14,11 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ClipSize: 5
   BulletsPerSecond: 2
-  BulletSpeed: 50
+  BulletSpeed: 1
   Damage: 100
   IsHitscan: 0
   FiringType: 2
   GunPrefab: {fileID: 6767740743508458349, guid: f31600afa4842134ab0c30069a6b8fa1, type: 3}
+  GunBarrel: {fileID: 0}
   BulletImpact: {fileID: 0}
   BulletTrail: {fileID: 0}
   BulletPrefab: {fileID: 0}
