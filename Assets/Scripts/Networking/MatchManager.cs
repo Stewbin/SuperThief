@@ -586,7 +586,7 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
             }
         } 
 
-        UIController.instance.winnerText.text = "Winner: " + winner.name + " with $" + winner.money;
+        UIController.instance.winnerText.text =  winner.name + " won the match with " + winner.money;
     }
 }
 
