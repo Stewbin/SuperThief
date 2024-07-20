@@ -46,6 +46,8 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
 
     public AudioSource gunShootSource;
 
+    public AudioSource moneyCollectSource;
+
     [Header("Testing")]
 
     public string damagerText;
@@ -75,6 +77,8 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
 
 
     public static AdvancedGunSystem instance;
+    private int currentMoney;
+
 
     public void Awake()
     {
@@ -149,52 +153,16 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
                         selectedGun = allGuns.Length - 1;
                     }
                 }
-
                 if (prevSelectedGun != selectedGun)
                 {
                     photonView.RPC("SetGun", RpcTarget.All, selectedGun);
                 }
             }
 
+            // Handle continuous shooting
             if (_isShootButtonPressed)
             {
-                if (allGuns[selectedGun].isAutomatic)
-                {
-                    if (Time.time > allGuns[selectedGun].fireRate)
-                    {
-                        Shoot();
-                        allGuns[selectedGun].fireRate = Time.time + allGuns[selectedGun].fireRate;
-                    }
-                }
-                else
-                {
-                    if (_isShootButtonPressed)
-                    {
-                        if (Time.time > allGuns[selectedGun].fireRate)
-                        {
-                            Shoot();
-                            allGuns[selectedGun].fireRate = Time.time + allGuns[selectedGun].fireRate;
-                        }
-                    }
-                }
-            }
-
-            if (!overHeated)
-            {
-                heatCounter -= coolRate * Time.deltaTime;
-            }
-            else
-            {
-                heatCounter -= overheatCoolRate * Time.deltaTime;
-                if (heatCounter <= 0)
-                {
-                    overHeated = false;
-                }
-            }
-
-            if (heatCounter < 0)
-            {
-                heatCounter = 0f;
+                TryShoot();
             }
 
             for (int i = 0; i < allGuns.Length; i++)
@@ -212,6 +180,28 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
         }
     }
 
+    private void TryShoot()
+    {
+        Gun currentGun = allGuns[selectedGun];
+
+        if (currentGun.isAutomatic)
+        {
+            if (Time.time - currentGun.lastFireTime >= currentGun.fireRate)
+            {
+                Shoot();
+                currentGun.lastFireTime = Time.time;
+            }
+        }
+        else
+        {
+            if (Time.time - currentGun.lastFireTime >= currentGun.fireRate)
+            {
+                Shoot();
+                currentGun.lastFireTime = Time.time;
+            }
+        }
+    }
+
     public void Shoot()
     {
         Debug.Log("Shoot() just got called");
@@ -225,6 +215,7 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
 
 
         photonView.RPC("ShootSFX", RpcTarget.All);
+
 
         //shoot sfx 
         // PlayerSoundManager.instance.PlayShootSFX_RPC(shootSFXIndex); 
@@ -293,13 +284,10 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
                 currentHealth = 0;
                 PlayerSpawner.instance.Die(damager);
                 MatchManager.instance.UpdateStatsSend(actor, 0, 1);
-                //Elimination text     
-                //UIController.instance.ShowKillMessage(damager, photonView.Owner.NickName);
+
+
 
                 string victimName = photonView.Owner.NickName;
-                // Send RPC to show elimination message on all clients
-                PhotonView.Find(actor).RPC("ShowEliminationMessageRPC", RpcTarget.All, damager, victimName);
-
 
 
 
@@ -313,10 +301,14 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
 
                 damagerText = photonView.Owner.NickName;
 
-                photonView.RPC("ShowEliminationMessage", RpcTarget.All, damager, photonView.Owner.NickName);
 
                 //
 
+
+
+            }
+            else
+            {
                 UIController.instance.healthSlider.value = currentHealth;
                 photonView.RPC("UpdateHealthBarRPC", RpcTarget.All, currentHealth);
 
@@ -505,9 +497,7 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
             UIController.instance.ShowLocalEliminationMessage(victim);
         }
     }
-
-
-    #endregion Show Elimination Message (Only For Killer)
+    #endregion
 
 
     #region Show Hit Marker
@@ -537,24 +527,17 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
         {
             hitMarkerAudioSource.Stop();
         }
-
-    }
-
-    [PunRPC]
-    public void ShootSFX()
-    {
-        gunShootSource.Play();
     }
 
 
-    #endregion Show Hit Marker
+        #endregion Show Elimination Message (Only For Killer)
+
 
     #region Shoot VFX
 
     [PunRPC]
     public void ShootVFX(Vector3 spawnPoint, Vector3 hitDestination)
     {
-        print("Peewww---Kabooosh!");
         StartCoroutine(SpawnTrail(spawnPoint, hitDestination, BulletSpeed));
     }
 
@@ -575,7 +558,57 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
         }
         Destroy(trail, renderer.time);
     }
-    #endregion
+    #endregion Bullet Trail
 
-    #endregion 
+    #endregion Shoot VFX
+
+
+
+    #region Automatic Firing 
+
+    public void AutoFire()
+    {
+        Ray ray = camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
+        ray.origin = camera.transform.position;
+
+
+        if (Physics.Raycast(ray, out RaycastHit hit))
+        {
+            if (hit.collider.gameObject.CompareTag("Player") && !hit.collider.gameObject.GetPhotonView().IsMine)
+            {
+
+                print("A player has been detected, auto fire can happen");
+                Shoot();
+            }
+        }
+    }
+
+
+    #endregion Automatic Firing 
+
+    #region Collect Money 
+
+    [PunRPC]
+    public void CollectMoney(int amount)
+    {
+        if (photonView.IsMine)
+        {
+            // Update local money
+            // You might want to add a currentMoney variable if it doesn't exist
+            currentMoney += amount;
+
+            // Update the MatchManager
+            MatchManager.instance.UpdateStatsSend(photonView.Owner.ActorNumber, 2, amount); // 2 for money stat
+
+            // Update UI if necessary
+            //UpdateMoneyDisplay();
+            UIController.instance.moneyText.text = currentMoney.ToString();
+
+            //make a sopund when money is collected
+            moneyCollectSource.Play();
+        }
+    }
+
+    #endregion Collect Money
+
 }
