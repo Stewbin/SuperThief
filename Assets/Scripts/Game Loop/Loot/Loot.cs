@@ -18,9 +18,13 @@ public class Loot : MonoBehaviourPunCallbacks
     public int amount;
     public GameObject medkitMesh;
     public GameObject ammoMesh;
-
     public GameObject moneyMesh; 
     private bool isCollected = false;
+    [Header("Make items hover")]
+    public float MaxHoverHeight;
+    public float HoverFrequency;
+    public float SpinFrequency;
+    [SerializeField] private new ParticleSystem particleSystem;
 
     private void OnTriggerEnter(Collider other)
     {
@@ -98,6 +102,38 @@ public class Loot : MonoBehaviourPunCallbacks
             }
         }
     }
+
+    #region Loot hovering
+    public override void OnEnable()
+    {
+        // Don't override 
+        base.OnEnable();
+
+        // Find ground
+        RaycastHit hitInfo;
+        float floorCoords = Physics.Raycast(transform.position, -transform.up, out hitInfo, MaxHoverHeight, LayerMask.GetMask("Ground"))
+            ? hitInfo.point.y
+            : HoverFrequency;
+        float peakCoords = transform.position.y + MaxHoverHeight;
+        StartCoroutine(Hover(floorCoords, peakCoords));
+    }
+    
+    [PunRPC]
+    private IEnumerator Hover(float minY, float maxY)
+    {
+        while(true)
+        {
+            transform.Rotate(0, Time.deltaTime * SpinFrequency, 0);
+            
+            Vector3 targetPosition = transform.position;
+            targetPosition.y = Mathf.Lerp(minY, maxY, Time.deltaTime * HoverFrequency * Time.time);
+            transform.position = targetPosition;
+
+            yield return null;
+        }
+    }
+    
+    #endregion
 
     [PunRPC]
     private void SyncLootRespawn()
