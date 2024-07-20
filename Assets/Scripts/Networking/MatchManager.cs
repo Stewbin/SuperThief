@@ -401,6 +401,17 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
         }
 
         UIController.instance.endScreen.SetActive(true);
+
+        //deactivate all other UI components 
+        UIController.instance.deathScreen.SetActive(false);
+        UIController.instance.leaderboardComponent.SetActive(false);
+        UIController.instance.healthComponent.SetActive(false);
+        UIController.instance.statsComponent.SetActive(false);
+        UIController.instance.GunComponent.SetActive(false);
+        UIController.instance.timeComponent.SetActive(false);
+        UIController.instance.optionComponent.SetActive(false);
+
+
         //ShowLeaderBoard(); 
         DetermineWinner();
 
@@ -572,5 +583,9 @@ public class PlayerInfo
         deaths = _deaths;
         money = _money;
         rank = 0; // Initialize rank to 0
+
+
+
+
     }
 }

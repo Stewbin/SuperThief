@@ -93,6 +93,7 @@ GameObject:
   m_Component:
   - component: {fileID: 703396894140977102}
   - component: {fileID: 4046264382887669243}
+  - component: {fileID: 4203929253908935030}
   m_Layer: 0
   m_Name: Camera
   m_TagString: Untagged
@@ -166,6 +167,18 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
+--- !u!114 &4203929253908935030
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4247776965218476426}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3c7b95da9b148a4c827e76ef7ea983b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4894686792287687563
 GameObject:
   m_ObjectHideFlags: 0
@@ -360,7 +373,18 @@ MonoBehaviour:
   adsSpeed: 5
   adsOutPoint: {fileID: 0}
   adsInPoint: {fileID: 0}
-  shootSFXIndex: 0
+  gunShootSource: {fileID: 0}
+  moneyCollectSource: {fileID: 0}
+  damagerText: 
+  currentMoney: 0
+  isPlayerDead: 0
+  hitMarker: {fileID: 0}
+  hitMarkerAudioSource: {fileID: 0}
+  playHitMarker: 0
+  damageIndicator: {fileID: 0}
+  damageTest: 0
+  targetPlayerName: 
+  targetPhotonView: {fileID: 0}
 --- !u!114 &5347319975950949186
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -381,6 +405,7 @@ MonoBehaviour:
   shotDamage: 10
   currentAmmoInClip: 10
   adsZoom: 0.1
+  lastFireTime: 0
 --- !u!1 &5115099225210043503
 GameObject:
   m_ObjectHideFlags: 0
