@@ -198,10 +198,10 @@ public class ShopManager : MonoBehaviour, IStoreListener
         case "com.superthief.diamonds.basic":
             diamondsToAdd = 500; 
             break;
-        case "com.superthief.diamonds.rare":
+        case "com.superthief.diamonds.advanced":
             diamondsToAdd = 1200; 
             break;
-        case "com.superthief.diamonds.epic":
+        case "com.superthief.diamonds.pro":
             diamondsToAdd = 2500; 
             break;
         default:

@@ -497,7 +497,7 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
             UIController.instance.ShowLocalEliminationMessage(victim);
         }
     }
-    #endregion
+    #endregion Show Elimination Message (Only For Killer)
 
 
     #region Show Hit Marker
@@ -530,9 +530,6 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
     }
 
 
-        #endregion Show Elimination Message (Only For Killer)
-
-
     #region Shoot VFX
 
     [PunRPC]
@@ -557,7 +554,7 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
             yield return null;
         }
         Destroy(trail, renderer.time);
-    }
+    
     #endregion Bullet Trail
 
     #endregion Shoot VFX
@@ -582,8 +579,6 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
             }
         }
     }
-
-
     #endregion Automatic Firing 
 
     #region Collect Money 
@@ -612,3 +607,4 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
     #endregion Collect Money
 
 }
+
