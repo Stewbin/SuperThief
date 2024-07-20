@@ -42,6 +42,8 @@ public class Menu : MonoBehaviour
         shopPanel.SetActive(false); 
 
         lobbyMusic.SetActive(true);
+
+        AdManager.Instance.ShowBannerAd(); 
     }
     public void Play(){
         //CLick Play to start playing

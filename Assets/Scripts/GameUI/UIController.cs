@@ -33,6 +33,7 @@ public class UIController : MonoBehaviour
   public GameObject endScreen;
 
   public TMP_Text waitingText; 
+  public TMP_Text waitingTimerText; 
 
   public TMP_Text respawnText; 
 
@@ -40,6 +41,9 @@ public class UIController : MonoBehaviour
   public TMP_Text magazineSize; 
   
   public TMP_Text timerText; 
+
+  
+  public TMP_Text winnerText; 
 
   public TMP_Text localEliminationMessage;
 
@@ -70,6 +74,8 @@ public class UIController : MonoBehaviour
   public TMP_Text eliminationMessage;
 
   public float eliminationMessageDuration = 3f; 
+
+  public GameObject optionComponent; 
 
   
   public TMP_Text debugMessage;
