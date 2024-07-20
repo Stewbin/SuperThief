@@ -535,23 +535,23 @@ hitMarkerAudioSource.Stop();
 #endregion Show Hit Marker
 
 #region Create and Move Bullet Trail
-    private IEnumerator SpawnTrail(Vector3 SpawnPoint, Vector3 HitDestination, float BulletSpeed)
-    {
-        GameObject trail = Instantiate(BulletTrail, SpawnPoint, Quaternion.identity);
-        Debug.Assert(trail != null);
-        TrailRenderer tr = trail.GetComponent<TrailRenderer>();
-        Vector3 startPosition = camera.transform.position;
-        float hitDistance = Vector3.Distance(startPosition, HitDestination);
-        float remainingDistance = hitDistance;
+private IEnumerator SpawnTrail(Vector3 SpawnPoint, Vector3 HitDestination, float BulletSpeed)
+{
+    GameObject trail = PhotonNetwork.Instantiate("BulletTrail", SpawnPoint, Quaternion.identity);
+    Debug.Assert(trail != null);
+    TrailRenderer tr = trail.GetComponent<TrailRenderer>();
+    Vector3 startPosition = camera.transform.position;
+    float hitDistance = Vector3.Distance(startPosition, HitDestination);
+    float remainingDistance = hitDistance;
 
-        while(remainingDistance > 0)
-        {
-            trail.transform.position = Vector3.Lerp(startPosition, HitDestination, 1 - (remainingDistance / hitDistance));
-            remainingDistance -= Time.deltaTime * BulletSpeed;
-            yield return null;
-        }
-        Destroy(trail, tr.time);
+    while(remainingDistance > 0)
+    {
+        trail.transform.position = Vector3.Lerp(startPosition, HitDestination, 1 - (remainingDistance / hitDistance));
+        remainingDistance -= Time.deltaTime * BulletSpeed;
+        yield return null;
     }
+    PhotonNetwork.Destroy(trail);
+}
 #endregion Create and Move Bullet Trail
 
 
