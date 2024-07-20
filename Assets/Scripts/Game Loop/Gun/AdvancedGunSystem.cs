@@ -77,6 +77,8 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
 
 
     public static AdvancedGunSystem instance;
+    private int currentMoney;
+
 
     public void Awake()
     {
@@ -495,7 +497,7 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
             UIController.instance.ShowLocalEliminationMessage(victim);
         }
     }
-    #endregion
+    #endregion Show Elimination Message (Only For Killer)
 
 
     #region Show Hit Marker
@@ -525,132 +527,84 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
         {
             hitMarkerAudioSource.Stop();
         }
-
-
-        #endregion Show Elimination Message (Only For Killer)
-
-
-        #region Show Hit Marker
-
-        public void HitMarkerActive()
-        {
-            hitMarker.SetActive(true);
-            damageIndicator.gameObject.SetActive(true);
-        }
-        public void HitMarkerInActive()
-        {
-
-            hitMarker.SetActive(false);
-            damageIndicator.gameObject.SetActive(false);
-
-            hitMarker.SetActive(false);
-            damageIndicator.gameObject.SetActive(false);
-
-
-        }
-
-        public void PlayHitMarkerSoundFX()
-        {
-            public void PlayHitMarkerSoundFX()
-            {
-
-                if (playHitMarker == true)
-                {
-                    hitMarkerAudioSource.Play();
-                }
-                else
-                {
-                    hitMarkerAudioSource.Stop();
-                }
-
-            }
-
-            [PunRPC]
-            public void ShootSFX()
-            {
-                gunShootSource.Play();
-            }
-
-
-            #endregion Show Hit Marker
-
-            #region Shoot VFX
-
-            [PunRPC]
-            public void ShootVFX(Vector3 spawnPoint, Vector3 hitDestination)
-            {
-                StartCoroutine(SpawnTrail(spawnPoint, hitDestination, BulletSpeed));
-            }
-
-            #region Bullet Trail
-            private IEnumerator SpawnTrail(Vector3 spawnPoint, Vector3 hitDestination, float bulletSpeed)
-            {
-                GameObject trail = Instantiate(BulletTrail, spawnPoint, Quaternion.identity);
-                Debug.Assert(trail != null);
-                TrailRenderer renderer = trail.GetComponent<TrailRenderer>();
-                float hitDistance = Vector3.Distance(spawnPoint, hitDestination);
-                float remainingDistance = hitDistance;
-
-                while (remainingDistance > 0)
-                {
-                    trail.transform.position = Vector3.Lerp(spawnPoint, hitDestination, 1 - (remainingDistance / hitDistance));
-                    remainingDistance -= Time.deltaTime * bulletSpeed;
-                    yield return null;
-                }
-                Destroy(trail, renderer.time);
-            }
-            #endregion
-
-            #endregion
-        }
-
-
-
-        #region Automatic Firing 
-
-        public void AutoFire()
-        {
-            Ray ray = camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
-            ray.origin = camera.transform.position;
-
-
-            if (Physics.Raycast(ray, out RaycastHit hit))
-            {
-                if (hit.collider.gameObject.CompareTag("Player") && !hit.collider.gameObject.GetPhotonView().IsMine)
-                {
-
-                    print("A player has been detected, auto fire can happen");
-                    Shoot();
-                }
-            }
-        }
-
-
-        #endregion Automatic Firing 
-
-        #region Collect Money 
-
-        [PunRPC]
-        public void CollectMoney(int amount)
-        {
-            if (photonView.IsMine)
-            {
-                // Update local money
-                // You might want to add a currentMoney variable if it doesn't exist
-                currentMoney += amount;
-
-                // Update the MatchManager
-                MatchManager.instance.UpdateStatsSend(photonView.Owner.ActorNumber, 2, amount); // 2 for money stat
-
-                // Update UI if necessary
-                //UpdateMoneyDisplay();
-                UIController.instance.moneyText.text = currentMoney.ToString();
-
-                //make a sopund when money is collected
-                moneyCollectSource.Play();
-            }
-        }
-
-        #endregion Collect Money
-
     }
+
+
+    #region Shoot VFX
+
+    [PunRPC]
+    public void ShootVFX(Vector3 spawnPoint, Vector3 hitDestination)
+    {
+        StartCoroutine(SpawnTrail(spawnPoint, hitDestination, BulletSpeed));
+    }
+
+    #region Bullet Trail
+    private IEnumerator SpawnTrail(Vector3 spawnPoint, Vector3 hitDestination, float bulletSpeed)
+    {
+        GameObject trail = Instantiate(BulletTrail, spawnPoint, Quaternion.identity);
+        Debug.Assert(trail != null);
+        TrailRenderer renderer = trail.GetComponent<TrailRenderer>();
+        float hitDistance = Vector3.Distance(spawnPoint, hitDestination);
+        float remainingDistance = hitDistance;
+
+        while (remainingDistance > 0)
+        {
+            trail.transform.position = Vector3.Lerp(spawnPoint, hitDestination, 1 - (remainingDistance / hitDistance));
+            remainingDistance -= Time.deltaTime * bulletSpeed;
+            yield return null;
+        }
+        Destroy(trail, renderer.time);
+    
+    #endregion Bullet Trail
+
+    #endregion Shoot VFX
+
+
+
+    #region Automatic Firing 
+
+    public void AutoFire()
+    {
+        Ray ray = camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
+        ray.origin = camera.transform.position;
+
+
+        if (Physics.Raycast(ray, out RaycastHit hit))
+        {
+            if (hit.collider.gameObject.CompareTag("Player") && !hit.collider.gameObject.GetPhotonView().IsMine)
+            {
+
+                print("A player has been detected, auto fire can happen");
+                Shoot();
+            }
+        }
+    }
+    #endregion Automatic Firing 
+
+    #region Collect Money 
+
+    [PunRPC]
+    public void CollectMoney(int amount)
+    {
+        if (photonView.IsMine)
+        {
+            // Update local money
+            // You might want to add a currentMoney variable if it doesn't exist
+            currentMoney += amount;
+
+            // Update the MatchManager
+            MatchManager.instance.UpdateStatsSend(photonView.Owner.ActorNumber, 2, amount); // 2 for money stat
+
+            // Update UI if necessary
+            //UpdateMoneyDisplay();
+            UIController.instance.moneyText.text = currentMoney.ToString();
+
+            //make a sopund when money is collected
+            moneyCollectSource.Play();
+        }
+    }
+
+    #endregion Collect Money
+
+}
+
