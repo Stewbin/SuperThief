@@ -282,6 +282,7 @@ private void TryShoot()
                 MatchManager.instance.UpdateStatsSend(actor, 0, 1);
                 
          
+            MatchManager.instance.UpdateStatsSend(actor, 2, 50);
             
             string victimName = photonView.Owner.NickName;
             
@@ -597,7 +598,23 @@ public void AutoFire()
 
             //make a sopund when money is collected
             moneyCollectSource.Play();
+
+            StartCoroutine(ShowMoneyPopup(amount)); 
         }
+
+    }
+
+    public IEnumerator ShowMoneyPopup(int money)
+    
+    {
+            UIController.instance.moneyPopup.gameObject.SetActive(true); 
+            UIController.instance.moneyPopup.text = "+" + money; 
+
+            yield return new WaitForSeconds(1f); 
+
+            UIController.instance.moneyPopup.gameObject.SetActive(false); 
+
+
     }
 
 #endregion Collect Money

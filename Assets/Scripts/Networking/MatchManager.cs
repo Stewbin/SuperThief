@@ -54,6 +54,24 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
 
     private float waitingTimer;
 
+    public string[] tips = {
+        "BE THE LAST WITH THE MOST CASH TO WIN",
+        "Eliminate opponents to earn rewards!",
+        "Keep an eye on the timer, every second counts!",
+        "Steal from the rich, but don’t get greedy!",
+        "Be quick and efficient – time is money!",
+        "Keep your cool… and your loot!",
+        "Don’t forget to steal the cash",
+        "Crush anyone who stands in your way!",
+        "Show no mercy – eliminate the competition!",
+        "Dominate the heist – let fear be your ally!",
+        "Every second counts – hesitate and you’re dead!",
+        "Take the cash and crush anyone who dares to stop you!",
+        "Show no mercy – all that money is yours!",
+        "Outsmart, outgun, and outloot them all!",
+        "Crack the safes and break their spirits!"
+    };
+
     void Start()
     {
         if (!PhotonNetwork.IsConnected)
@@ -66,6 +84,10 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
             state = GameState.Waiting;
 
             UIController.instance.waitingScreen.SetActive(true);
+             // Pick a random tip
+            string randomTip = tips[Random.Range(0, tips.Length)];
+            UIController.instance.tipMessage.text = randomTip;
+
             waitingTimer = waitBeforeBegin;
 
             if (PhotonNetwork.IsMasterClient)
@@ -523,6 +545,8 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
         waitingTimer = (float)dataReceived[0];
         UIController.instance.waitingTimerText.text = "The Heist will begin in " + Mathf.CeilToInt(waitingTimer).ToString() + " seconds!";
 
+       
+
         UIController.instance.leaderboardComponent.SetActive(false);
         UIController.instance.healthComponent.SetActive(false);
         UIController.instance.statsComponent.SetActive(false);
@@ -543,6 +567,7 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
             UIController.instance.GunComponent.SetActive(true);
             UIController.instance.timeComponent.SetActive(true);
             UIController.instance.optionComponent.SetActive(true);
+            UIController.instance.tipMessage.gameObject.SetActive(false);
 
             state = GameState.Playing;
 
