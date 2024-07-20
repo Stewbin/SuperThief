@@ -107,7 +107,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4745344009797126663}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0.7071068, z: -0, w: 0.7071068}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.5, y: -1.331601, z: -0.14012718}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -115,7 +115,7 @@ Transform:
   - {fileID: 64206452743751069}
   - {fileID: 1542332840061911162}
   m_Father: {fileID: 6988657083990127941}
-  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5730360046247614764
 GameObject:
   m_ObjectHideFlags: 0
@@ -234,6 +234,7 @@ GameObject:
   - component: {fileID: 3945413631351231641}
   - component: {fileID: 7256372202475440564}
   - component: {fileID: 1937473519031065685}
+  - component: {fileID: 7885439772639168812}
   m_Layer: 0
   m_Name: Head - high_turret_1_0
   m_TagString: Untagged
@@ -249,14 +250,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5907566231499382906}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: -0.10400011, y: 1.2150002, z: 0}
+  m_LocalRotation: {x: 0.5, y: -0.5, z: 0.5, w: 0.5}
+  m_LocalPosition: {x: -0.03, y: 1.2150002, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2469682193838296346}
   m_Father: {fileID: 446887972487284474}
-  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 90, y: -90, z: 0}
 --- !u!33 &3945413631351231641
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -329,6 +330,19 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -8099705334291674580, guid: 95c2f8250c46c3c4b9e7a4115962b3e5, type: 3}
+--- !u!114 &7885439772639168812
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5907566231499382906}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6dedc6fa6948bff4a99d29ff9156d94e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  axisLength: 1
 --- !u!1 &6215102997143404739
 GameObject:
   m_ObjectHideFlags: 0
@@ -343,6 +357,7 @@ GameObject:
   - component: {fileID: 8211095106843986267}
   - component: {fileID: 7207960205750531284}
   - component: {fileID: 775908461929783538}
+  - component: {fileID: 5797638370303139454}
   m_Layer: 0
   m_Name: Turret
   m_TagString: Untagged
@@ -360,8 +375,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 446887972487284474}
   - {fileID: 866176737455596280}
@@ -426,6 +441,9 @@ MonoBehaviour:
   FOV: 60
   TurnSpeed: 2
   AggroTime: 5
+  _aggroTime: 0
+  ReloadTime: 20
+  SecPerBullet: 4
 --- !u!114 &7207960205750531284
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -442,7 +460,7 @@ MonoBehaviour:
   bulletImpact: {fileID: 8520776430649704606, guid: 22c69eb8035d2e146b10bfea805102cf, type: 3}
   muzzleDisplayTime: 0
   muzzleCounter: 0
-  playerHitImpact: {fileID: 7719053168306797779, guid: 5d965baf4dce8a246a6bd98dc1360954, type: 3}
+  playerHitImpact: {fileID: 8520776430649704606, guid: afd936d709b49bb4995646406a6eb71c, type: 3}
   BulletTrail: {fileID: 5905089801231778237, guid: b2c46f5c7c576874084b3300660a5f7f, type: 3}
   BulletSpeed: 100
   maxHeat: 10
@@ -454,7 +472,7 @@ MonoBehaviour:
   currentHealth: 0
   healthBarDisplay: {fileID: 0}
   allGuns:
-  - {fileID: 5347319975950949186, guid: e4d280b49a833fb45ab55d2e81dc9f68, type: 3}
+  - {fileID: 775908461929783538}
   selectedGun: 0
   adsSpeed: 5
   adsOutPoint: {fileID: 0}
@@ -481,7 +499,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 567262a0c0343aa43aed1a28da6728e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isAutomatic: 1
+  isAutomatic: 0
   fireRate: 0.1
   clipSize: 50
   reservedAmmoCapacity: 0
@@ -489,6 +507,19 @@ MonoBehaviour:
   shotDamage: 10
   currentAmmoInClip: 10
   adsZoom: 0.1
+--- !u!114 &5797638370303139454
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6215102997143404739}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6dedc6fa6948bff4a99d29ff9156d94e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  axisLength: 1
 --- !u!1 &7124032222901970271
 GameObject:
   m_ObjectHideFlags: 0
@@ -542,7 +573,7 @@ LineRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 066d8374b92039d44bb63fe59c5f0722, type: 2}
+  - {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -573,8 +604,8 @@ LineRenderer:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
-        time: 0
-        value: 1
+        time: 0.09233692
+        value: 0.10035186
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -586,9 +617,9 @@ LineRenderer:
       m_RotationOrder: 4
     colorGradient:
       serializedVersion: 2
-      key0: {r: 1, g: 0, b: 0, a: 1}
-      key1: {r: 1, g: 1, b: 1, a: 1}
-      key2: {r: 0, g: 0, b: 0, a: 0}
+      key0: {r: 1, g: 0, b: 0, a: 0.95686275}
+      key1: {r: 1, g: 0, b: 0, a: 0.63529414}
+      key2: {r: 1, g: 1, b: 1, a: 0.44313726}
       key3: {r: 0, g: 0, b: 0, a: 0}
       key4: {r: 0, g: 0, b: 0, a: 0}
       key5: {r: 0, g: 0, b: 0, a: 0}
@@ -596,24 +627,24 @@ LineRenderer:
       key7: {r: 0, g: 0, b: 0, a: 0}
       ctime0: 0
       ctime1: 65535
-      ctime2: 0
+      ctime2: 65535
       ctime3: 0
       ctime4: 0
       ctime5: 0
       ctime6: 0
       ctime7: 0
       atime0: 0
-      atime1: 65535
-      atime2: 0
+      atime1: 64379
+      atime2: 65535
       atime3: 0
       atime4: 0
       atime5: 0
       atime6: 0
       atime7: 0
-      m_Mode: 0
+      m_Mode: 1
       m_ColorSpace: 0
       m_NumColorKeys: 2
-      m_NumAlphaKeys: 2
+      m_NumAlphaKeys: 3
     numCornerVertices: 0
     numCapVertices: 0
     alignment: 1
@@ -622,6 +653,6 @@ LineRenderer:
     shadowBias: 0.5
     generateLightingData: 0
   m_MaskInteraction: 0
-  m_UseWorldSpace: 0
+  m_UseWorldSpace: 1
   m_Loop: 0
   m_ApplyActiveColorSpace: 1
