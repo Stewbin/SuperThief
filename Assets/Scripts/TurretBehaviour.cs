@@ -12,7 +12,7 @@ public class TurretBehaviour : EnemyBehaviour
     public float FOV = 60f;
     public float TurnSpeed = 0.01f;
     public int AggroTime;
-    [SerializeField] private float _aggroTime;
+    private float _aggroTime;
     private Quaternion _initRotation;
     private bool _isAttacking;
     
