@@ -2,8 +2,9 @@ using System;
 using System.Collections.Generic;
 using FiniteStateMachine;
 using Photon.Pun;
-using UnityEditor.SceneManagement;
+//using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 // Note: this class is for makeshift purposes only. DON'T put anything 
 // that you want to survive in here!

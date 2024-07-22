@@ -38,7 +38,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 69af0d790bc6faf4dbeb0410316f1806, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.7071068
+      value: -0.7071068
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 69af0d790bc6faf4dbeb0410316f1806, type: 3}
       propertyPath: m_LocalRotation.y
@@ -50,7 +50,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 69af0d790bc6faf4dbeb0410316f1806, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: 90
+      value: -90
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 69af0d790bc6faf4dbeb0410316f1806, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
@@ -163,3 +163,7 @@ MonoBehaviour:
   medkitMesh: {fileID: 0}
   ammoMesh: {fileID: 0}
   moneyMesh: {fileID: 5162901110957153041}
+  MaxHoverHeight: 2
+  HoverFrequency: 10
+  SpinFrequency: 10
+  particleSystem: {fileID: 0}

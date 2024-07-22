@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028331, g: 0.2257133, b: 0.3069217, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028334, g: 0.22571328, b: 0.3069217, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -236,7 +236,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _FixedTouchField: {fileID: 1527709975}
   _CameraLook: {fileID: 354376556}
-  _PlayerMove: {fileID: 0}
+  _PlayerMove: {fileID: 658632558}
   _FixedButton: {fileID: 0}
 --- !u!114 &658632558
 MonoBehaviour:
@@ -316,7 +316,7 @@ MonoBehaviour:
   prefixField: -1
   Synchronization: 3
   OwnershipTransfer: 0
-  observableSearch: 2
+  observableSearch: 0
   ObservedComponents:
   - {fileID: 658632559}
   sceneViewId: 1
@@ -1162,7 +1162,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7723648201158377226, guid: da581e17ba6097c4aadb454fac211c69, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.9
+      value: 0.85
       objectReference: {fileID: 0}
     - target: {fileID: 7723648201158377226, guid: da581e17ba6097c4aadb454fac211c69, type: 3}
       propertyPath: m_LocalPosition.z

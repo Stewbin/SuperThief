@@ -77,6 +77,11 @@ public class UIController : MonoBehaviour
 
   public GameObject optionComponent; 
 
+  public TMP_Text moneyPopup; 
+
+  
+  public TMP_Text tipMessage;
+
   
   public TMP_Text debugMessage;
 
@@ -92,9 +97,7 @@ public class UIController : MonoBehaviour
     [Header("Detect player")]
 
      public TMP_Text detectPlayerText;
-
-  
-  //public TMP_Text gameMessageText; 
+     
 
 
   void Update()

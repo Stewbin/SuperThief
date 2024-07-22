@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
 
+
 public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointerUpHandler
 {
     [Header("Main Camera for Ray Cast")]
@@ -18,6 +19,7 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
     public GameObject BulletTrail;
     public float BulletSpeed = 100f;
 
+
     [Header("Heat Gun Settings")]
     public float maxHeat = 10f;
     public float coolRate = 5f;
@@ -25,11 +27,14 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
     public float heatCounter;
     public bool overHeated;
 
+
     [Header("Player Health")]
     public int maxHealth = 100;
     public int currentHealth;
     public Image healthBarDisplay;
 
+
+   
 
 
     [Header("Gun Variables")]
@@ -38,46 +43,67 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
     private bool _isShootButtonPressed;
     private bool _isReloadButtonPressed;
 
-    public float adsSpeed = 5f;
 
+    public float adsSpeed = 5f;
+   
     public Transform adsOutPoint, adsInPoint;
+
 
     [Header("SFX")]
 
+
     public AudioSource gunShootSource;
+
 
     public AudioSource moneyCollectSource;
 
+
     [Header("Testing")]
+
 
     public string damagerText;
 
+
+    public int currentMoney;
+
+
     public bool isPlayerDead = false;
+
 
     [Header("Hitmarker Implementation")]
 
+
     public GameObject hitMarker;
+
 
     public AudioSource hitMarkerAudioSource;
     public bool playHitMarker;
 
+
     public TMP_Text damageIndicator;
+
 
     [SerializeField] public int damageTest;
 
+
+ 
 
 
     [Header("Damage Floating Text Implementation")]
 
 
+   
 
-    [SerializeField] public string targetPlayerName;
+
+    [SerializeField] public string  targetPlayerName;
     [SerializeField] public PhotonView targetPhotonView;
 
 
 
+
+
+
     public static AdvancedGunSystem instance;
-    private int currentMoney;
 
 
     public void Awake()
@@ -87,8 +113,10 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
     }
 
 
+   
 
-    private void Start()
+
+   private void Start()
     {
         photonView.RPC("SetGun", RpcTarget.All, selectedGun);
         photonView.RPC("SwitchGunForMobile", RpcTarget.All);
@@ -97,12 +125,14 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
         UIController.instance.healthSlider.maxValue = maxHealth;
         UIController.instance.healthSlider.value = currentHealth;
         UIController.instance.currentHealthDisplay.text = currentHealth.ToString();
-        //Disable hit marker 
+        //Disable hit marker
+
 
         hitMarker.SetActive(false);
         damageIndicator.gameObject.SetActive(false);
-
+       
         playHitMarker = false;
+
 
         if (photonView.IsMine)
         {
@@ -113,6 +143,7 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
         }
     }
 
+
     private void Update()
     {
         if (photonView.IsMine)
@@ -120,10 +151,10 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
             UIController.instance.currentHealthDisplay.text = currentHealth.ToString();
             UIController.instance.magazineSize.text = allGuns[selectedGun].clipSize.ToString();
             UIController.instance.currentAmmo.text = allGuns[selectedGun].currentAmmoInClip.ToString();
-
-            //test
-
-
+           
+            // Auto fire
+            //AutoFire();
+           
             if (allGuns[selectedGun].muzzleFlash.activeInHierarchy)
             {
                 muzzleCounter -= Time.deltaTime;
@@ -132,12 +163,12 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
                     allGuns[selectedGun].muzzleFlash.SetActive(false);
                 }
             }
-
+           
             if (Input.GetKeyDown(KeyCode.R) || _isReloadButtonPressed)
             {
                 Reload();
             }
-
+           
             if (Input.GetAxisRaw("Mouse ScrollWheel") != 0f || Input.GetKeyDown(KeyCode.Tab))
             {
                 int prevSelectedGun = selectedGun;
@@ -159,11 +190,13 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
                 }
             }
 
+
             // Handle continuous shooting
             if (_isShootButtonPressed)
             {
                 TryShoot();
             }
+
 
             for (int i = 0; i < allGuns.Length; i++)
             {
@@ -180,9 +213,11 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
         }
     }
 
-    private void TryShoot()
+
+private void TryShoot()
     {
         Gun currentGun = allGuns[selectedGun];
+
 
         if (currentGun.isAutomatic)
         {
@@ -202,34 +237,39 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
         }
     }
 
+
     public void Shoot()
     {
-        Debug.Log("Shoot() just got called");
-        if (allGuns[selectedGun].currentAmmoInClip <= 0)
+       if (allGuns[selectedGun].currentAmmoInClip <= 0)
         {
             return;
         }
+
 
         Ray ray = camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
         ray.origin = camera.transform.position;
 
 
+
+
         photonView.RPC("ShootSFX", RpcTarget.All);
+       
 
 
-        //shoot sfx 
-        // PlayerSoundManager.instance.PlayShootSFX_RPC(shootSFXIndex); 
+        //shoot sfx
+       // PlayerSoundManager.instance.PlayShootSFX_RPC(shootSFXIndex);
+
 
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
-            // Bullet VFX
-            Transform currentGun = allGuns[selectedGun].transform;
-            photonView.RPC(nameof(ShootVFX), RpcTarget.All, currentGun.position, hit.point);
+            StartCoroutine(SpawnTrail(ray.origin, hit.point, BulletSpeed));
+
 
             if (hit.collider.gameObject.CompareTag("Player") && !hit.collider.gameObject.GetPhotonView().IsMine)
             {
                 PhotonNetwork.Instantiate(playerHitImpact.name, hit.point, Quaternion.identity);
                 hit.collider.gameObject.GetPhotonView().RPC("TakeDamage", RpcTarget.All, photonView.Owner.NickName, allGuns[selectedGun].shotDamage, PhotonNetwork.LocalPlayer.ActorNumber);
+
 
                 //Show Hit Marker
                 HitMarkerActive();
@@ -237,36 +277,42 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
                 playHitMarker = true;
                 PlayHitMarkerSoundFX();
 
+
                 UIController.instance.damageTextAmount.text = allGuns[selectedGun].shotDamage.ToString();
+
 
                 damageIndicator.text = allGuns[selectedGun].shotDamage.ToString();
 
 
-
+       
+               
+               
 
 
                 //get opponent photon view and name dd
                 targetPhotonView = hit.collider.gameObject.GetPhotonView();
                 targetPlayerName = targetPhotonView.Owner.NickName;
-
+               
             }
             else
             {
-                print($"we just hit: {hit.transform.name}");
                 GameObject bulletImpactObject = Instantiate(bulletImpact, hit.point + hit.normal * 0.002f, Quaternion.LookRotation(hit.normal, Vector3.up));
                 Destroy(bulletImpactObject, 5f);
                 playHitMarker = false;
-
+               
             }
         }
+       
 
 
         allGuns[selectedGun].currentAmmoInClip--;
         heatCounter += allGuns[selectedGun].shotDamage;
 
+
         allGuns[selectedGun].muzzleFlash.SetActive(true);
         muzzleCounter = muzzleDisplayTime;
     }
+
 
     [PunRPC]
     private void TakeDamage(string damager, int damageAmount, int actor)
@@ -275,40 +321,44 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
         {
             currentHealth -= damageAmount;
 
-            //display damage anmount 
 
-
+            //display damage anmount
+           
+           
             print(damageAmount + "" + damageTest);
             if (currentHealth <= 0)
             {
                 currentHealth = 0;
                 PlayerSpawner.instance.Die(damager);
                 MatchManager.instance.UpdateStatsSend(actor, 0, 1);
-
-
-
-                string victimName = photonView.Owner.NickName;
-
-
-
-
-                // Display who the player just killed
-                // This ensures only the shooter sees this message
-
+               
+         
+            MatchManager.instance.UpdateStatsSend(actor, 2, 25);
+           
+            string victimName = photonView.Owner.NickName;
+           
+         
+               
+               
+            // Display who the player just killed
+            // This ensures only the shooter sees this message
+           
                 UIController.instance.debugMessage.text = "ELIMINATED: " + isPlayerDead;
+           
 
 
 
-                damagerText = photonView.Owner.NickName;
+
+               damagerText = photonView.Owner.NickName;
+               
+             
+               //
 
 
-                //
-
-
-
-            }
-            else
-            {
+               
+               
+            }  
+            else {
                 UIController.instance.healthSlider.value = currentHealth;
                 photonView.RPC("UpdateHealthBarRPC", RpcTarget.All, currentHealth);
 
@@ -316,6 +366,7 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
             }
         }
     }
+
 
     [PunRPC]
     private void SetGun(int gunToSwitchTo)
@@ -327,6 +378,7 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
         }
     }
 
+
     public void SwitchGun()
     {
         foreach (Gun gun in allGuns)
@@ -335,12 +387,14 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
         }
         allGuns[selectedGun].gameObject.SetActive(true);
 
+
         if (photonView.IsMine)
         {
             UIController.instance.magazineSize.text = allGuns[selectedGun].clipSize.ToString();
             UIController.instance.currentAmmo.text = allGuns[selectedGun].currentAmmoInClip.ToString();
         }
     }
+
 
     public void Reload()
     {
@@ -360,6 +414,8 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
     }
 
 
+
+
     [PunRPC]
     public void SwitchGunForMobile()
     {
@@ -369,50 +425,56 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
             selectedGun = 0;
         }
         SwitchGun();
-
+       
         //testing something
+         
 
 
-
+     
     }
+
 
     public void AimGun()
     {
         camera.fieldOfView = Mathf.Lerp(camera.fieldOfView, allGuns[selectedGun].adsZoom, adsSpeed * Time.deltaTime);
-        //PlayerMove.instance.gunHolder.position = Vector3.Lerp(PlayerMove.instance.gunHolder.position, adsInPoint.position, adsSpeed * Time.deltaTime); 
-
+        //PlayerMove.instance.gunHolder.position = Vector3.Lerp(PlayerMove.instance.gunHolder.position, adsInPoint.position, adsSpeed * Time.deltaTime);
+         
     }
+
 
     public void CancelAimGun()
     {
         camera.fieldOfView = Mathf.Lerp(camera.fieldOfView, 60f, adsSpeed * Time.deltaTime);
-        //PlayerMove.instance.gunHolder.position = Vector3.Lerp(PlayerMove.instance.gunHolder.position, adsOutPoint.position, adsSpeed * Time.deltaTime); 
-
+        //PlayerMove.instance.gunHolder.position = Vector3.Lerp(PlayerMove.instance.gunHolder.position, adsOutPoint.position, adsSpeed * Time.deltaTime);
+ 
     }
+
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        if (eventData.pointerCurrentRaycast.gameObject.CompareTag("ShootButton"))
-        {
-            _isShootButtonPressed = true;
-        }
+       if (eventData.pointerCurrentRaycast.gameObject.CompareTag("ShootButton"))
+    {
+        _isShootButtonPressed = true;
+    }
         else if (eventData.pointerCurrentRaycast.gameObject.CompareTag("ReloadButton"))
         {
             _isReloadButtonPressed = true;
         }
     }
 
+
     public void OnPointerUp(PointerEventData eventData)
     {
-        if (eventData.pointerCurrentRaycast.gameObject.CompareTag("ShootButton"))
-        {
-            _isShootButtonPressed = false;
-        }
+       if (eventData.pointerCurrentRaycast.gameObject.CompareTag("ShootButton"))
+    {
+        _isShootButtonPressed = false;
+    }
         else if (eventData.pointerCurrentRaycast.gameObject.CompareTag("ReloadButton"))
         {
             _isReloadButtonPressed = false;
         }
     }
+
 
     public void UpdateHealthBar()
     {
@@ -423,12 +485,14 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
         }
     }
 
+
     [PunRPC]
     public void UpdateHealthBarRPC(int health)
     {
         currentHealth = health;
         UpdateHealthBar();
     }
+
 
     [PunRPC]
     public void Heal(int healAmount)
@@ -437,16 +501,18 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
         {
             currentHealth = Mathf.Min(currentHealth + healAmount, maxHealth);
             UpdateHealthBar();
-
-
+           
+           
         }
     }
 
 
-    [PunRPC]
+
+
+     [PunRPC]
     public void AddAmmo(int ammoAmount)
     {
-
+       
         if (photonView.IsMine)
         {
             int currentAmmo = allGuns[selectedGun].currentAmmoInClip;
@@ -454,36 +520,44 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
             int ammoToAdd = Mathf.Min(ammoAmount, maxAmmo - currentAmmo);
 
 
+           
             allGuns[selectedGun].currentAmmoInClip += ammoToAdd;
             UIController.instance.currentAmmo.text = allGuns[selectedGun].currentAmmoInClip.ToString();
             print("Successfully added ammo amount of " + ammoToAdd);
 
-        }
 
+        }
+ 
     }
 
 
-    #region Show Elimination Message (Only For Killer)
-    [PunRPC]
-    private void ShowEliminationMessage(string killer, string victim)
-    {
-        if (photonView.IsMine && killer == photonView.Owner.NickName)
-        {
-            StartCoroutine(DisplayEliminationMessage(victim));
-            print("Eliminated " + victim);
-        }
-    }
 
-    private IEnumerator DisplayEliminationMessage(string victim)
+
+#region Show Elimination Message (Only For Killer)
+[PunRPC]
+private void ShowEliminationMessage(string killer, string victim)
+{
+    if (photonView.IsMine && killer == photonView.Owner.NickName)
     {
-        UIController.instance.eliminationMessage.gameObject.SetActive(true);
-        UIController.instance.eliminationMessage.text = "Eliminated " + victim;
+        StartCoroutine(DisplayEliminationMessage(victim));
         print("Eliminated " + victim);
-
-        yield return new WaitForSeconds(5f);
-
-        UIController.instance.eliminationMessage.gameObject.SetActive(false);
     }
+}
+
+
+private IEnumerator DisplayEliminationMessage(string victim)
+{
+    UIController.instance.eliminationMessage.gameObject.SetActive(true);
+    UIController.instance.eliminationMessage.text = "Eliminated " + victim;
+    print("Eliminated " + victim);
+
+
+    yield return new WaitForSeconds(5f);
+
+
+    UIController.instance.eliminationMessage.gameObject.SetActive(false);
+}
+
 
     [PunRPC]
     private void ShowEliminationMessageRPC(string damager, string victim)
@@ -500,24 +574,30 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
     #endregion 
 
 
-    #region Show Hit Marker
-
-    public void HitMarkerActive()
-    {
-        hitMarker.SetActive(true);
-        damageIndicator.gameObject.SetActive(true);
-    }
-    public void HitMarkerInActive()
-    {
-
-        hitMarker.SetActive(false);
-        damageIndicator.gameObject.SetActive(false);
 
 
-    }
+#region Show Hit Marker
 
-    public void PlayHitMarkerSoundFX()
-    {
+
+public void HitMarkerActive()
+{
+hitMarker.SetActive(true);
+damageIndicator.gameObject.SetActive(true);
+}
+public void HitMarkerInActive()
+{
+
+
+hitMarker.SetActive(false);
+damageIndicator.gameObject.SetActive(false);
+ 
+
+
+}
+
+
+public void PlayHitMarkerSoundFX(){
+
 
         if (playHitMarker == true)
         {
@@ -532,20 +612,27 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
 
     // Shoot VFX
 
-    [PunRPC]
-    public void ShootVFX(Vector3 spawnPoint, Vector3 hitDestination)
+     [PunRPC]
+    public void ShootSFX()
     {
-        StartCoroutine(SpawnTrail(spawnPoint, hitDestination, BulletSpeed));
+        gunShootSource.Play();
     }
 
-    #region Bullet Trail
-    private IEnumerator SpawnTrail(Vector3 spawnPoint, Vector3 hitDestination, float bulletSpeed)
-    {
-        GameObject trail = Instantiate(BulletTrail, spawnPoint, Quaternion.identity);
-        Debug.Assert(trail != null);
-        TrailRenderer renderer = trail.GetComponent<TrailRenderer>();
-        float hitDistance = Vector3.Distance(spawnPoint, hitDestination);
-        float remainingDistance = hitDistance;
+
+
+
+#endregion Show Hit Marker
+
+
+#region Create and Move Bullet Trail
+private IEnumerator SpawnTrail(Vector3 SpawnPoint, Vector3 HitDestination, float BulletSpeed)
+{
+    GameObject trail = PhotonNetwork.Instantiate("BulletTrail", SpawnPoint, Quaternion.identity);
+    Debug.Assert(trail != null);
+    TrailRenderer tr = trail.GetComponent<TrailRenderer>();
+    Vector3 startPosition = camera.transform.position;
+    float hitDistance = Vector3.Distance(startPosition, HitDestination);
+    float remainingDistance = hitDistance;
 
         while (remainingDistance > 0)
         {
@@ -560,18 +647,22 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
 
 
 
-    #region Automatic Firing 
-
-    public void AutoFire()
-    {
-        Ray ray = camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
-        ray.origin = camera.transform.position;
+#region Automatic Firing
 
 
-        if (Physics.Raycast(ray, out RaycastHit hit))
-        {
-            if (hit.collider.gameObject.CompareTag("Player") && !hit.collider.gameObject.GetPhotonView().IsMine)
+public void AutoFire()
+{
+     Ray ray = camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
+     ray.origin = camera.transform.position;
+
+
+
+
+     if (Physics.Raycast(ray, out RaycastHit hit))
+     {
+           if (hit.collider.gameObject.CompareTag("Player") && !hit.collider.gameObject.GetPhotonView().IsMine)
             {
+
 
                 print("A player has been detected, auto fire can happen");
                 Shoot();
@@ -580,9 +671,10 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
     }
     #endregion 
 
-    #region Collect Money 
+#region Collect Money
 
-    [PunRPC]
+
+ [PunRPC]
     public void CollectMoney(int amount)
     {
         if (photonView.IsMine)
@@ -591,12 +683,15 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
             // You might want to add a currentMoney variable if it doesn't exist
             currentMoney += amount;
 
+
             // Update the MatchManager
             MatchManager.instance.UpdateStatsSend(photonView.Owner.ActorNumber, 2, amount); // 2 for money stat
+
 
             // Update UI if necessary
             //UpdateMoneyDisplay();
             UIController.instance.moneyText.text = currentMoney.ToString();
+
 
             //make a sopund when money is collected
             moneyCollectSource.Play();
