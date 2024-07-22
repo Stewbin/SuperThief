@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Photon.Pun;
 using Unity.VisualScripting;
+using Palmmedia.ReportGenerator.Core.Reporting.Builders;
 
 
 public class Test_GunSystem : MonoBehaviourPunCallbacks
@@ -42,6 +43,10 @@ public class Test_GunSystem : MonoBehaviourPunCallbacks
 
         // Always be raycasting from the player's crosshair
         Physics.Raycast(_raycastOrigin.position, transform.forward, out _hitInfo);
+
+        // Get location of barrel end 
+        _gunBarrel = _selectedGunObject.transform.GetChild(0); // Must ensure first child is Barrel End 
+        // not clever way to do this :( 
     }
     
     #region Gun Shooting
@@ -77,7 +82,7 @@ public class Test_GunSystem : MonoBehaviourPunCallbacks
     private void FireBullet()
     {
         // Muzzle flash
-        SelectedGun.MuzzleFlash.Play();
+        // SelectedGun.MuzzleFlash.Play();
         
         if(SelectedGun.IsHitscan) // Hitscan weapon
         {

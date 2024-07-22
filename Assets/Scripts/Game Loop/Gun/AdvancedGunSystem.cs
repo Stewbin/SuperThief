@@ -559,23 +559,19 @@ private IEnumerator DisplayEliminationMessage(string victim)
 }
 
 
-[PunRPC]
-private void ShowEliminationMessageRPC(string damager, string victim)
-{
-    // Display elimination message on all clients
-    UIController.instance.ShowEliminationMessage(damager, victim);
-   
-    // Check if the local player is the damager
-    if (photonView.Owner.NickName == damager)
+    [PunRPC]
+    private void ShowEliminationMessageRPC(string damager, string victim)
     {
-        UIController.instance.ShowLocalEliminationMessage(victim);
+        // Display elimination message on all clients
+        UIController.instance.ShowEliminationMessage(damager, victim);
+
+        // Check if the local player is the damager
+        if (photonView.Owner.NickName == damager)
+        {
+            UIController.instance.ShowLocalEliminationMessage(victim);
+        }
     }
-}
-
-
-
-
-#endregion Show Elimination Message (Only For Killer)
+    #endregion 
 
 
 
@@ -603,18 +599,18 @@ damageIndicator.gameObject.SetActive(false);
 public void PlayHitMarkerSoundFX(){
 
 
-if(playHitMarker == true)
-{
-    hitMarkerAudioSource.Play();
-}
-else
-{
-hitMarkerAudioSource.Stop();
-}
+        if (playHitMarker == true)
+        {
+            hitMarkerAudioSource.Play();
+        }
+        else
+        {
+            hitMarkerAudioSource.Stop();
+        }
+    }
+    #endregion
 
-
-}
-
+    // Shoot VFX
 
      [PunRPC]
     public void ShootSFX()
@@ -638,17 +634,16 @@ private IEnumerator SpawnTrail(Vector3 SpawnPoint, Vector3 HitDestination, float
     float hitDistance = Vector3.Distance(startPosition, HitDestination);
     float remainingDistance = hitDistance;
 
-
-    while(remainingDistance > 0)
-    {
-        trail.transform.position = Vector3.Lerp(startPosition, HitDestination, 1 - (remainingDistance / hitDistance));
-        remainingDistance -= Time.deltaTime * BulletSpeed;
-        yield return null;
+        while (remainingDistance > 0)
+        {
+            trail.transform.position = Vector3.Lerp(spawnPoint, hitDestination, 1 - (remainingDistance / hitDistance));
+            remainingDistance -= Time.deltaTime * bulletSpeed;
+            yield return null;
+        }
+        Destroy(trail, renderer.time);
     }
-    PhotonNetwork.Destroy(trail);
-}
-#endregion Create and Move Bullet Trail
-
+    
+    #endregion 
 
 
 
@@ -672,14 +667,9 @@ public void AutoFire()
                 print("A player has been detected, auto fire can happen");
                 Shoot();
             }
-     }
-}
-
-
-
-
-#endregion Automatic Firing
-
+        }
+    }
+    #endregion 
 
 #region Collect Money
 
@@ -705,34 +695,8 @@ public void AutoFire()
 
             //make a sopund when money is collected
             moneyCollectSource.Play();
-
-
-            StartCoroutine(ShowMoneyPopup(amount));
         }
-
-
     }
 
-
-    public IEnumerator ShowMoneyPopup(int money)
-   
-    {
-            UIController.instance.moneyPopup.gameObject.SetActive(true);
-            UIController.instance.moneyPopup.text = "+" + money;
-
-
-            yield return new WaitForSeconds(1f);
-
-
-            UIController.instance.moneyPopup.gameObject.SetActive(false);
-
-
-
-
-    }
-
-
-#endregion Collect Money
-
-
+    #endregion
 }
