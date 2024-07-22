@@ -9,7 +9,7 @@ public class Loot : MonoBehaviourPunCallbacks
     {
         Ammo,
         Healing,
-        Explosive, 
+        Explosive,
 
         Money
     }
@@ -18,7 +18,7 @@ public class Loot : MonoBehaviourPunCallbacks
     public int amount;
     public GameObject medkitMesh;
     public GameObject ammoMesh;
-    public GameObject moneyMesh; 
+    public GameObject moneyMesh;
     private bool isCollected = false;
     [Header("Make items hover")]
     public float MaxHoverHeight;
@@ -44,7 +44,7 @@ public class Loot : MonoBehaviourPunCallbacks
                 else
                 {
                     Debug.LogError("PhotonView component not found on the Loot object.");
-                } 
+                }
             }
             else
             {
@@ -70,7 +70,7 @@ public class Loot : MonoBehaviourPunCallbacks
                 break;
             case LootType.Money:
                 playerController.photonView.RPC("CollectMoney", RpcTarget.All, amount);
-                Destroy(moneyMesh); 
+                Destroy(moneyMesh);
                 break;
         }
     }
@@ -117,14 +117,14 @@ public class Loot : MonoBehaviourPunCallbacks
         float peakCoords = transform.position.y + MaxHoverHeight;
         StartCoroutine(Hover(floorCoords, peakCoords));
     }
-    
+
     [PunRPC]
     private IEnumerator Hover(float minY, float maxY)
     {
-        while(true)
+        while (true)
         {
             transform.Rotate(0, Time.deltaTime * SpinFrequency, 0);
-            
+
             Vector3 targetPosition = transform.position;
             targetPosition.y = Mathf.Lerp(minY, maxY, Time.deltaTime * HoverFrequency * Time.time);
             transform.position = targetPosition;
@@ -132,7 +132,7 @@ public class Loot : MonoBehaviourPunCallbacks
             yield return null;
         }
     }
-    
+
     #endregion
 
     [PunRPC]
