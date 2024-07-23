@@ -20,6 +20,8 @@ public class Launcher : MonoBehaviourPunCallbacks
     public GameObject errorScreen;
     public GameObject roomBrowserScreen;
 
+    public GameObject loadingGameScreen; 
+
     [Header("Loading Screen")]
     public TMP_Text loadingText;
 
@@ -56,6 +58,8 @@ public class Launcher : MonoBehaviourPunCallbacks
     void Awake()
     {
         instance = this;
+
+        loadingGameScreen.SetActive(false); 
     }
 
     void Start()
@@ -163,26 +167,29 @@ public class Launcher : MonoBehaviourPunCallbacks
         UpdatePlayerList();
     }
 
-    void UpdatePlayerList()
-    {
-        foreach(TMP_Text player in allPlayerNames){
-            Destroy(player.gameObject);
-        }
-
-        allPlayerNames.Clear();
-
-        Player[] players = PhotonNetwork.PlayerList; 
-
-        for (int i = 0; i < players.Length; i++){
-            TMP_Text newPlayerLabel = Instantiate(playerNameLabel,playerNameLabel.transform.parent);
-            newPlayerLabel.text = players[i].NickName;
-            newPlayerLabel.gameObject.SetActive(true); 
-
-            allPlayerNames.Add(newPlayerLabel);
-        }   
-        
-        UpdateStartButtonVisibility();
+void UpdatePlayerList()
+{
+    foreach(TMP_Text player in allPlayerNames){
+        Destroy(player.gameObject);
     }
+
+    allPlayerNames.Clear();
+
+    Player[] players = PhotonNetwork.PlayerList;
+    
+    // Sort players by their ActorNumber to ensure consistent ordering
+    System.Array.Sort(players, (a, b) => a.ActorNumber.CompareTo(b.ActorNumber));
+
+    for (int i = 0; i < players.Length; i++){
+        TMP_Text newPlayerLabel = Instantiate(playerNameLabel, playerNameLabel.transform.parent);
+        newPlayerLabel.text = players[i].NickName;
+        newPlayerLabel.gameObject.SetActive(true); 
+
+        allPlayerNames.Add(newPlayerLabel);
+    }   
+    
+    UpdateStartButtonVisibility();
+}
 
     void UpdateStartButtonVisibility()
     {
@@ -278,12 +285,16 @@ public class Launcher : MonoBehaviourPunCallbacks
         {
             PhotonNetwork.CurrentRoom.SetCustomProperties(new PhotonHashtable() { {GameStartedKey, true} });
             PhotonNetwork.LoadLevel(levelToPlay);
+
+            loadingGameScreen.SetActive(true); 
             
         }
         else
         {
             Debug.Log("Cannot start game. Either not Master Client or not enough players.");
             // Optionally, display a message to the user
+
+            loadingGameScreen.SetActive(false); 
 
             
         }

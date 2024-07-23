@@ -53,7 +53,7 @@ public class DelayStartWaitingRoomManager : MonoBehaviourPunCallbacks
     {
         playerCount = PhotonNetwork.PlayerList.Length;
         roomSize = PhotonNetwork.CurrentRoom.MaxPlayers;
-        roomCountDisplay.text = playerCount + ":" + roomSize;
+        roomCountDisplay.text = playerCount + "/" + roomSize;
 
         if (playerCount == roomSize)
         {
