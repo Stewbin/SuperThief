@@ -4830,8 +4830,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isAutomatic: 1
-  fireRate: 0.01
-  clipSize: 20
+  fireRate: 0.001
+  clipSize: 30
   reservedAmmoCapacity: 100
   muzzleFlash: {fileID: 919132149155446097, guid: 198102fde069568459d5c53a6ec14211, type: 3}
   shotDamage: 10
