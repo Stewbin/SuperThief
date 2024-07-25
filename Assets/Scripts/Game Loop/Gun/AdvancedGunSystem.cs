@@ -363,7 +363,6 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
                 UIController.instance.healthSlider.value = currentHealth;
                 photonView.RPC("UpdateHealthBarRPC", RpcTarget.All, currentHealth);
 
-
             }
         }
     }
