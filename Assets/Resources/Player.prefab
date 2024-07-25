@@ -5127,6 +5127,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player Controls
       objectReference: {fileID: 0}
+    - target: {fileID: 5498659177771746916, guid: 98c31c21aebc68140ae5e27fcc6abfc7, type: 3}
+      propertyPath: m_SortingOrder
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7612892493016032736, guid: 98c31c21aebc68140ae5e27fcc6abfc7, type: 3}
       propertyPath: m_Sprite
       value: 
