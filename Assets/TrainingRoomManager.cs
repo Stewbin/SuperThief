@@ -14,30 +14,28 @@ public class TrainingRoomManager : MonoBehaviour
     public float LeftBound;
     public float RightBound;
     [Header("Play Buttons")]
-    public GameObject Buttonz;
-    public Image PlaySymbol;
-    public Image PauseSymbol;
+    public Image PlayButton;
+    public Sprite PlaySymbol;
+    public Sprite PauseSymbol;
     private bool isPlaying;
     public TMP_Text counter;
 
 
-    // Start is called before the first frame update
-    void Start()
+    public void TogglePlay()
     {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-    public void Play()
-    {
-        if (isPlaying)
+        if (isPlaying) // Pause
         {
+            isPlaying = false;
+            DummyBehaviour.Dummies.ForEach(dummy => StopCoroutine(dummy.MoveLeftAndRight()));
 
+            PlayButton.sprite = PauseSymbol;
+        }
+        else // Play
+        {
+            isPlaying = true;
+            DummyBehaviour.Dummies.ForEach(dummy => StartCoroutine(dummy.MoveLeftAndRight()));
+
+            PlayButton.sprite = PlaySymbol;
         }
     }
 

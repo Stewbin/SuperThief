@@ -8,11 +8,12 @@ public class DummyBehaviour : MonoBehaviour
     public float MoveSpeed;
     public float Range;
     private Vector3 startPosition;
-
+    public static readonly List<DummyBehaviour> Dummies = new();
     // Start is called before the first frame update
     void Start()
     {
         startPosition = transform.position;   
+        Dummies.Add(this);
     }
 
     // Update is called once per frame
@@ -20,7 +21,7 @@ public class DummyBehaviour : MonoBehaviour
     {
     }
 
-    private IEnumerator MoveLeftAndRight()
+    public IEnumerator MoveLeftAndRight()
     {
         Vector3 direction = Range * transform.right;
         float time = Time.deltaTime * MoveSpeed;
