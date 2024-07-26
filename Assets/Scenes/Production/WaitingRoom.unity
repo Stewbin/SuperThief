@@ -316,7 +316,6 @@ MonoBehaviour:
   playerCount: 0
   minPlayersToStart: 2
   roomCountDisplay: {fileID: 4860731}
-  playerCountDisplay: {fileID: 4860731}
   timerToStartDisplay: {fileID: 305032513}
   roomSize: 8
   playerNameLabel: {fileID: 1064223171}
@@ -728,7 +727,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.9490196}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

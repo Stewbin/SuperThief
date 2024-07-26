@@ -22011,7 +22011,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1150187221
 RectTransform:
   m_ObjectHideFlags: 0
@@ -27026,7 +27026,7 @@ MonoBehaviour:
   killFeedText: {fileID: 8758568518864957219}
   optionsScreen: {fileID: 76645725}
   eliminationMessage: {fileID: 1986885099}
-  eliminationMessageDuration: 3
+  eliminationMessageDuration: 5
   optionComponent: {fileID: 895426324}
   moneyPopup: {fileID: 2006174398}
   tipMessage: {fileID: 961850387}
@@ -42869,7 +42869,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2043023524
 RectTransform:
   m_ObjectHideFlags: 0

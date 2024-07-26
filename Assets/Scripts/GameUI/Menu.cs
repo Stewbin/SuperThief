@@ -8,6 +8,7 @@ public class Menu : MonoBehaviour
 {
   
     [SerializeField] public string instagramUrl; 
+    [SerializeField] public string discordUrl; 
 
     public TMP_Text playerUsernameDisplay; 
 
@@ -70,6 +71,11 @@ public class Menu : MonoBehaviour
 
         Application.OpenURL(instagramUrl); 
     }
+
+     public void OpenDiscordUrl(){
+        Application.OpenURL(discordUrl); 
+    }
+
 
     public void OpenSinglePlayerScene(){
         SceneManager.LoadScene("Enemies");

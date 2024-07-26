@@ -72,7 +72,6 @@ Transform:
   m_Children:
   - {fileID: 4353426736015557050}
   - {fileID: 3014794032048943336}
-  - {fileID: 2555322604820854918}
   - {fileID: 2194563189388409034}
   - {fileID: 1121301826179200363}
   - {fileID: 1565188313167416654}
@@ -978,8 +977,8 @@ Transform:
   m_GameObject: {fileID: 1506432100251026323}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.156, y: 0.14499998, z: 0.839}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0.312, y: 2.2120001, z: 1.678}
+  m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5129624615500537152}
@@ -987,7 +986,7 @@ Transform:
   - {fileID: 5458427962149670312}
   - {fileID: 5932767000470345880}
   - {fileID: 6185580361682296896}
-  m_Father: {fileID: 4959510211175333748}
+  m_Father: {fileID: 3014794032048943336}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1547977445390546477
 GameObject:
@@ -2832,7 +2831,7 @@ MonoBehaviour:
   clipSize: 10
   reservedAmmoCapacity: 100
   muzzleFlash: {fileID: 919132149155446097, guid: 198102fde069568459d5c53a6ec14211, type: 3}
-  shotDamage: 5
+  shotDamage: 10
   currentAmmoInClip: 0
   adsZoom: 0.1
   lastFireTime: 0
@@ -2881,12 +2880,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 567262a0c0343aa43aed1a28da6728e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isAutomatic: 1
-  fireRate: 0.01
+  isAutomatic: 0
+  fireRate: 1
   clipSize: 25
   reservedAmmoCapacity: 200
   muzzleFlash: {fileID: 919132149155446097, guid: 198102fde069568459d5c53a6ec14211, type: 3}
-  shotDamage: 100
+  shotDamage: 90
   currentAmmoInClip: 0
   adsZoom: 0.1
   lastFireTime: 0
@@ -3235,12 +3234,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 567262a0c0343aa43aed1a28da6728e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isAutomatic: 1
-  fireRate: 0.01
+  isAutomatic: 0
+  fireRate: 1
   clipSize: 5
   reservedAmmoCapacity: 200
   muzzleFlash: {fileID: 919132149155446097, guid: 198102fde069568459d5c53a6ec14211, type: 3}
-  shotDamage: 15
+  shotDamage: 30
   currentAmmoInClip: 0
   adsZoom: 0.1
   lastFireTime: 0
@@ -4750,6 +4749,7 @@ Transform:
   m_Children:
   - {fileID: 8211096492489370599}
   - {fileID: 4048548256878130272}
+  - {fileID: 2555322604820854918}
   m_Father: {fileID: 4959510211175333748}
   m_LocalEulerAnglesHint: {x: -89.98021, y: 0, z: 0}
 --- !u!1 &8759852866904428911
@@ -4834,7 +4834,7 @@ MonoBehaviour:
   clipSize: 30
   reservedAmmoCapacity: 100
   muzzleFlash: {fileID: 919132149155446097, guid: 198102fde069568459d5c53a6ec14211, type: 3}
-  shotDamage: 10
+  shotDamage: 20
   currentAmmoInClip: 0
   adsZoom: 0.1
   lastFireTime: 0

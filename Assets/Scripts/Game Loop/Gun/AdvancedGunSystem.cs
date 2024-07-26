@@ -195,6 +195,7 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
             if (_isShootButtonPressed)
             {
                 TryShoot();
+
             }
 
 
@@ -340,11 +341,7 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
 
 
 
-                // Display who the player just killed
-                // This ensures only the shooter sees this message
-
-                UIController.instance.debugMessage.text = "ELIMINATED: " + isPlayerDead;
-
+                ShowEliminationMessage(damager, victimName);
 
 
 
@@ -455,6 +452,7 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
         if (eventData.pointerCurrentRaycast.gameObject.CompareTag("ShootButton"))
         {
             _isShootButtonPressed = true;
+            UnityEngine.Debug.Log("Shoot button is being holded and pressed"); 
         }
         else if (eventData.pointerCurrentRaycast.gameObject.CompareTag("ReloadButton"))
         {
@@ -468,6 +466,7 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
         if (eventData.pointerCurrentRaycast.gameObject.CompareTag("ShootButton"))
         {
             _isShootButtonPressed = false;
+            UnityEngine.Debug.Log("Shoot button is not being pressed"); 
         }
         else if (eventData.pointerCurrentRaycast.gameObject.CompareTag("ReloadButton"))
         {
@@ -534,44 +533,27 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
 
 
     #region Show Elimination Message (Only For Killer)
-    [PunRPC]
-    private void ShowEliminationMessage(string killer, string victim)
+  [PunRPC]
+private void ShowEliminationMessage(string killer, string victim)
+{
+    if (photonView.IsMine && killer == PhotonNetwork.LocalPlayer.NickName)
     {
-        if (photonView.IsMine && killer == photonView.Owner.NickName)
-        {
-            StartCoroutine(DisplayEliminationMessage(victim));
-            print("Eliminated " + victim);
-        }
+        StartCoroutine(DisplayEliminationMessage(victim));
+        UnityEngine.Debug.Log("Eliminated " + victim);
     }
+}
 
+private IEnumerator DisplayEliminationMessage(string victim)
+{
+    UIController.instance.eliminationMessage.gameObject.SetActive(true);
+    UIController.instance.eliminationMessage.text = "Eliminated " + victim;
+    UnityEngine.Debug.Log("Eliminated " + victim);
 
-    private IEnumerator DisplayEliminationMessage(string victim)
-    {
-        UIController.instance.eliminationMessage.gameObject.SetActive(true);
-        UIController.instance.eliminationMessage.text = "Eliminated " + victim;
-        print("Eliminated " + victim);
+    yield return new WaitForSeconds(5f);
 
-
-        yield return new WaitForSeconds(5f);
-
-
-        UIController.instance.eliminationMessage.gameObject.SetActive(false);
-    }
-
-
-    [PunRPC]
-    private void ShowEliminationMessageRPC(string damager, string victim)
-    {
-        // Display elimination message on all clients
-        UIController.instance.ShowEliminationMessage(damager, victim);
-
-        // Check if the local player is the damager
-        if (photonView.Owner.NickName == damager)
-        {
-            UIController.instance.ShowLocalEliminationMessage(victim);
-        }
-    }
-    #endregion
+    UIController.instance.eliminationMessage.gameObject.SetActive(false);
+}
+#endregion Show Elimination Message (Only For Killer)
 
 
 

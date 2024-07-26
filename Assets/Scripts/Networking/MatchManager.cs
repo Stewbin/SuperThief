@@ -316,6 +316,7 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
                         break;
                     case 1: // deaths
                         allPlayers[i].deaths += amount;
+                        
                         break;
                     case 2: // money
                         allPlayers[i].money += amount;
@@ -578,7 +579,7 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
             }
         } 
 
-        UIController.instance.winnerText.text =  winner.name + " won the match with " + winner.money;
+        UIController.instance.winnerText.text =  winner.name + " won the match with $" + winner.money;
     }
 }
 
