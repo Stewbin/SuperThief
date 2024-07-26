@@ -51,13 +51,16 @@ public class TurretBehaviour : EnemyBehaviour
         if (CurrentState == State.Searching)
         {
             // Stop attacknig
-            StopCoroutine(Attack());
-            _isAttacking = false;
-
+            if(_isAttacking)
+            {
+                StopCoroutine(Attack());
+                _isAttacking = false;
+            }
+            
             // Rotate head
             float targetY = Mathf.Sin(Time.time * TurnSpeed) * (FOV / 2);
             Quaternion targetRotation = Quaternion.Euler(0, targetY, 0) * _initRotation;
-            _turretHead.rotation = targetRotation;
+            _turretHead.rotation = Quaternion.RotateTowards(_turretHead.rotation, targetRotation, Time.deltaTime);
 
 
             // Exit search state
@@ -79,8 +82,9 @@ public class TurretBehaviour : EnemyBehaviour
             // Compute the new rotation
             Quaternion lookRotation = Quaternion.LookRotation(directionToPlayer, transform.up);
 
-            // Apply the initial rotation
+            // Apply new rotation
             _turretHead.rotation = lookRotation;
+            // Apply the initial rotation
             _turretHead.Rotate(_initRotation.eulerAngles);
 
             // Start atttacking
@@ -127,7 +131,6 @@ public class TurretBehaviour : EnemyBehaviour
             }
 
             // Otherwise shoot
-            print("Still shooting...");
             _advancedGunSystem.Shoot();
             yield return new WaitForSeconds(SecPerBullet);
         }
