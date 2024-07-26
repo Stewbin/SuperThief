@@ -191,13 +191,11 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
             }
 
 
-            // Handle continuous shooting
-            if (_isShootButtonPressed)
-            {
-                TryShoot();
-
-            }
-
+           // Handle continuous shooting
+        if (_isShootButtonPressed)
+        {
+            TryShoot();
+        }
 
             for (int i = 0; i < allGuns.Length; i++)
             {
@@ -215,29 +213,28 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
     }
 
 
-    private void TryShoot()
+private void TryShoot()
+{
+    Gun currentGun = allGuns[selectedGun];
+
+    if (currentGun.isAutomatic)
     {
-        Gun currentGun = allGuns[selectedGun];
-
-
-        if (currentGun.isAutomatic)
+        if (Time.time - currentGun.lastFireTime >= currentGun.fireRate)
         {
-            if (Time.time - currentGun.lastFireTime >= currentGun.fireRate)
-            {
-                Shoot();
-                currentGun.lastFireTime = Time.time;
-            }
-        }
-        else
-        {
-            if (Time.time - currentGun.lastFireTime >= currentGun.fireRate)
-            {
-                Shoot();
-                currentGun.lastFireTime = Time.time;
-            }
+            Shoot();
+            currentGun.lastFireTime = Time.time;
         }
     }
-
+    else
+    {
+        if (Time.time - currentGun.lastFireTime >= currentGun.fireRate && !currentGun.hasFired)
+        {
+            Shoot();
+            currentGun.lastFireTime = Time.time;
+            currentGun.hasFired = true;
+        }
+    }
+}
 
     public void Shoot()
     {
@@ -431,6 +428,12 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
     }
 
 
+    public void SetActive(bool isActive)
+    {
+        _isShootButtonPressed = isActive;
+    }
+
+
     public void AimGun()
     {
         camera.fieldOfView = Mathf.Lerp(camera.fieldOfView, allGuns[selectedGun].adsZoom, adsSpeed * Time.deltaTime);
@@ -461,18 +464,20 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
     }
 
 
-    public void OnPointerUp(PointerEventData eventData)
+public void OnPointerUp(PointerEventData eventData)
+{
+    if (eventData.pointerCurrentRaycast.gameObject.CompareTag("ShootButton"))
     {
-        if (eventData.pointerCurrentRaycast.gameObject.CompareTag("ShootButton"))
-        {
-            _isShootButtonPressed = false;
-            UnityEngine.Debug.Log("Shoot button is not being pressed"); 
-        }
-        else if (eventData.pointerCurrentRaycast.gameObject.CompareTag("ReloadButton"))
-        {
-            _isReloadButtonPressed = false;
-        }
+        _isShootButtonPressed = false;
+        allGuns[selectedGun].hasFired = false;
+        UnityEngine.Debug.Log("Shoot button is not being pressed");
     }
+    else if (eventData.pointerCurrentRaycast.gameObject.CompareTag("ReloadButton"))
+    {
+        _isReloadButtonPressed = false;
+    }
+}
+
 
 
     public void UpdateHealthBar()
