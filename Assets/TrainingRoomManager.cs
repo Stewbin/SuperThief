@@ -7,7 +7,7 @@ using TMPro;
 public class TrainingRoomManager : MonoBehaviour
 {
     public GameObject DummyPrefab;
-    public int DummyCount {get; private set;}
+    public int DummyCount { get; private set; }
     [Header("Bounds")]
     public float UpperBound;
     public float LowerBound;
@@ -26,41 +26,61 @@ public class TrainingRoomManager : MonoBehaviour
         if (isPlaying) // Pause
         {
             isPlaying = false;
-            DummyBehaviour.Dummies.ForEach(dummy => StopCoroutine(dummy.MoveLeftAndRight()));
+            DummyBehaviour.Dummies.ForEach(dummy =>
+            {
+                dummy.StopMoving();
+                print("Stopped one dummy tonight!");
+            });
 
-            PlayButton.sprite = PauseSymbol;
+            PlayButton.sprite = PlaySymbol;
         }
         else // Play
         {
             isPlaying = true;
-            DummyBehaviour.Dummies.ForEach(dummy => StartCoroutine(dummy.MoveLeftAndRight()));
+            DummyBehaviour.Dummies.ForEach(dummy => dummy.StartMoving());
 
-            PlayButton.sprite = PlaySymbol;
+            PlayButton.sprite = PauseSymbol;
         }
     }
 
     private void SpawnDummy()
     {
-        float x = Random.Range(LeftBound, RightBound);
-        float z = Random.Range(UpperBound, LowerBound);
+        float x = Random.Range(-LeftBound, RightBound);
+        float z = Random.Range(-LowerBound, UpperBound);
 
-        Vector3 spawnPt = new(x, transform.position.y, z);
+        Vector3 spawnPt = transform.position;
+        spawnPt.x += x;
+        spawnPt.z += z;
+
         Instantiate(DummyPrefab, spawnPt, Quaternion.identity);
     }
 
-    public void IncrementDummyCount()
+    private void DestroyDummy()
+    {
+        var instances = DummyBehaviour.Dummies;
+        if (instances.Count > 0)
+        {
+            int i = Random.Range(0, instances.Count - 1);
+            Destroy(instances[i].gameObject);
+            instances.RemoveAt(i);
+        }
+    }
+
+    public void IncrementDummyCounter()
     {
         if (DummyCount < 21)
         {
             DummyCount++;
+            SpawnDummy();
         }
     }
 
-    public void DecrementDummyCount()
+    public void DecrementDummyCounter()
     {
-        if(DummyCount > 0)
+        if (DummyCount > 0)
         {
             DummyCount--;
+            DestroyDummy();
         }
     }
 
