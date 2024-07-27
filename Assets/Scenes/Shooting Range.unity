@@ -3366,6 +3366,18 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+        - m_Target: {fileID: 1858152397}
+          m_TargetAssemblyTypeName: AdvancedGunSystem, Assembly-CSharp
+          m_MethodName: Shoot
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!114 &1857198676
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3477,6 +3489,17 @@ Camera:
   m_CorrespondingSourceObject: {fileID: 487061838893495305, guid: 3044a7f2f024b7f4588a26ee3e06850d, type: 3}
   m_PrefabInstance: {fileID: 1858152395}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1858152397 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4508678602226234430, guid: 3044a7f2f024b7f4588a26ee3e06850d, type: 3}
+  m_PrefabInstance: {fileID: 1858152395}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56928e5c3cecb344596cfdea7d9e71b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1890765297
 GameObject:
   m_ObjectHideFlags: 0
