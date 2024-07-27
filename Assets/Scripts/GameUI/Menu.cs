@@ -78,7 +78,7 @@ public class Menu : MonoBehaviour
 
 
     public void OpenSinglePlayerScene(){
-        SceneManager.LoadScene("Enemies");
+        SceneManager.LoadScene(18);
     }
 
      public void LeaveSinglePlayer(){
