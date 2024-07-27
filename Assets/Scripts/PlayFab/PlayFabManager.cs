@@ -32,6 +32,7 @@ public class PlayFabManager : MonoBehaviour
     public GameObject loginPanel;
     public GameObject addLoginPanel;
     public GameObject recoverButton;
+    public GameObject analyticsPanel;
     private const string EMAIL_KEY = "EMAIL";
     private const string PASSWORD_KEY = "PASSWORD";
     private const string USERNAME_KEY = "USERNAME";
@@ -39,6 +40,8 @@ public class PlayFabManager : MonoBehaviour
     private const string  DIAMONDS_KEY = "DIAMONDS"; 
 
     private const string COINS_KEY = "COINS"; 
+
+    private const string ANALYTICS_SHOWN_KEY = "ANALYTICS_SHOWN";
 
     public TMP_Text errorTextMessage; 
 
@@ -84,6 +87,12 @@ public class PlayFabManager : MonoBehaviour
 
        //get player currenciesnns
        GetVirtualCurrencies(); 
+
+        // Check if analytics panel has been shown before
+    if (!PlayerPrefs.HasKey(ANALYTICS_SHOWN_KEY))
+    {
+        ShowAnalyticsPanel();
+    }
     
     }
 
@@ -315,6 +324,34 @@ public class PlayFabManager : MonoBehaviour
     }
     
     #endregion Authentication
+
+
+#region Show Analytics
+
+private void ShowAnalyticsPanel()
+{
+    if (analyticsPanel != null)
+    {
+        analyticsPanel.SetActive(true);
+    }
+}
+
+public void OnAnalyticsResponse(bool accepted)
+{
+    
+    PlayerPrefs.SetInt(ANALYTICS_SHOWN_KEY, 1);
+    PlayerPrefs.Save();
+
+    
+    if (analyticsPanel != null)
+    {
+        analyticsPanel.SetActive(false);
+    }
+}
+
+#endregion Show Analytics
+
+
  
 public int playerLevel;
 public int gameLevel;

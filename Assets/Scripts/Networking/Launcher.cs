@@ -19,6 +19,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     public GameObject roomScreen;
     public GameObject errorScreen;
     public GameObject roomBrowserScreen;
+    public GameObject loadingGameScreen;
 
     [Header("Loading Screen")]
     public TMP_Text loadingText;
@@ -32,8 +33,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     [Header("Room Screen")]
     public TMP_Text roomNameText;
     public TMP_Text playerListText;
-
-     public TMP_Text message;
+    public TMP_Text message;
 
     [Header("Error Screen")]
     public TMP_Text errorText;
@@ -41,8 +41,10 @@ public class Launcher : MonoBehaviourPunCallbacks
     [Header("Room Browser Screen")]
     public RoomButton theRoomButton;
     public List<RoomButton> allRoomButtons = new List<RoomButton>();
+    public Button refreshButton;
+    public TMP_Text refreshingText;
 
-    public TMP_Text playerNameLabel; 
+    public TMP_Text playerNameLabel;
     private List<TMP_Text> allPlayerNames = new List<TMP_Text>();
 
     public string levelToPlay;
@@ -56,6 +58,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     void Awake()
     {
         instance = this;
+        loadingGameScreen.SetActive(false);
     }
 
     void Start()
@@ -69,6 +72,15 @@ public class Launcher : MonoBehaviourPunCallbacks
         if (!PhotonNetwork.IsConnected)
         {
             PhotonNetwork.ConnectUsingSettings();
+        }
+
+        if (refreshButton != null)
+        {
+            refreshButton.onClick.AddListener(RefreshRoomList);
+        }
+        else
+        {
+            Debug.LogWarning("Refresh button is not assigned in the Inspector.");
         }
     }
 
@@ -171,10 +183,12 @@ public class Launcher : MonoBehaviourPunCallbacks
 
         allPlayerNames.Clear();
 
-        Player[] players = PhotonNetwork.PlayerList; 
+        Player[] players = PhotonNetwork.PlayerList;
+        
+        System.Array.Sort(players, (a, b) => a.ActorNumber.CompareTo(b.ActorNumber));
 
         for (int i = 0; i < players.Length; i++){
-            TMP_Text newPlayerLabel = Instantiate(playerNameLabel,playerNameLabel.transform.parent);
+            TMP_Text newPlayerLabel = Instantiate(playerNameLabel, playerNameLabel.transform.parent);
             newPlayerLabel.text = players[i].NickName;
             newPlayerLabel.gameObject.SetActive(true); 
 
@@ -236,7 +250,6 @@ public class Launcher : MonoBehaviourPunCallbacks
         if (info.CustomProperties.TryGetValue(GameStartedKey, out object gameStarted) && (bool)gameStarted)
         {
             Debug.Log("Cannot join room. Game has already started.");
-            // Optionally, display a message to the user
             return;
         }
 
@@ -248,28 +261,50 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
-        foreach (RoomButton rb in allRoomButtons)
+        if (refreshingText != null)
         {
-            Destroy(rb.gameObject);
+            refreshingText.gameObject.SetActive(false);
         }
 
-        allRoomButtons.Clear();
-
-        theRoomButton.gameObject.SetActive(false);
-
-        for (int i = 0; i < roomList.Count; i++)
+        foreach (RoomInfo info in roomList)
         {
-            if (roomList[i].PlayerCount != roomList[i].MaxPlayers && !roomList[i].RemovedFromList)
+            if (info.RemovedFromList || !info.IsOpen || !info.IsVisible || info.PlayerCount >= info.MaxPlayers)
             {
-                if (roomList[i].CustomProperties.TryGetValue(GameStartedKey, out object gameStarted) && !(bool)gameStarted)
+                RoomButton existingButton = allRoomButtons.Find(x => x.info.Name == info.Name);
+                if (existingButton != null)
                 {
-                    RoomButton newButton = Instantiate(theRoomButton, theRoomButton.transform.parent);
-                    newButton.SetButtonDetails(roomList[i]);
-                    newButton.gameObject.SetActive(true);
-                    allRoomButtons.Add(newButton);
+                    Destroy(existingButton.gameObject);
+                    allRoomButtons.Remove(existingButton);
+                }
+            }
+            else
+            {
+                if (info.CustomProperties.TryGetValue(GameStartedKey, out object gameStarted) && !(bool)gameStarted)
+                {
+                    RoomButton existingButton = allRoomButtons.Find(x => x.info.Name == info.Name);
+                    if (existingButton != null)
+                    {
+                        existingButton.SetButtonDetails(info);
+                    }
+                    else
+                    {
+                        RoomButton newButton = Instantiate(theRoomButton, theRoomButton.transform.parent);
+                        newButton.SetButtonDetails(info);
+                        newButton.gameObject.SetActive(true);
+                        allRoomButtons.Add(newButton);
+                    }
                 }
             }
         }
+
+        allRoomButtons.Sort((a, b) => string.Compare(a.info.Name, b.info.Name));
+
+        for (int i = 0; i < allRoomButtons.Count; i++)
+        {
+            allRoomButtons[i].transform.SetSiblingIndex(i);
+        }
+
+        theRoomButton.gameObject.SetActive(false);
     }
 
     public void StartGame()
@@ -278,14 +313,12 @@ public class Launcher : MonoBehaviourPunCallbacks
         {
             PhotonNetwork.CurrentRoom.SetCustomProperties(new PhotonHashtable() { {GameStartedKey, true} });
             PhotonNetwork.LoadLevel(levelToPlay);
-            
+            loadingGameScreen.SetActive(true);
         }
         else
         {
             Debug.Log("Cannot start game. Either not Master Client or not enough players.");
-            // Optionally, display a message to the user
-
-            
+            loadingGameScreen.SetActive(false);
         }
     }
 
@@ -299,8 +332,26 @@ public class Launcher : MonoBehaviourPunCallbacks
         PhotonNetwork.NickName = PlayerPrefs.GetString("USERNAME");
     }
 
-    public void CloseRoomBrowser(){
+    public void CloseRoomBrowser()
+    {
         CloseAllScreens(); 
         lobbyScreen.SetActive(true);
+    }
+
+    public void RefreshRoomList()
+    {
+        if (PhotonNetwork.InLobby)
+        {
+            if (refreshingText != null)
+            {
+                refreshingText.gameObject.SetActive(true);
+            }
+            PhotonNetwork.LeaveLobby();
+            PhotonNetwork.JoinLobby();
+        }
+        else
+        {
+            Debug.LogWarning("Cannot refresh room list. Not din lobby.");
+        }
     }
 }

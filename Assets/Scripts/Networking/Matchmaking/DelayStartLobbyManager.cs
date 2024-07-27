@@ -10,10 +10,20 @@ using UnityEngine.SceneManagement;
 
 public class DelayStartLobbyManager : MonoBehaviourPunCallbacks
 {
+    public static DelayStartLobbyManager instance; 
+
     [Header("Delay Matchmaking configuration")]
     [SerializeField] public GameObject delayStartButton; // Button used for creating and joining a game
     [SerializeField] public GameObject delayCancelButton; // Button used to stop searching and joining a game
 
+
+
+    public void Awake()
+    {
+        instance = this; 
+    }
+
+    
     #region Delay Matchmaking
 
       public override void OnConnectedToMaster()
@@ -21,6 +31,7 @@ public class DelayStartLobbyManager : MonoBehaviourPunCallbacks
         print ("Connected to Master Ready for MatchMaking");
        delayStartButton.SetActive(true);
     }
+
 
 
     public void DelayStart()

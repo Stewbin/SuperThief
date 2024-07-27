@@ -191,12 +191,11 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
             }
 
 
-            // Handle continuous shooting
-            if (_isShootButtonPressed)
-            {
-                TryShoot();
-            }
-
+           // Handle continuous shooting
+        if (_isShootButtonPressed)
+        {
+            TryShoot();
+        }
 
             for (int i = 0; i < allGuns.Length; i++)
             {
@@ -214,29 +213,28 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
     }
 
 
-    private void TryShoot()
+private void TryShoot()
+{
+    Gun currentGun = allGuns[selectedGun];
+
+    if (currentGun.isAutomatic)
     {
-        Gun currentGun = allGuns[selectedGun];
-
-
-        if (currentGun.isAutomatic)
+        if (Time.time - currentGun.lastFireTime >= currentGun.fireRate)
         {
-            if (Time.time - currentGun.lastFireTime >= currentGun.fireRate)
-            {
-                Shoot();
-                currentGun.lastFireTime = Time.time;
-            }
-        }
-        else
-        {
-            if (Time.time - currentGun.lastFireTime >= currentGun.fireRate)
-            {
-                Shoot();
-                currentGun.lastFireTime = Time.time;
-            }
+            Shoot();
+            currentGun.lastFireTime = Time.time;
         }
     }
-
+    else
+    {
+        if (Time.time - currentGun.lastFireTime >= currentGun.fireRate && !currentGun.hasFired)
+        {
+            Shoot();
+            currentGun.lastFireTime = Time.time;
+            currentGun.hasFired = true;
+        }
+    }
+}
 
     public void Shoot()
     {
@@ -340,11 +338,7 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
 
 
 
-                // Display who the player just killed
-                // This ensures only the shooter sees this message
-
-                UIController.instance.debugMessage.text = "ELIMINATED: " + isPlayerDead;
-
+                ShowEliminationMessage(damager, victimName);
 
 
 
@@ -362,7 +356,6 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
             {
                 UIController.instance.healthSlider.value = currentHealth;
                 photonView.RPC("UpdateHealthBarRPC", RpcTarget.All, currentHealth);
-
 
             }
         }
@@ -435,6 +428,12 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
     }
 
 
+    public void SetActive(bool isActive)
+    {
+        _isShootButtonPressed = isActive;
+    }
+
+
     public void AimGun()
     {
         camera.fieldOfView = Mathf.Lerp(camera.fieldOfView, allGuns[selectedGun].adsZoom, adsSpeed * Time.deltaTime);
@@ -456,6 +455,7 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
         if (eventData.pointerCurrentRaycast.gameObject.CompareTag("ShootButton"))
         {
             _isShootButtonPressed = true;
+            UnityEngine.Debug.Log("Shoot button is being holded and pressed"); 
         }
         else if (eventData.pointerCurrentRaycast.gameObject.CompareTag("ReloadButton"))
         {
@@ -464,17 +464,20 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
     }
 
 
-    public void OnPointerUp(PointerEventData eventData)
+public void OnPointerUp(PointerEventData eventData)
+{
+    if (eventData.pointerCurrentRaycast.gameObject.CompareTag("ShootButton"))
     {
-        if (eventData.pointerCurrentRaycast.gameObject.CompareTag("ShootButton"))
-        {
-            _isShootButtonPressed = false;
-        }
-        else if (eventData.pointerCurrentRaycast.gameObject.CompareTag("ReloadButton"))
-        {
-            _isReloadButtonPressed = false;
-        }
+        _isShootButtonPressed = false;
+        allGuns[selectedGun].hasFired = false;
+        UnityEngine.Debug.Log("Shoot button is not being pressed");
     }
+    else if (eventData.pointerCurrentRaycast.gameObject.CompareTag("ReloadButton"))
+    {
+        _isReloadButtonPressed = false;
+    }
+}
+
 
 
     public void UpdateHealthBar()
@@ -535,44 +538,27 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
 
 
     #region Show Elimination Message (Only For Killer)
-    [PunRPC]
-    private void ShowEliminationMessage(string killer, string victim)
+  [PunRPC]
+private void ShowEliminationMessage(string killer, string victim)
+{
+    if (photonView.IsMine && killer == PhotonNetwork.LocalPlayer.NickName)
     {
-        if (photonView.IsMine && killer == photonView.Owner.NickName)
-        {
-            StartCoroutine(DisplayEliminationMessage(victim));
-            print("Eliminated " + victim);
-        }
+        StartCoroutine(DisplayEliminationMessage(victim));
+        UnityEngine.Debug.Log("Eliminated " + victim);
     }
+}
 
+private IEnumerator DisplayEliminationMessage(string victim)
+{
+    UIController.instance.eliminationMessage.gameObject.SetActive(true);
+    UIController.instance.eliminationMessage.text = "Eliminated " + victim;
+    UnityEngine.Debug.Log("Eliminated " + victim);
 
-    private IEnumerator DisplayEliminationMessage(string victim)
-    {
-        UIController.instance.eliminationMessage.gameObject.SetActive(true);
-        UIController.instance.eliminationMessage.text = "Eliminated " + victim;
-        print("Eliminated " + victim);
+    yield return new WaitForSeconds(5f);
 
-
-        yield return new WaitForSeconds(5f);
-
-
-        UIController.instance.eliminationMessage.gameObject.SetActive(false);
-    }
-
-
-    [PunRPC]
-    private void ShowEliminationMessageRPC(string damager, string victim)
-    {
-        // Display elimination message on all clients
-        UIController.instance.ShowEliminationMessage(damager, victim);
-
-        // Check if the local player is the damager
-        if (photonView.Owner.NickName == damager)
-        {
-            UIController.instance.ShowLocalEliminationMessage(victim);
-        }
-    }
-    #endregion
+    UIController.instance.eliminationMessage.gameObject.SetActive(false);
+}
+#endregion Show Elimination Message (Only For Killer)
 
 
 

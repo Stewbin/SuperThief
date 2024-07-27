@@ -8,6 +8,7 @@ public class Menu : MonoBehaviour
 {
   
     [SerializeField] public string instagramUrl; 
+    [SerializeField] public string discordUrl; 
 
     public TMP_Text playerUsernameDisplay; 
 
@@ -19,6 +20,8 @@ public class Menu : MonoBehaviour
     public GameObject shopPanel; 
 
     public GameObject lobbyMusic; 
+
+     [SerializeField] public GameObject matchMaking; 
 
 
     private void Start()
@@ -33,6 +36,8 @@ public class Menu : MonoBehaviour
         AdManager.Instance.HideBannerAd();
     }
     public void Awake() {
+
+        matchMaking.SetActive(false); 
 
         playerUsername = PlayerPrefs.GetString("USERNAME");
         HeistDiamondsValuesText.text = PlayerPrefs.GetInt("Diamonds").ToString(); 
@@ -67,8 +72,13 @@ public class Menu : MonoBehaviour
         Application.OpenURL(instagramUrl); 
     }
 
+     public void OpenDiscordUrl(){
+        Application.OpenURL(discordUrl); 
+    }
+
+
     public void OpenSinglePlayerScene(){
-        SceneManager.LoadScene("Local");
+        SceneManager.LoadScene("Enemies");
     }
 
      public void LeaveSinglePlayer(){
@@ -76,7 +86,8 @@ public class Menu : MonoBehaviour
     }
 
      public void DelayMatchMaking(){
-        SceneManager.LoadScene(12);
+        DelayStartLobbyManager.instance.DelayStart(); 
+        matchMaking.SetActive(true);
     }
 
     public void OpenShop(){

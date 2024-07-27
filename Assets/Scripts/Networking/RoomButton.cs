@@ -5,7 +5,7 @@ using Photon.Realtime;
 public class RoomButton : MonoBehaviour
 {
     public TMP_Text buttonText;
-    private RoomInfo info;
+    public RoomInfo info;
 
     public void SetButtonDetails(RoomInfo inputInfo)
     {

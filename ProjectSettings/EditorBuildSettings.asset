@@ -62,4 +62,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Production/Custom.unity
     guid: a7ec5adeb55114900aa4df79551d244e
+  - enabled: 1
+    path: Assets/Scenes/Enemies.unity
+    guid: d15de109c1617174a8240ab7f0dc5e24
   m_configObjects: {}

@@ -19,6 +19,7 @@ public class Gun : MonoBehaviour
     public int shotDamage;
     public int currentAmmoInClip;
     public float adsZoom ;
+    public bool hasFired;
 
     public float lastFireTime;
     public void Start()

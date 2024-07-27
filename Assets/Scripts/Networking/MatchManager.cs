@@ -6,6 +6,7 @@ using Photon.Pun;
 using Photon.Realtime;
 using ExitGames.Client.Photon;
 using TMPro;
+using System.Linq;
 
 public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
 {
@@ -58,14 +59,14 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
         "BE THE LAST WITH THE MOST CASH TO WIN",
         "Eliminate opponents to earn rewards!",
         "Keep an eye on the timer, every second counts!",
-        "Steal from the rich, but don’t get greedy!",
+        "Steal from the rich, but don't get greedy!",
         "Be quick and efficient – time is money!",
         "Keep your cool… and your loot!",
-        "Don’t forget to steal the cash",
+        "Don't forget to steal the cash",
         "Crush anyone who stands in your way!",
         "Show no mercy – eliminate the competition!",
         "Dominate the heist – let fear be your ally!",
-        "Every second counts – hesitate and you’re dead!",
+        "Every second counts – hesitate and you're dead!",
         "Take the cash and crush anyone who dares to stop you!",
         "Show no mercy – all that money is yours!",
         "Outsmart, outgun, and outloot them all!",
@@ -84,7 +85,6 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
             state = GameState.Waiting;
 
             UIController.instance.waitingScreen.SetActive(true);
-             // Pick a random tip
             string randomTip = tips[Random.Range(0, tips.Length)];
             UIController.instance.tipMessage.text = randomTip;
 
@@ -316,6 +316,7 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
                         break;
                     case 1: // deaths
                         allPlayers[i].deaths += amount;
+                        
                         break;
                     case 2: // money
                         allPlayers[i].money += amount;
@@ -376,7 +377,6 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
         List<PlayerInfo> sorted = new List<PlayerInfo>(players);
         sorted.Sort((x, y) => y.money.CompareTo(x.money));
         
-        // Assign ranks
         for (int i = 0; i < sorted.Count; i++)
         {
             sorted[i].rank = i + 1;
@@ -415,8 +415,6 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
     {
         state = GameState.Ending;
 
-        
-
         if(PhotonNetwork.IsMasterClient)
         {
             PhotonNetwork.DestroyAll();
@@ -424,7 +422,6 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
 
         UIController.instance.endScreen.SetActive(true);
 
-        //deactivate all other UI components 
         UIController.instance.deathScreen.SetActive(false);
         UIController.instance.leaderboardComponent.SetActive(false);
         UIController.instance.healthComponent.SetActive(false);
@@ -433,8 +430,6 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
         UIController.instance.timeComponent.SetActive(false);
         UIController.instance.optionComponent.SetActive(false);
 
-
-        //ShowLeaderBoard(); 
         DetermineWinner();
 
         Cursor.lockState = CursorLockMode.None;
@@ -526,9 +521,14 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
         UpdateTimerDisplay();
 
         UIController.instance.timerText.gameObject.SetActive(true);
+
+        if(state == GameState.Ending)
+        {
+            StateCheck();
+        }
     }
 
-    public void WaitingTimerSend()
+ public void WaitingTimerSend()
     {
         object[] package = new object[] { waitingTimer };
 
@@ -545,17 +545,12 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
         waitingTimer = (float)dataReceived[0];
         UIController.instance.waitingTimerText.text = "The Heist will begin in " + Mathf.CeilToInt(waitingTimer).ToString() + " seconds!";
 
-       
-
         UIController.instance.leaderboardComponent.SetActive(false);
         UIController.instance.healthComponent.SetActive(false);
         UIController.instance.statsComponent.SetActive(false);
         UIController.instance.GunComponent.SetActive(false);
         UIController.instance.timeComponent.SetActive(false);
         UIController.instance.optionComponent.SetActive(false);
-
-
-
 
         if (waitingTimer <= 0)
         {
@@ -570,8 +565,6 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
             UIController.instance.tipMessage.gameObject.SetActive(false);
 
             state = GameState.Playing;
-
-
         }
     }
 
@@ -586,7 +579,7 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
             }
         } 
 
-        UIController.instance.winnerText.text =  winner.name + " won the match with " + winner.money;
+        UIController.instance.winnerText.text =  winner.name + " won the match with $" + winner.money;
     }
 }
 
@@ -598,7 +591,7 @@ public class PlayerInfo
     public int kills;
     public int deaths;
     public int money;
-    public int rank; // New property
+    public int rank;
 
     public PlayerInfo(string _name, int _actor, int _kills, int _deaths, int _money)
     {
@@ -607,10 +600,6 @@ public class PlayerInfo
         kills = _kills;
         deaths = _deaths;
         money = _money;
-        rank = 0; // Initialize rank to 0
-
-
-
-
+        rank = 0;
     }
 }
