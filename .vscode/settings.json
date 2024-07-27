@@ -53,5 +53,5 @@
   },
 
   "dotnet.defaultSolution": "SuperTheif.sln",
-  "dotnet.preferCSharpExtension": true
+  "dotnet.preferCSharpExtension": false
 }

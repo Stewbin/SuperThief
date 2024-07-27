@@ -118,7 +118,7 @@ public class PlayerMove : MonoBehaviourPunCallbacks
         if (photonView.IsMine)
         {
             isGrounded = Physics.CheckSphere(Ground.position, GroundDistance, layerMask);
-            Debug.Log($"Is grounded is {isGrounded}");
+
             if (isGrounded && velocity.y < 0)
             {
                 velocity.y = -2f;
