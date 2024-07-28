@@ -27,6 +27,8 @@ public class PlayFabManager : MonoBehaviour
 
     [SerializeField] private int sceneIndex;
 
+    [SerializeField] public string privacyUrl;
+
     
 
     public GameObject loginPanel;
@@ -742,5 +744,14 @@ public CharacterManager GetCharacter(int index)
     return character[index];
 }
 #endregion Character Database System
+
+
+#region  Privacy Policy
+public void OpenPrivacyUrl(){
+
+Application.OpenURL(privacyUrl); 
+
+}
+#endregion Privacy Policy
 
 }
