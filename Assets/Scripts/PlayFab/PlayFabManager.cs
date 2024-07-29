@@ -29,6 +29,10 @@ public class PlayFabManager : MonoBehaviour
 
     [SerializeField] public string privacyUrl;
 
+    [Header("Account Deletion")]
+    [SerializeField] private GameObject deletionConfirmationPanel;
+    [SerializeField] private TMP_Text deletionStatusText;
+
     
 
     public GameObject loginPanel;
@@ -753,5 +757,75 @@ Application.OpenURL(privacyUrl);
 
 }
 #endregion Privacy Policy
+
+
+#region Account Deletion 
+
+
+public void OnClickDeleteAccount()
+    {
+        if (deletionConfirmationPanel != null)
+        {
+            deletionConfirmationPanel.SetActive(true);
+        }
+        else
+        {
+            ProceedWithAccountDeletion();
+        }
+    }
+
+    public void ConfirmAccountDeletion()
+    {
+        ProceedWithAccountDeletion();
+    }
+
+    public void CancelAccountDeletion()
+    {
+        if (deletionConfirmationPanel != null)
+        {
+            deletionConfirmationPanel.SetActive(false);
+        }
+    }
+
+    private void ProceedWithAccountDeletion()
+    {
+        var request = new ExecuteCloudScriptRequest
+        {
+            FunctionName = "deleteAccount"  // This should match the Cloud Script function name
+        };
+        PlayFabClientAPI.ExecuteCloudScript(request, OnDeleteAccountSuccess, OnDeleteAccountFailure);
+    }
+
+    private void OnDeleteAccountSuccess(ExecuteCloudScriptResult result)
+    {
+        var jsonResult = (JsonObject)result.FunctionResult;
+        var success = (bool)jsonResult["success"];
+        
+        if (success)
+        {
+            Debug.Log("Account deleted successfully");
+            if (deletionStatusText != null)
+            {
+                deletionStatusText.text = "Your account has been deleted successfully.";
+            }
+            PlayerPrefs.DeleteAll();
+            SceneManager.LoadScene("Authentication"); // Adjust the scene name as needed
+        }
+        else
+        {
+            var errorMessage = (string)jsonResult["error"];
+            OnDeleteAccountFailure(new PlayFabError { ErrorMessage = errorMessage });
+        }
+    }
+
+    private void OnDeleteAccountFailure(PlayFabError error)
+    {
+        Debug.LogError($"Failed to delete account: {error.ErrorMessage}");
+        if (deletionStatusText != null)
+        {
+            deletionStatusText.text = $"Failed to delete account: {error.ErrorMessage}";
+        }
+    }
+#endregion Account Deletion
 
 }
