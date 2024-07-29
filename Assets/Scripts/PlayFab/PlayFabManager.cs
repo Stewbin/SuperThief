@@ -1,3 +1,4 @@
+using System.ComponentModel.Design;
 using System;
 using PlayFab;
 using PlayFab.ClientModels;
@@ -762,21 +763,14 @@ Application.OpenURL(privacyUrl);
 #region Account Deletion 
 
 
-public void OnClickDeleteAccount()
+    public void OnClickDeleteAccount()
     {
-        if (deletionConfirmationPanel != null)
-        {
-            deletionConfirmationPanel.SetActive(true);
-        }
-        else
-        {
-            ProceedWithAccountDeletion();
-        }
+    Menu.instance.deletionPanel.gameObject.SetActive(true); 
     }
 
     public void ConfirmAccountDeletion()
     {
-        ProceedWithAccountDeletion();
+        ProceedWithAccountDeletion();   
     }
 
     public void CancelAccountDeletion()
@@ -804,12 +798,11 @@ public void OnClickDeleteAccount()
         if (success)
         {
             Debug.Log("Account deleted successfully");
-            if (deletionStatusText != null)
-            {
-                deletionStatusText.text = "Your account has been deleted successfully.";
-            }
+            
+            deletionStatusText.text = "Your account has been deleted successfully.";
+            
             PlayerPrefs.DeleteAll();
-            SceneManager.LoadScene("Authentication"); // Adjust the scene name as needed
+            StartCoroutine(ReturnToAuth());  // Adjust the scene name as needed
         }
         else
         {
@@ -825,6 +818,13 @@ public void OnClickDeleteAccount()
         {
             deletionStatusText.text = $"Failed to delete account: {error.ErrorMessage}";
         }
+    }
+
+    public IEnumerator ReturnToAuth()
+    {
+
+        yield return new WaitForSeconds(1f); 
+        SceneManager.LoadScene("Authentication");
     }
 #endregion Account Deletion
 
