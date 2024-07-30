@@ -116,6 +116,11 @@ public class Menu : MonoBehaviour
         deletionPanel.SetActive(true); 
     }
 
+    public void ConfirmAccountDeletionFromMenu()
+    {
+        PlayFabManager.PFC.ConfirmAccountDeletion(); 
+    }
+
  
 
 
