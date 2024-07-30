@@ -32,7 +32,7 @@ public class PlayFabManager : MonoBehaviour
 
     [Header("Account Deletion")]
     [SerializeField] private GameObject deletionConfirmationPanel;
-    [SerializeField] private TMP_Text deletionStatusText;
+  
 
     
 
@@ -799,7 +799,7 @@ Application.OpenURL(privacyUrl);
         {
             Debug.Log("Account deleted successfully");
             
-            deletionStatusText.text = "Your account has been deleted successfully.";
+            Menu.instance.deletionStatusText.text = "Your account has been deleted successfully.";
             
             PlayerPrefs.DeleteAll();
             StartCoroutine(ReturnToAuth());  // Adjust the scene name as needed
@@ -814,9 +814,9 @@ Application.OpenURL(privacyUrl);
     private void OnDeleteAccountFailure(PlayFabError error)
     {
         Debug.LogError($"Failed to delete account: {error.ErrorMessage}");
-        if (deletionStatusText != null)
+        if (Menu.instance.deletionStatusText.text != null)
         {
-            deletionStatusText.text = $"Failed to delete account: {error.ErrorMessage}";
+            Menu.instance.deletionStatusText.text = $"Failed to delete account: {error.ErrorMessage}";
         }
     }
 

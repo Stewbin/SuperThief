@@ -19,6 +19,8 @@ public class Menu : MonoBehaviour
      public TMP_Text HeistDiamondsValuesText; 
     [SerializeField] public string playerUsername; 
 
+    [SerializeField] public TMP_Text deletionStatusText;
+
     
 
     [Header("UI Panels")]

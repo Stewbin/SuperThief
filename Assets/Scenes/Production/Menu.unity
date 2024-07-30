@@ -9221,6 +9221,7 @@ MonoBehaviour:
   playerUsernameDisplay: {fileID: 42387252}
   HeistDiamondsValuesText: {fileID: 301524642}
   playerUsername: 
+  deletionStatusText: {fileID: 0}
   shopPanel: {fileID: 1051617687}
   lobbyMusic: {fileID: 653865871}
   settingsPanel: {fileID: 0}
@@ -13456,6 +13457,7 @@ MonoBehaviour:
   playerUsernameDisplay: {fileID: 0}
   HeistDiamondsValuesText: {fileID: 0}
   playerUsername: 
+  deletionStatusText: {fileID: 803270140}
   shopPanel: {fileID: 0}
   lobbyMusic: {fileID: 0}
   settingsPanel: {fileID: 1475701272}
@@ -14196,7 +14198,6 @@ MonoBehaviour:
   sceneIndex: 0
   privacyUrl: 
   deletionConfirmationPanel: {fileID: 419681823}
-  deletionStatusText: {fileID: 803270140}
   loginPanel: {fileID: 0}
   addLoginPanel: {fileID: 0}
   recoverButton: {fileID: 0}
