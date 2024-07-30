@@ -17,27 +17,23 @@ public class TrainingRoomManager : MonoBehaviour
     public Image PlayButton;
     public Sprite PlaySymbol;
     public Sprite PauseSymbol;
-    private bool isPlaying;
+    private bool _isPlaying;
     public TMP_Text counter;
 
 
     public void TogglePlay()
     {
-        if (isPlaying) // Pause
+        if (_isPlaying) // Pause
         {
-            isPlaying = false;
-            DummyBehaviour.Dummies.ForEach(dummy =>
-            {
-                dummy.StopMoving();
-                print("Stopped one dummy tonight!");
-            });
+            _isPlaying = false;
+            DummyBehaviour.Dummies.ForEach(dummy => dummy.StopMoving());
 
             PlayButton.sprite = PlaySymbol;
         }
         else // Play
         {
-            isPlaying = true;
-            DummyBehaviour.Dummies.ForEach(dummy => dummy.StartMoving());
+            _isPlaying = true;
+            DummyBehaviour.Dummies.ForEach(dummy => dummy.StartMoving(true));
 
             PlayButton.sprite = PauseSymbol;
         }
@@ -51,6 +47,7 @@ public class TrainingRoomManager : MonoBehaviour
         Vector3 spawnPt = transform.position;
         spawnPt.x += x;
         spawnPt.z += z;
+        spawnPt.y += 0.05f;
 
         Instantiate(DummyPrefab, spawnPt, Quaternion.identity);
     }
