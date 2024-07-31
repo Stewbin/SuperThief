@@ -230,6 +230,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 8064138999560970418}
     m_Modifications:
+    - target: {fileID: 306421509955231357, guid: fa675a78433bd214f83d82ac397cebd2, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: a430a0f07159a374bb405b7fe06b64b0, type: 3}
     - target: {fileID: 2473080064134906722, guid: fa675a78433bd214f83d82ac397cebd2, type: 3}
       propertyPath: m_Name
       value: JoyStick

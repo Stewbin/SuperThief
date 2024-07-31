@@ -86,8 +86,7 @@ public class TurretBehaviour : EnemyBehaviour
             directionToPlayer.Normalize(); // Normalize the direction to avoid scaling issues
 
             // Compute the new rotation
-            targetRotation = Quaternion.LookRotation(directionToPlayer, Quaternion.Inverse(_initRotation) * transform.up);
-
+            targetRotation = Quaternion.LookRotation(directionToPlayer, transform.up);
 
             // Start atttacking
             if (!_isAttacking)

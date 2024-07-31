@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
-using System;
 using TMPro;
-using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class DelayStartWaitingRoomManager : MonoBehaviourPunCallbacks
@@ -18,7 +16,6 @@ public class DelayStartWaitingRoomManager : MonoBehaviourPunCallbacks
     [SerializeField] private int minPlayersToStart;
 
     [SerializeField] private TMP_Text roomCountDisplay;
-    [SerializeField] private TMP_Text playerCountDisplay;
     [SerializeField] private TMP_Text timerToStartDisplay;
 
     [SerializeField] private int roomSize;
@@ -31,10 +28,10 @@ public class DelayStartWaitingRoomManager : MonoBehaviourPunCallbacks
     private float notFullGameTimer;
     private float fullGameTimer;
 
-    public TMP_Text playerNameLabel ;
-
-    public TMP_Text playerLeftOrJoinText; 
-   private List<TMP_Text> allPlayerNames = new List<TMP_Text>();
+    public TMP_Text playerNameLabelPrefab;
+    public Transform playerListContent;
+    public TMP_Text playerLeftOrJoinText;
+    private Dictionary<int, TMP_Text> playerListItems = new Dictionary<int, TMP_Text>();
 
     [SerializeField] private float maxWaitTime;
     [SerializeField] private float maxFullGameWaitTime;
@@ -47,59 +44,64 @@ public class DelayStartWaitingRoomManager : MonoBehaviourPunCallbacks
         timerToStartGame = maxWaitTime;
 
         PlayerCountUpdate();
+        SetNickname();
+        UpdatePlayerList();
     }
 
     public void PlayerCountUpdate()
     {
         playerCount = PhotonNetwork.PlayerList.Length;
         roomSize = PhotonNetwork.CurrentRoom.MaxPlayers;
-        roomCountDisplay.text = playerCount + ":" + roomSize;
+        roomCountDisplay.text = $"{playerCount}/{roomSize}";
 
-        if (playerCount == roomSize)
+        bool shouldStartCountdown = playerCount >= minPlayersToStart;
+        if (PhotonNetwork.IsMasterClient)
         {
-            readyToStart = true;
+            myPhotonView.RPC("RPC_UpdateCountdownStatus", RpcTarget.All, shouldStartCountdown, playerCount == roomSize);
         }
-        else if (playerCount >= minPlayersToStart)
-        {
-            readyToCountDown = true;
-        }
-        else
-        {
-            readyToCountDown = false;
-            readyToStart = false;
-        }
+    }
+
+    [PunRPC]
+    private void RPC_UpdateCountdownStatus(bool countDown, bool startNow)
+    {
+        readyToCountDown = countDown;
+        readyToStart = startNow;
     }
 
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
         PlayerCountUpdate();
-
-            //Added player Nickname UI
-
-            string savedUsername = PlayerPrefs.GetString("USERNAME");
-            PhotonNetwork.NickName = PlayerPrefs.GetString("USERNAME");
-
-            newPlayer.NickName = PlayerPrefs.GetString("USERNAME"); 
-    
-            if (playerNameLabel != null)
-            {
-        playerNameLabel.text = PlayerPrefs.GetString("USERNAME");
-        }
-        else
-        {
-         print("playerNameLabel is not assigned!");
-        }
-           
-            //Added player Nickname UI
-
+        UpdatePlayerList();
 
         if (PhotonNetwork.IsMasterClient)
         {
-            myPhotonView.RPC("RPC_SendTimer", RpcTarget.Others, timerToStartGame);
+            myPhotonView.RPC("RPC_SendTimer", RpcTarget.All, timerToStartGame);
         }
 
-        print("This player has joined the room" + newPlayer.NickName); 
-        StartCoroutine(DisplayPlayerJointUI(newPlayer.NickName)); 
+        StartCoroutine(DisplayPlayerJointUI(newPlayer.NickName));
+    }
+
+    public override void OnPlayerLeftRoom(Player otherPlayer)
+    {
+        PlayerCountUpdate();
+        UpdatePlayerList();
+        StartCoroutine(DisplayPlayerLeftUI(otherPlayer.NickName));
+    }
+
+    private void UpdatePlayerList()
+    {
+        foreach (var item in playerListItems.Values)
+        {
+            Destroy(item.gameObject);
+        }
+        playerListItems.Clear();
+
+        foreach (Player player in PhotonNetwork.PlayerList)
+        {
+            TMP_Text newPlayerLabel = Instantiate(playerNameLabelPrefab, playerListContent);
+            newPlayerLabel.text = player.NickName;
+            playerListItems.Add(player.ActorNumber, newPlayerLabel);
+        }
     }
 
     [PunRPC]
@@ -107,36 +109,24 @@ public class DelayStartWaitingRoomManager : MonoBehaviourPunCallbacks
     {
         timerToStartGame = timeIn;
         notFullGameTimer = timeIn;
-
-        if (timeIn < fullGameTimer)
-        {
-            fullGameTimer = timeIn;
-        }
+        fullGameTimer = timeIn;
     }
 
-public override void OnPlayerLeftRoom(Player otherPlayer)
-{
-    PlayerCountUpdate();
-    StartCoroutine(DisplayPlayerLeftUI(otherPlayer.NickName));
-}
+    IEnumerator DisplayPlayerLeftUI(string playerName)
+    {
+        playerLeftOrJoinText.gameObject.SetActive(true);
+        playerLeftOrJoinText.text = playerName + " has left the room";
+        yield return new WaitForSeconds(3f);
+        playerLeftOrJoinText.gameObject.SetActive(false);
+    }
 
-IEnumerator DisplayPlayerLeftUI(string playerName)
-{
-    playerLeftOrJoinText.gameObject.SetActive(true);
-    playerLeftOrJoinText.text = playerName + " has left the room";
-    yield return new WaitForSeconds(3f);
-    playerLeftOrJoinText.gameObject.SetActive(false);
-}
-
-IEnumerator DisplayPlayerJointUI(string playerName)
-{
-    playerLeftOrJoinText.gameObject.SetActive(true);
-    playerLeftOrJoinText.text = playerName + " has joined the room";
-    yield return new WaitForSeconds(3f);
-    playerLeftOrJoinText.gameObject.SetActive(false);
-}
-
-
+    IEnumerator DisplayPlayerJointUI(string playerName)
+    {
+        playerLeftOrJoinText.gameObject.SetActive(true);
+        playerLeftOrJoinText.text = playerName + " has joined the room";
+        yield return new WaitForSeconds(3f);
+        playerLeftOrJoinText.gameObject.SetActive(false);
+    }
 
     private void Update()
     {
@@ -148,31 +138,28 @@ IEnumerator DisplayPlayerJointUI(string playerName)
         if (playerCount <= 1)
         {
             ResetTimer();
+            return;
         }
 
-        if (readyToStart)
+        if (readyToStart || readyToCountDown)
         {
-            fullGameTimer -= Time.deltaTime;
-            timerToStartGame = fullGameTimer;
-        }
-        else if (readyToCountDown)
-        {
-            notFullGameTimer -= Time.deltaTime;
-            timerToStartGame = notFullGameTimer;
+            timerToStartGame -= Time.deltaTime;
+            timerToStartGame = Mathf.Max(timerToStartGame, 0f);
+           
+            if (PhotonNetwork.IsMasterClient)
+            {
+                myPhotonView.RPC("RPC_SendTimer", RpcTarget.All, timerToStartGame);
+            }
         }
         else
         {
-            ResetTimer(); // Reset the timer if not ready to count down
+            ResetTimer();
         }
 
         timerToStartDisplay.text = timerToStartGame.ToString("00");
 
-        if (timerToStartGame <= 0f)
+        if (timerToStartGame <= 0f && !startingGame)
         {
-            if (startingGame)
-            {
-                return;
-            }
             StartGame();
         }
     }
@@ -186,11 +173,16 @@ IEnumerator DisplayPlayerJointUI(string playerName)
 
     public void StartGame()
     {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            myPhotonView.RPC("RPC_StartGame", RpcTarget.All);
+        }
+    }
+
+    [PunRPC]
+    private void RPC_StartGame()
+    {
         startingGame = true;
-
-    
-
-        // Ensure all players are ready before starting the game
         if (PhotonNetwork.PlayerList.Length >= minPlayersToStart)
         {
             PhotonNetwork.CurrentRoom.IsOpen = false;
@@ -198,7 +190,6 @@ IEnumerator DisplayPlayerJointUI(string playerName)
         }
         else
         {
-            // If not enough players are present, reset the starting game flag
             startingGame = false;
         }
     }
@@ -209,18 +200,9 @@ IEnumerator DisplayPlayerJointUI(string playerName)
         SceneManager.LoadScene(menuSceneIndex);
     }
 
-  public void SetNickname()
-{
-    string savedUsername = PlayerPrefs.GetString("USERNAME");
-    PhotonNetwork.NickName = PlayerPrefs.GetString("USERNAME");
-    
-    if (playerNameLabel != null)
+    public void SetNickname()
     {
-        playerNameLabel.text = PlayerPrefs.GetString("USERNAME");
+        string savedUsername = PlayerPrefs.GetString("USERNAME");
+        PhotonNetwork.NickName = savedUsername;
     }
-    else
-    {
-       print("playerNameLabel is not assigned!");
-    }
-}
 }

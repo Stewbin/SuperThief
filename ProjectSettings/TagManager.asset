@@ -6,6 +6,7 @@ TagManager:
   tags:
   - ShootButton
   - ReloadButton
+  - Dummy
   layers:
   - Default
   - TransparentFX
