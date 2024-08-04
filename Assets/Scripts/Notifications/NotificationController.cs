@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 #if UNITY_IOS
 using Unity.Notifications.iOS;
@@ -7,8 +5,8 @@ using Unity.Notifications.iOS;
 
 public class NotificationController : MonoBehaviour
 {
-    #if UNITY_IOS
-    [SerializeField] private iOSNotifications iosNotifications; 
+#if UNITY_IOS
+    [SerializeField] private iOSNotifications iosNotifications;
 
     private void Start()
     {
@@ -19,8 +17,8 @@ public class NotificationController : MonoBehaviour
     {
         if (focus == false)
         {
-            iosNotifications.SendNotification("SUPERTHIEF", "Pablo Escobar has invited you to a team heist. Join now and plan the perfect heist together!", "Team Heist", 59);
+            iosNotifications.SendNotification();
         }
     }
-    #endif
+#endif
 }

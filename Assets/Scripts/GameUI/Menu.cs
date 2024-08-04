@@ -1,3 +1,4 @@
+using System.Net.Mime;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,19 +8,30 @@ using TMPro;
 public class Menu : MonoBehaviour
 {
   
+
+    public static Menu instance; 
     [SerializeField] public string instagramUrl; 
     [SerializeField] public string discordUrl; 
+    [SerializeField] public string privacyUrl; 
 
     public TMP_Text playerUsernameDisplay; 
 
      public TMP_Text HeistDiamondsValuesText; 
     [SerializeField] public string playerUsername; 
 
+    [SerializeField] public TMP_Text deletionStatusText;
+
+    
+
     [Header("UI Panels")]
 
     public GameObject shopPanel; 
 
     public GameObject lobbyMusic; 
+
+    [SerializeField] public GameObject settingsPanel;
+    
+    [SerializeField] public GameObject deletionPanel;
 
      [SerializeField] public GameObject matchMaking; 
 
@@ -37,6 +49,9 @@ public class Menu : MonoBehaviour
     }
     public void Awake() {
 
+        instance = this; 
+
+
         matchMaking.SetActive(false); 
 
         playerUsername = PlayerPrefs.GetString("USERNAME");
@@ -45,6 +60,7 @@ public class Menu : MonoBehaviour
         print("The player username is " + playerUsername);
 
         shopPanel.SetActive(false); 
+        settingsPanel.SetActive(false); 
 
         lobbyMusic.SetActive(true);
 
@@ -76,9 +92,44 @@ public class Menu : MonoBehaviour
         Application.OpenURL(discordUrl); 
     }
 
+    public void OpenSettingsPanel()
+    {
+        settingsPanel.SetActive(true); 
+    }
+
+    public void CloseSettingsPanel()
+    {
+        settingsPanel.SetActive(false); 
+    }
+
+     public void CloseDeletionPanel()
+    {
+        deletionPanel.SetActive(false); 
+        settingsPanel.SetActive(false); 
+    }
+
+    public void OpenPrivacy()
+    {
+       Application.OpenURL(privacyUrl); 
+    }
+
+     public void OnClickDeleteAccount()
+    {
+        deletionPanel.SetActive(true); 
+    }
+
+    public void ConfirmAccountDeletionFromMenu()
+    {
+        PlayFabManager.PFC.ConfirmAccountDeletion(); 
+    }
+
+ 
+
+
+
 
     public void OpenSinglePlayerScene(){
-        SceneManager.LoadScene("Enemies");
+        SceneManager.LoadScene(18);
     }
 
      public void LeaveSinglePlayer(){
