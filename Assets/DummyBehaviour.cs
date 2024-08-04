@@ -11,9 +11,9 @@ public class DummyBehaviour : MonoBehaviourPunCallbacks
     public float Range = 1f;
     private Vector3 startPosition;
     public int MaxHealth;
-    private int _currentHealth;
+    [SerializeField] private int _currentHealth;
     public float RespawnTime;
-    private Coroutine moving;
+    private Coroutine _moving;
 
     // Start is called before the first frame update
     private void Start()
@@ -31,7 +31,7 @@ public class DummyBehaviour : MonoBehaviourPunCallbacks
 
     #region Health
     [PunRPC]
-    private void TakeDamage(string damager, int damageAmount, int actor)
+    public void TakeDamage(int damageAmount)
     {
         print("Ouch");
         _currentHealth -= damageAmount;
@@ -49,13 +49,16 @@ public class DummyBehaviour : MonoBehaviourPunCallbacks
         yield return new WaitForSeconds(RespawnTime);
         gameObject.SetActive(true);
     }
+
     #endregion
 
     #region Movement
-    private bool hitWall = false;
-    public IEnumerator MoveLeftAndRight()
+    private bool _hitWall = false;
+    public bool IsRight = false;
+    public IEnumerator MoveLeftAndRight(bool isRight)
     {
-        Vector3 displacement = Range * transform.right;
+        int direction = isRight ? 1 : -1;
+        Vector3 displacement = Range * direction * transform.right;
         float time = Time.deltaTime * MoveSpeed;
         while (true)
         {
@@ -63,35 +66,45 @@ public class DummyBehaviour : MonoBehaviourPunCallbacks
 
             transform.position = Vector3.MoveTowards(transform.position, targetPosition, time);
 
-            if (Vector3.Distance(transform.position, targetPosition) < 0.1f || hitWall)
+            if (Vector3.Distance(transform.position, targetPosition) < 0.1f)
             {
                 displacement *= -1;
+                print("Changing");
             }
-
-            Debug.Log("Moving!");
+            print("Stepping");
             yield return null;
         }
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        hitWall = other.gameObject.name.Equals("Walls");
+        _hitWall = other.gameObject.layer == LayerMask.NameToLayer("Ground");
+
+        // Reverse direction
+        StopMoving();
+        IsRight = !IsRight;
+        Debug.Assert(_moving == null);
+        StartMoving(IsRight);
+
+        print("Hit wall?: " + _hitWall);
     }
 
-    public void StartMoving()
+    public void StartMoving(bool isRight)
     {
-        if (moving == null)
+        print("started");
+        if (_moving == null)
         {
-            moving = StartCoroutine(MoveLeftAndRight());
+            _moving = StartCoroutine(MoveLeftAndRight(isRight));
         }
     }
 
     public void StopMoving()
     {
-        if (moving != null)
+        print("stopped");
+        if (_moving != null)
         {
-            StopCoroutine(moving);
-            moving = null;
+            StopCoroutine(_moving);
+            _moving = null;
         }
     }
     #endregion

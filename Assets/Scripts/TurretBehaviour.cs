@@ -14,7 +14,6 @@ public class TurretBehaviour : EnemyBehaviour
     public float TurnSpeed = 0.01f;
     public int AggroTime;
     private float _aggroTime;
-    private Quaternion _initRotation;
     private bool _isAttacking;
 
     // Start is called before the first frame update
@@ -27,17 +26,17 @@ public class TurretBehaviour : EnemyBehaviour
         _initRotation = _turretHead.rotation;
         step = TurnSpeed * Time.deltaTime;
         targetRotation = Quaternion.Euler(0, FOV / 2, 0);
-        print("Laserpointer rot: " + _initRotation * _shootOrigin.forward);
 
         // Setup line renderer
         _lineRenderer.positionCount = 2;
     }
 
+    private Quaternion _initRotation;
     private Quaternion targetRotation;
     private float step;
     void Update()
     {
-        #region Shared between states
+        #region Raycast 
         Ray ray = new(_shootOrigin.position, Quaternion.Euler(0, -90, 0) * _shootOrigin.forward);
         // "Forward" is considered 'right' cuz of model T^T
 
@@ -48,9 +47,9 @@ public class TurretBehaviour : EnemyBehaviour
             seenPlayer = hit.collider.CompareTag("Player");
         }
 
-        // Set the positions of the LineRenderer
-        _lineRenderer.SetPosition(0, ray.origin);
-        _lineRenderer.SetPosition(1, ray.origin + ray.direction * RayLength);
+        // // Set the positions of the LineRenderer
+        // _lineRenderer.SetPosition(0, ray.origin);
+        // _lineRenderer.SetPosition(1, ray.origin + ray.direction * RayLength);
 
         #endregion
 
@@ -63,7 +62,7 @@ public class TurretBehaviour : EnemyBehaviour
                 _isAttacking = false;
             }
 
-
+            // Change target rotation at end of rotation
             if (Quaternion.Angle(_turretHead.rotation, targetRotation) < 0.1f)
             {
                 targetRotation = Quaternion.Inverse(targetRotation);
@@ -89,7 +88,6 @@ public class TurretBehaviour : EnemyBehaviour
             // Compute the new rotation
             targetRotation = Quaternion.LookRotation(directionToPlayer, transform.up);
 
-
             // Start atttacking
             if (!_isAttacking)
             {
@@ -110,16 +108,14 @@ public class TurretBehaviour : EnemyBehaviour
             }
         }
 
+
+
+        #region Rotate turret head
         // Move to target rotation
         _turretHead.localRotation = Quaternion.RotateTowards(_turretHead.localRotation, targetRotation, step);
 
-        /* 
-            Note: Enemies can't die until gun system is reworked
-        */
-        // if(_advancedGunSystem.currentHealth <= 0)
-        // {
-        //     PhotonNetwork.Destroy(gameObject);
-        // }
+        #endregion
+
     }
 
     private void LateUpdate()
@@ -130,7 +126,6 @@ public class TurretBehaviour : EnemyBehaviour
     }
     public float ReloadTime = 5;
     public float SecPerBullet = 5;
-    public bool rotate;
 
     private IEnumerator Attack(RaycastHit hit)
     {

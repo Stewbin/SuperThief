@@ -191,11 +191,11 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
             }
 
 
-           // Handle continuous shooting
-        if (_isShootButtonPressed)
-        {
-            TryShoot();
-        }
+            // Handle continuous shooting
+            if (_isShootButtonPressed)
+            {
+                TryShoot();
+            }
 
             for (int i = 0; i < allGuns.Length; i++)
             {
@@ -213,28 +213,28 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
     }
 
 
-private void TryShoot()
-{
-    Gun currentGun = allGuns[selectedGun];
+    private void TryShoot()
+    {
+        Gun currentGun = allGuns[selectedGun];
 
-    if (currentGun.isAutomatic)
-    {
-        if (Time.time - currentGun.lastFireTime >= currentGun.fireRate)
+        if (currentGun.isAutomatic)
         {
-            Shoot();
-            currentGun.lastFireTime = Time.time;
+            if (Time.time - currentGun.lastFireTime >= currentGun.fireRate)
+            {
+                Shoot();
+                currentGun.lastFireTime = Time.time;
+            }
+        }
+        else
+        {
+            if (Time.time - currentGun.lastFireTime >= currentGun.fireRate && !currentGun.hasFired)
+            {
+                Shoot();
+                currentGun.lastFireTime = Time.time;
+                currentGun.hasFired = true;
+            }
         }
     }
-    else
-    {
-        if (Time.time - currentGun.lastFireTime >= currentGun.fireRate && !currentGun.hasFired)
-        {
-            Shoot();
-            currentGun.lastFireTime = Time.time;
-            currentGun.hasFired = true;
-        }
-    }
-}
 
     public void Shoot()
     {
@@ -292,16 +292,32 @@ private void TryShoot()
                 targetPlayerName = targetPhotonView.Owner.NickName;
 
             }
+            else if (hit.collider.CompareTag("Dummy"))
+            {
+                // Damage dummy
+                print("Dummy found");
+                Debug.Assert(hit.transform.root.gameObject.TryGetComponent<DummyBehaviour>(out var dummyScript));
+                dummyScript.TakeDamage(allGuns[selectedGun].shotDamage);
+
+                // Bullet impact
+                GameObject bulletImpactObject = Instantiate(bulletImpact, hit.point + hit.normal * 0.002f, Quaternion.LookRotation(hit.normal, Vector3.up));
+                Destroy(bulletImpactObject, 5f);
+                //Show Hit Marker
+                HitMarkerActive();
+                damageIndicator.text = allGuns[selectedGun].shotDamage.ToString();
+                Invoke("HitMarkerInActive", 0.1f);
+                playHitMarker = true;
+                PlayHitMarkerSoundFX();
+            }
             else
             {
                 GameObject bulletImpactObject = Instantiate(bulletImpact, hit.point + hit.normal * 0.002f, Quaternion.LookRotation(hit.normal, Vector3.up));
                 Destroy(bulletImpactObject, 5f);
                 playHitMarker = false;
-
             }
         }
 
-
+        print("Dummy? :" + hit.collider.CompareTag("Dummy"));
 
         allGuns[selectedGun].currentAmmoInClip--;
         heatCounter += allGuns[selectedGun].shotDamage;
@@ -455,7 +471,7 @@ private void TryShoot()
         if (eventData.pointerCurrentRaycast.gameObject.CompareTag("ShootButton"))
         {
             _isShootButtonPressed = true;
-            UnityEngine.Debug.Log("Shoot button is being holded and pressed"); 
+            UnityEngine.Debug.Log("Shoot button is being holded and pressed");
         }
         else if (eventData.pointerCurrentRaycast.gameObject.CompareTag("ReloadButton"))
         {
@@ -464,19 +480,19 @@ private void TryShoot()
     }
 
 
-public void OnPointerUp(PointerEventData eventData)
-{
-    if (eventData.pointerCurrentRaycast.gameObject.CompareTag("ShootButton"))
+    public void OnPointerUp(PointerEventData eventData)
     {
-        _isShootButtonPressed = false;
-        allGuns[selectedGun].hasFired = false;
-        UnityEngine.Debug.Log("Shoot button is not being pressed");
+        if (eventData.pointerCurrentRaycast.gameObject.CompareTag("ShootButton"))
+        {
+            _isShootButtonPressed = false;
+            allGuns[selectedGun].hasFired = false;
+            UnityEngine.Debug.Log("Shoot button is not being pressed");
+        }
+        else if (eventData.pointerCurrentRaycast.gameObject.CompareTag("ReloadButton"))
+        {
+            _isReloadButtonPressed = false;
+        }
     }
-    else if (eventData.pointerCurrentRaycast.gameObject.CompareTag("ReloadButton"))
-    {
-        _isReloadButtonPressed = false;
-    }
-}
 
 
 
@@ -538,27 +554,27 @@ public void OnPointerUp(PointerEventData eventData)
 
 
     #region Show Elimination Message (Only For Killer)
-  [PunRPC]
-private void ShowEliminationMessage(string killer, string victim)
-{
-    if (photonView.IsMine && killer == PhotonNetwork.LocalPlayer.NickName)
+    [PunRPC]
+    private void ShowEliminationMessage(string killer, string victim)
     {
-        StartCoroutine(DisplayEliminationMessage(victim));
-        UnityEngine.Debug.Log("Eliminated " + victim);
+        if (photonView.IsMine && killer == PhotonNetwork.LocalPlayer.NickName)
+        {
+            StartCoroutine(DisplayEliminationMessage(victim));
+            UnityEngine.Debug.Log("Eliminated " + victim);
+        }
     }
-}
 
-private IEnumerator DisplayEliminationMessage(string victim)
-{
-    UIController.instance.eliminationMessage.gameObject.SetActive(true);
-    UIController.instance.eliminationMessage.text = "Eliminated " + victim;
-    UnityEngine.Debug.Log("Eliminated " + victim);
+    private IEnumerator DisplayEliminationMessage(string victim)
+    {
+        UIController.instance.eliminationMessage.gameObject.SetActive(true);
+        UIController.instance.eliminationMessage.text = "Eliminated " + victim;
+        UnityEngine.Debug.Log("Eliminated " + victim);
 
-    yield return new WaitForSeconds(5f);
+        yield return new WaitForSeconds(5f);
 
-    UIController.instance.eliminationMessage.gameObject.SetActive(false);
-}
-#endregion Show Elimination Message (Only For Killer)
+        UIController.instance.eliminationMessage.gameObject.SetActive(false);
+    }
+    #endregion Show Elimination Message (Only For Killer)
 
 
 
