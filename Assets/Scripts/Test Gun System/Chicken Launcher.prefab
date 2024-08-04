@@ -41,7 +41,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7447843625940069369}
   m_Layer: 0
-  m_Name: Rocket Launcher
+  m_Name: Chicken Launcher
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

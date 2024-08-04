@@ -118,11 +118,10 @@ GameObject:
   m_Component:
   - component: {fileID: 5556368267281210727}
   - component: {fileID: 540065212320613006}
-  - component: {fileID: 5311664051080910597}
-  - component: {fileID: 7603567677066265006}
   - component: {fileID: 519824598921865569}
   - component: {fileID: 857083624535841925}
   - component: {fileID: 5082673554981541242}
+  - component: {fileID: 9205590926706881285}
   m_Layer: 0
   m_Name: Turret
   m_TagString: Untagged
@@ -161,55 +160,13 @@ MonoBehaviour:
   _lineRenderer: {fileID: 519170955318082924}
   _turretHead: {fileID: 4459138201521205675}
   _shootOrigin: {fileID: 1352677597914048582}
-  _advancedGunSystem: {fileID: 0}
-  _simpleGunSystem: {fileID: 0}
+  _gunSystem: {fileID: 9205590926706881285}
   RayLength: 5
   FOV: 180
   TurnSpeed: 10
   AggroTime: 10
   ReloadTime: 8
   SecPerBullet: 4
-  rotate: 1
---- !u!114 &5311664051080910597
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1261939540798350415}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 567262a0c0343aa43aed1a28da6728e4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isAutomatic: 0
-  fireRate: 0.1
-  clipSize: 0
-  reservedAmmoCapacity: 0
-  muzzleFlash: {fileID: 0}
-  shotDamage: 0
-  currentAmmoInClip: 0
-  adsZoom: 0
-  lastFireTime: 0
---- !u!114 &7603567677066265006
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1261939540798350415}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4b5f4aad66b8ccc40939c247fecb7128, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  TheGun: {fileID: 5311664051080910597}
-  _shootOrigin: {fileID: 1352677597914048582}
-  _audioSource: {fileID: 519824598921865569}
-  BulletImpact: {fileID: 8520776430649704606, guid: 22c69eb8035d2e146b10bfea805102cf, type: 3}
-  PlayerHitImpact: {fileID: 8520776430649704606, guid: afd936d709b49bb4995646406a6eb71c, type: 3}
-  BulletTrail: {fileID: 5905089801231778237, guid: b2c46f5c7c576874084b3300660a5f7f, type: 3}
-  BulletSpeed: 100
 --- !u!82 &519824598921865569
 AudioSource:
   m_ObjectHideFlags: 0
@@ -345,6 +302,27 @@ MonoBehaviour:
   m_SynchronizeRotation: 1
   m_SynchronizeScale: 0
   m_UseLocal: 1
+--- !u!114 &9205590926706881285
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1261939540798350415}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35c08db5fa4d42d4a990a4ceb2501522, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MaxHealth: 100
+  healthBarDisplay: {fileID: 0}
+  IsGunVisible: 0
+  _gunHolder: {fileID: 0}
+  Guns:
+  - {fileID: 11400000, guid: c0efb9fade191dd4b8423cec77fd3f90, type: 2}
+  _raycastOrigin: {fileID: 1352677597914048582}
+  CurrentAmmo: 0
+  AmmoInReserve: 0
 --- !u!1 &1761460429491000069
 GameObject:
   m_ObjectHideFlags: 0
@@ -572,13 +550,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2665172672313362310}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: -0, w: 1}
+  m_LocalRotation: {x: -0.5, y: -0.5, z: 0.5, w: 0.5}
   m_LocalPosition: {x: 1.4690399, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4459138201521205675}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 90}
 --- !u!120 &519170955318082924
 LineRenderer:
   serializedVersion: 2
@@ -623,7 +601,7 @@ LineRenderer:
   m_SortingOrder: 0
   m_Positions:
   - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 1}
+  - {x: 0, y: 0, z: 0}
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 1

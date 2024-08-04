@@ -2,34 +2,39 @@ using UnityEngine;
 using UnityEngine.Assertions;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.Pool;
+using Photon.Pun;
 
-public class ProjectileMotion : MonoBehaviour
+public class ProjectileMotion : MonoBehaviourPunCallbacks
 {
     [Header("Audio")]
-    [SerializeField] private List<AudioClip> sounds;
     [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip onDestroySound;
+    [SerializeField] private List<AudioClip> regularSounds;
     public float SoundInterval = 2f;
 
-    [SerializeField] private Test_GunItem gunItem;
+    [Header("Motion")]
     public float Gravity = 9.8f;
-    private float _bulletSpeed => gunItem.BulletSpeed;
+    [SerializeField] private Test_GunItem _gunItem;
+    private float _damage => _gunItem.Damage;
+    private float _speed => _gunItem.BulletSpeed;
     private Vector3 y_Vel;
     private Vector3 xz_Vel;
+    [HideInInspector] public ObjectPool<GameObject> ProjectilePool;
 
-
-    private void Start()
+    public override void OnEnable()
     {
+        base.OnEnable();
         // Bullet sounds
-        StartCoroutine(PlaySounds());      
-        
-        Vector3 velocity = _bulletSpeed * transform.forward;  
+        StartCoroutine(PlaySounds());
+
+        Vector3 velocity = _speed * transform.forward;
         // Velocity components
         y_Vel = velocity.y * Vector3.up;
-        xz_Vel = velocity - y_Vel;   
+        xz_Vel = velocity - y_Vel;
     }
 
     private Vector3 targetPosition;
-
     private void FixedUpdate()
     {
         targetPosition = transform.position;
@@ -41,25 +46,31 @@ public class ProjectileMotion : MonoBehaviour
 
         // Incorporate gravity
         y_Vel.y += -0.5f * Time.fixedDeltaTime * Gravity;
-        
+
         // Apply vertical motion
         targetPosition.y += Time.fixedDeltaTime * y_Vel.y;
 
         transform.position = targetPosition;
     }
 
-    private void OnCollisionEnter()
+    private void OnTriggerEnter(Collider victim)
     {
         print("Touched something, gunna die now!");
-        Destroy(gameObject);
-        // TODO: Add back bullet to object pool instead of destroying
+
+        if (victim.TryGetComponent<Test_GunSystem>(out Test_GunSystem gunSystem))
+        {
+            victim.gameObject.GetPhotonView().RPC(nameof(gunSystem.TakeDamage), RpcTarget.Others, this);
+        }
+
+        //  Add back bullet to object pool instead of destroying
+        ProjectilePool.Release(gameObject);
     }
 
     private IEnumerator PlaySounds()
     {
         while (true)
         {
-            sounds.ForEach(sound => audioSource.PlayOneShot(sound));
+            regularSounds.ForEach(sound => audioSource.PlayOneShot(sound));
             yield return new WaitForSeconds(SoundInterval);
         }
     }

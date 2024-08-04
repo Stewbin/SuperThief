@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028334, g: 0.22571328, b: 0.3069217, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028331, g: 0.2257133, b: 0.3069217, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -123,6 +123,24 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &44464794 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8478702638629644546, guid: b5cd3fcc9ed98f94098acdb89b745a2f, type: 3}
+  m_PrefabInstance: {fileID: 5688429968212888254}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &44464796
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 44464794}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6dedc6fa6948bff4a99d29ff9156d94e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  axisLength: 2
 --- !u!1 &76587037
 GameObject:
   m_ObjectHideFlags: 0
@@ -928,11 +946,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   instagramUrl: 
+  discordUrl: 
+  privacyUrl: 
   playerUsernameDisplay: {fileID: 0}
   HeistDiamondsValuesText: {fileID: 0}
   playerUsername: 
+  deletionStatusText: {fileID: 0}
   shopPanel: {fileID: 0}
   lobbyMusic: {fileID: 0}
+  settingsPanel: {fileID: 0}
+  deletionPanel: {fileID: 0}
   matchMaking: {fileID: 0}
 --- !u!1001 &684159554
 PrefabInstance:
@@ -1029,10 +1052,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 3295737677533017737, guid: 3044a7f2f024b7f4588a26ee3e06850d, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3044a7f2f024b7f4588a26ee3e06850d, type: 3}
 --- !u!1 &736323396
 GameObject:
@@ -1133,7 +1153,7 @@ Transform:
   m_GameObject: {fileID: 736323396}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 7.7, y: 1.81, z: 6.11}
+  m_LocalPosition: {x: 5.84, y: 1.81, z: 9.76}
   m_LocalScale: {x: 1, y: 2.6974, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1312,9 +1332,13 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 519170955318082924, guid: b5cd3fcc9ed98f94098acdb89b745a2f, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 540065212320613006, guid: b5cd3fcc9ed98f94098acdb89b745a2f, type: 3}
-      propertyPath: _advancedGunSystem
-      value: 
+      propertyPath: TurnSpeed
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 857083624535841925, guid: b5cd3fcc9ed98f94098acdb89b745a2f, type: 3}
       propertyPath: sceneViewId
@@ -1367,7 +1391,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8478702638629644546, guid: b5cd3fcc9ed98f94098acdb89b745a2f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 44464796}
   m_SourcePrefab: {fileID: 100100000, guid: b5cd3fcc9ed98f94098acdb89b745a2f, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
@@ -1379,3 +1406,4 @@ SceneRoots:
   - {fileID: 102513858}
   - {fileID: 5688429968212888254}
   - {fileID: 638515974}
+  - {fileID: 736323400}

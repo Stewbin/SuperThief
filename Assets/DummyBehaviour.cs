@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class DummyBehaviour : MonoBehaviourPunCallbacks
 {
-    public static readonly List<DummyBehaviour> Dummies = new();
+    public TrainingRoomManager Manager;
     public float MoveSpeed;
     public float Range = 1f;
     private Vector3 startPosition;
@@ -19,18 +19,18 @@ public class DummyBehaviour : MonoBehaviourPunCallbacks
     private void Start()
     {
         startPosition = transform.position;
-        Dummies.Add(this);
+        Manager.DummiesInRoom.Add(this);
 
         _currentHealth = MaxHealth;
     }
 
+    #region Health
     private void OnDestroy()
     {
-        Dummies.Remove(this);
+        Manager.DummiesInRoom.Remove(this);
+        Manager.IncrementVanquishCounter();
     }
 
-    #region Health
-    [PunRPC]
     public void TakeDamage(int damageAmount)
     {
         print("Ouch");
@@ -39,15 +39,8 @@ public class DummyBehaviour : MonoBehaviourPunCallbacks
         if (_currentHealth <= 0)
         {
             _currentHealth = 0;
-            StartCoroutine(Die());
+            Destroy(gameObject);
         }
-    }
-
-    private IEnumerator Die()
-    {
-        gameObject.SetActive(false);
-        yield return new WaitForSeconds(RespawnTime);
-        gameObject.SetActive(true);
     }
 
     #endregion

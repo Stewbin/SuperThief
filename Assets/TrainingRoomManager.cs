@@ -6,8 +6,8 @@ using TMPro;
 
 public class TrainingRoomManager : MonoBehaviour
 {
-    public GameObject DummyPrefab;
-    public int DummyCount { get; private set; }
+    public DummyBehaviour DummyPrefab;
+    public List<DummyBehaviour> DummiesInRoom;
     [Header("Bounds")]
     public float UpperBound;
     public float LowerBound;
@@ -18,25 +18,39 @@ public class TrainingRoomManager : MonoBehaviour
     public Sprite PlaySymbol;
     public Sprite PauseSymbol;
     private bool _isPlaying;
-    public TMP_Text counter;
+    public TMP_Text ScreenCounter {get; private set;}
+    [Header("Other buttons")]
+    public GameObject PlusButton;
+    public GameObject MinusButton;
 
-
+    #region Play button
+    // Will go on UI button
     public void TogglePlay()
     {
         if (_isPlaying) // Pause
         {
             _isPlaying = false;
-            DummyBehaviour.Dummies.ForEach(dummy => dummy.StopMoving());
+            DummiesInRoom.ForEach(dummy => dummy.StopMoving());
 
             PlayButton.sprite = PlaySymbol;
+
+            // Clear vanquish counter
+            ScreenCounter.text = "_";
         }
         else // Play
         {
             _isPlaying = true;
-            DummyBehaviour.Dummies.ForEach(dummy => dummy.StartMoving(true));
+            DummiesInRoom.ForEach(dummy => dummy.StartMoving(true));
 
             PlayButton.sprite = PauseSymbol;
+
+            // Init vanquish counter
+            ScreenCounter.text = "0";
         }
+
+        // Shut off +/- buttons when playing
+        PlusButton.SetActive(!_isPlaying);
+        MinusButton.SetActive(!_isPlaying);
     }
 
     private void SpawnDummy()
@@ -49,37 +63,34 @@ public class TrainingRoomManager : MonoBehaviour
         spawnPt.z += z;
         spawnPt.y += 0.05f;
 
-        Instantiate(DummyPrefab, spawnPt, Quaternion.identity);
+        DummyBehaviour dummy = Instantiate(DummyPrefab, spawnPt, Quaternion.identity);
+        // Register with manager
+        dummy.Manager = this;
+        DummiesInRoom.Add(dummy);
     }
 
-    private void DestroyDummy()
+    private void DespawnDummy()
     {
-        var instances = DummyBehaviour.Dummies;
-        if (instances.Count > 0)
+        if (DummiesInRoom.Count > 0)
         {
-            int i = Random.Range(0, instances.Count - 1);
-            Destroy(instances[i].gameObject);
-            instances.RemoveAt(i);
+            int i = Random.Range(0, DummiesInRoom.Count - 1);
+            Destroy(DummiesInRoom[i].gameObject);
+            DummiesInRoom.RemoveAt(i);
         }
+    }
+    #endregion
+
+    #region Record score
+    public int DummiesVanquished = 0;
+    public void IncrementVanquishCounter()
+    {
+        Debug.Assert(DummiesInRoom.Count <= DummiesVanquished, "Negative dummies in room");
+        
+        DummiesVanquished++;
+        ScreenCounter.text = DummiesVanquished.ToString();
     }
 
-    public void IncrementDummyCounter()
-    {
-        if (DummyCount < 21)
-        {
-            DummyCount++;
-            SpawnDummy();
-        }
-    }
-
-    public void DecrementDummyCounter()
-    {
-        if (DummyCount > 0)
-        {
-            DummyCount--;
-            DestroyDummy();
-        }
-    }
+    #endregion
 
     private void OnDrawGizmosSelected()
     {
