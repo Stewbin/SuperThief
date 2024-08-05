@@ -1,22 +1,20 @@
 using UnityEngine;
-using Photon.Pun;
 using System.Collections;
+using UnityEngine.Assertions;
 
 public class TurretBehaviour : EnemyBehaviour
 {
     [SerializeField] private LineRenderer _lineRenderer;
     [SerializeField] private Transform _turretHead;
     [SerializeField] private Transform _shootOrigin;
-    [SerializeField] private AdvancedGunSystem _advancedGunSystem;
-    [SerializeField] private SimpleGunSystem _simpleGunSystem;
+    [SerializeField] private Test_GunSystem _gunSystem;
     public float RayLength = 5f;
     public float FOV = 60f;
     public float TurnSpeed = 0.01f;
-    public int AggroTime;
-    private float _aggroTime;
-    private bool _isAttacking;
 
-    // Start is called before the first frame update
+
+    private Quaternion _initRotation;
+    Quaternion targetRotation; // Not a member, I just needed to lift a local variable T^T
     void Start()
     {
         // Setup state
@@ -24,21 +22,20 @@ public class TurretBehaviour : EnemyBehaviour
 
         // Setup rotating behavior
         _initRotation = _turretHead.rotation;
-        step = TurnSpeed * Time.deltaTime;
-        targetRotation = Quaternion.Euler(0, FOV / 2, 0);
+        targetRotation = _initRotation; // Initialization
 
         // Setup line renderer
         _lineRenderer.positionCount = 2;
     }
 
-    private Quaternion _initRotation;
-    private Quaternion targetRotation;
-    private float step;
+    private bool _isAttacking;
+    public int AggroTime;
+    private float _aggroTime;
     void Update()
     {
         #region Raycast 
-        Ray ray = new(_shootOrigin.position, Quaternion.Euler(0, -90, 0) * _shootOrigin.forward);
-        // "Forward" is considered 'right' cuz of model T^T
+        Ray ray = new(_shootOrigin.position, _shootOrigin.forward);
+        Debug.DrawRay(ray.origin, 5 * ray.direction, Color.black);
 
         // Shoot raycast
         bool seenPlayer = false;
@@ -47,11 +44,14 @@ public class TurretBehaviour : EnemyBehaviour
             seenPlayer = hit.collider.CompareTag("Player");
         }
 
-        // // Set the positions of the LineRenderer
-        // _lineRenderer.SetPosition(0, ray.origin);
-        // _lineRenderer.SetPosition(1, ray.origin + ray.direction * RayLength);
+        // Set the positions of the LineRenderer
+        _lineRenderer.SetPosition(0, ray.origin);
+        _lineRenderer.SetPosition(1, ray.origin + ray.direction * RayLength);
 
         #endregion
+
+        #region State machine
+
 
         if (CurrentState == State.Searching)
         {
@@ -62,11 +62,16 @@ public class TurretBehaviour : EnemyBehaviour
                 _isAttacking = false;
             }
 
-            // Change target rotation at end of rotation
-            if (Quaternion.Angle(_turretHead.rotation, targetRotation) < 0.1f)
+            // Rotate between two angles on Y
+            targetRotation = Quaternion.Euler(0, FOV / 2, 0);
+
+            if (Quaternion.Angle(_turretHead.rotation, targetRotation * _initRotation) < 0.1f)
             {
                 targetRotation = Quaternion.Inverse(targetRotation);
             }
+
+            // Destination ray
+            // Debug.DrawRay(_turretHead.position, targetRotation * Vector3.forward * 10, Color.yellow);
 
             // Exit search state
             if (seenPlayer)
@@ -78,7 +83,6 @@ public class TurretBehaviour : EnemyBehaviour
         }
         else if (CurrentState == State.Hunting)
         {
-
             // Calculate direction to the player
             Vector3 directionToPlayer = TargetPlayer.position - _turretHead.position;
             // Ignore vertical rotation
@@ -86,7 +90,9 @@ public class TurretBehaviour : EnemyBehaviour
             directionToPlayer.Normalize(); // Normalize the direction to avoid scaling issues
 
             // Compute the new rotation
-            targetRotation = Quaternion.LookRotation(directionToPlayer, transform.up);
+            targetRotation = Quaternion.FromToRotation(_shootOrigin.forward, directionToPlayer);
+
+
 
             // Start atttacking
             if (!_isAttacking)
@@ -107,43 +113,38 @@ public class TurretBehaviour : EnemyBehaviour
                 _aggroTime = AggroTime;
             }
         }
-
-
-
-        #region Rotate turret head
-        // Move to target rotation
-        _turretHead.localRotation = Quaternion.RotateTowards(_turretHead.localRotation, targetRotation, step);
-
         #endregion
 
+        #region Update rotation
+
+        float step = TurnSpeed * Mathf.Rad2Deg * Time.deltaTime;
+        _turretHead.rotation = Quaternion.RotateTowards(_turretHead.rotation, targetRotation * _initRotation, step);
+
+        #endregion
     }
 
-    private void LateUpdate()
-    {
-        // print("Current roatation: " + _turretHead.rotation.eulerAngles);
-        print("Target rotation: " + targetRotation.eulerAngles);
-        print("State: " + CurrentState);
-    }
+
+
     public float ReloadTime = 5;
     public float SecPerBullet = 5;
 
     private IEnumerator Attack(RaycastHit hit)
     {
-        // Gun gun = _advancedGunSystem.allGuns[_advancedGunSystem.selectedGun];
-        Gun gun = _simpleGunSystem.TheGun;
-        gun.reservedAmmoCapacity = int.MaxValue;
+        _gunSystem.AmmoInReserve = int.MaxValue;
 
         while (true)
         {
             // If gun empty
-            if (0 == gun.currentAmmoInClip)
+            if (0 == _gunSystem.CurrentAmmo)
             {
                 yield return new WaitForSeconds(ReloadTime);
-                _simpleGunSystem.Reload();
+                _gunSystem.Reload();
             }
 
             // Otherwise shoot
-            _simpleGunSystem.Shoot(hit);
+            _gunSystem.SetHitInfo(gameObject, hit);
+            _gunSystem.StartFiring();
+            _gunSystem.StopFiring();
             yield return new WaitForSeconds(SecPerBullet);
         }
     }

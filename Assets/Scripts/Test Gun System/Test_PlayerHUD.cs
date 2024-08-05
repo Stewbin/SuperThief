@@ -84,29 +84,14 @@ public class Test_PlayerHUD : MonoBehaviour, IPointerDownHandler, IPointerUpHand
         // Check for reload button press
         if (_isReloadButtonPressed)
         {
-            Reload();
+            GunSystem.Reload();
         }
         //Display UI Info about ammo in clip and reserve; 
     //     currentAmmoInClipText.text = _currentAmmoInClip.ToString();
     //     currentAmmoText.text = _ammoInReserve.ToString();
     }
 
-    public void Reload()
-    {
-        print("rElOaDiNg");
-
-        int amountNeeded = GunSystem.SelectedGun.ClipSize - _currentAmmoInClip;
-        if (amountNeeded >= _ammoInReserve)
-        {
-            _currentAmmoInClip += _ammoInReserve;
-            _ammoInReserve = 0;
-        }
-        else
-        {
-            _currentAmmoInClip = GunSystem.SelectedGun.ClipSize;
-            _ammoInReserve -= amountNeeded;
-        }
-    }
+    
 
     public void OnPointerDown(PointerEventData eventData)
     {
