@@ -23,7 +23,7 @@ public class Test_GunSystem : MonoBehaviourPunCallbacks
 
     [Header("Gun Shooting")]
     [SerializeField] private Transform _raycastOrigin; // Probably the player's crosshair
-    private Transform _gunBarrel;
+    [SerializeField] private Transform _gunBarrel;
     public bool IsFiring { get; private set; }
     private float _accumulatedTime;
     private ObjectPool<GameObject> _projectilePool;
@@ -44,6 +44,10 @@ public class Test_GunSystem : MonoBehaviourPunCallbacks
             // Get location of barrel end 
             _gunBarrel = _selectedGunObject.transform.GetChild(0); // Must ensure first child is Barrel End 
             // not clever way to do this :( 
+        }
+        else
+        {
+            Debug.Assert(_gunBarrel != null, "Need to manually assign gun barrel");
         }
 
 
@@ -90,6 +94,12 @@ public class Test_GunSystem : MonoBehaviourPunCallbacks
     private void Update()
     {
         UpdateHealthBar();
+
+        if(Input.GetKey(KeyCode.Space))
+        {
+            StartFiring();
+            StopFiring();
+        }
     }
 
     #region Gun Shooting

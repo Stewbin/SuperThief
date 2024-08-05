@@ -1324,6 +1324,11 @@ Mesh:
     offset: 0
     size: 0
     path: 
+--- !u!4 &1629368554 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1352677597914048582, guid: b5cd3fcc9ed98f94098acdb89b745a2f, type: 3}
+  m_PrefabInstance: {fileID: 5688429968212888254}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &5688429968212888254
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1386,6 +1391,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5556368267281210727, guid: b5cd3fcc9ed98f94098acdb89b745a2f, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9205590926706881285, guid: b5cd3fcc9ed98f94098acdb89b745a2f, type: 3}
+      propertyPath: _gunBarrel
+      value: 
+      objectReference: {fileID: 1629368554}
+    - target: {fileID: 9205590926706881285, guid: b5cd3fcc9ed98f94098acdb89b745a2f, type: 3}
+      propertyPath: IsGunVisible
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

@@ -21,14 +21,14 @@ public class TurretBehaviour : EnemyBehaviour
         CurrentState = State.Searching;
 
         // Setup rotating behavior
-        _initRotation = _turretHead.rotation;
+        _initRotation = _turretHead.localRotation;
         targetRotation = _initRotation; // Initialization
 
         // Setup line renderer
         _lineRenderer.positionCount = 2;
     }
 
-    private bool _isAttacking;
+    [SerializeField] private bool _isAttacking;
     public int AggroTime;
     private float _aggroTime;
     void Update()
@@ -39,9 +39,9 @@ public class TurretBehaviour : EnemyBehaviour
 
         // Shoot raycast
         bool seenPlayer = false;
-        if (Physics.Raycast(ray, out RaycastHit hit, RayLength, ~LayerMask.GetMask("Enemy")))
+        if (Physics.Raycast(ray, out RaycastHit hitInfo, RayLength, ~LayerMask.GetMask("Enemy")))
         {
-            seenPlayer = hit.collider.CompareTag("Player");
+            seenPlayer = hitInfo.collider.CompareTag("Player");
         }
 
         // Set the positions of the LineRenderer
@@ -58,14 +58,14 @@ public class TurretBehaviour : EnemyBehaviour
             // Stop attacknig
             if (_isAttacking)
             {
-                StopCoroutine(Attack(hit));
+                StopCoroutine(Attack(hitInfo));
                 _isAttacking = false;
             }
 
             // Rotate between two angles on Y
             targetRotation = Quaternion.Euler(0, FOV / 2, 0);
 
-            if (Quaternion.Angle(_turretHead.rotation, targetRotation * _initRotation) < 0.1f)
+            if (Quaternion.Angle(_turretHead.rotation, targetRotation) < 0.1f)
             {
                 targetRotation = Quaternion.Inverse(targetRotation);
             }
@@ -76,7 +76,7 @@ public class TurretBehaviour : EnemyBehaviour
             // Exit search state
             if (seenPlayer)
             {
-                TargetPlayer = hit.transform;
+                TargetPlayer = hitInfo.transform;
                 CurrentState = State.Hunting;
             }
 
@@ -90,16 +90,13 @@ public class TurretBehaviour : EnemyBehaviour
             directionToPlayer.Normalize(); // Normalize the direction to avoid scaling issues
 
             // Compute the new rotation
-            targetRotation = Quaternion.FromToRotation(_shootOrigin.forward, directionToPlayer);
-
-
+            targetRotation = Quaternion.FromToRotation(ray.direction, directionToPlayer);
 
             // Start atttacking
             if (!_isAttacking)
             {
-                StartCoroutine(Attack(hit));
+                StartCoroutine(Attack(hitInfo));
                 _isAttacking = true;
-                print("Shooting at " + hit.transform.name);
             }
 
             // Exit hunting state
@@ -118,7 +115,7 @@ public class TurretBehaviour : EnemyBehaviour
         #region Update rotation
 
         float step = TurnSpeed * Mathf.Rad2Deg * Time.deltaTime;
-        _turretHead.rotation = Quaternion.RotateTowards(_turretHead.rotation, targetRotation * _initRotation, step);
+        _turretHead.localRotation = Quaternion.RotateTowards(_turretHead.localRotation, targetRotation * _turretHead.localRotation, step);
 
         #endregion
     }
@@ -131,6 +128,7 @@ public class TurretBehaviour : EnemyBehaviour
     private IEnumerator Attack(RaycastHit hit)
     {
         _gunSystem.AmmoInReserve = int.MaxValue;
+        print("Attacking has commenced >:o");
 
         while (true)
         {
@@ -145,6 +143,7 @@ public class TurretBehaviour : EnemyBehaviour
             _gunSystem.SetHitInfo(gameObject, hit);
             _gunSystem.StartFiring();
             _gunSystem.StopFiring();
+            print("Pew pew pew");
             yield return new WaitForSeconds(SecPerBullet);
         }
     }
