@@ -4,7 +4,7 @@ using Photon.Pun;
 using UnityEngine;
 
 
-public class DummyBehaviour : MonoBehaviourPunCallbacks
+public class DummyBehaviour : MonoBehaviour
 {
     public TrainingRoomManager Manager;
     public float MoveSpeed;
@@ -13,87 +13,87 @@ public class DummyBehaviour : MonoBehaviourPunCallbacks
     public int MaxHealth;
     [SerializeField] private int _currentHealth;
     public float RespawnTime;
-    private Coroutine _moving;
+    private Coroutine _moving = null;
+    public AnimationCurve FallMotion;
 
     // Start is called before the first frame update
     private void Start()
     {
-        startPosition = transform.position;
         Manager.DummiesInRoom.Add(this);
+        startPosition = transform.position;
+    }
 
+    private void OnEnable()
+    {
         _currentHealth = MaxHealth;
+        StopAllCoroutines();
+
     }
 
     #region Health
-    private void OnDestroy()
+    private IEnumerator FallOver()
     {
-        Manager.DummiesInRoom.Remove(this);
         Manager.IncrementVanquishCounter();
+        float time = 0f;
+        while (transform.localEulerAngles.x < 90)
+        {
+            time += Time.deltaTime;
+            transform.localRotation = Quaternion.Slerp(Quaternion.identity, Quaternion.Euler(90, 0, 0), 2 * FallMotion.Evaluate(time));
+            yield return null;
+        }
+        gameObject.SetActive(false);
     }
 
     public void TakeDamage(int damageAmount)
     {
-        print("Ouch");
         _currentHealth -= damageAmount;
 
         if (_currentHealth <= 0)
         {
             _currentHealth = 0;
-            Destroy(gameObject);
+            StartCoroutine(FallOver());
         }
     }
 
     #endregion
 
     #region Movement
-    private bool _hitWall = false;
+    private bool _touchedWall = false;
     public bool IsRight = false;
-    public IEnumerator MoveLeftAndRight(bool isRight)
+    public IEnumerator MoveLeftAndRight()
     {
-        int direction = isRight ? 1 : -1;
-        Vector3 displacement = Range * direction * transform.right;
-        float time = Time.deltaTime * MoveSpeed;
+        Vector3 displacement = Range * transform.right;
         while (true)
         {
             Vector3 targetPosition = startPosition + displacement;
 
-            transform.position = Vector3.MoveTowards(transform.position, targetPosition, time);
+            transform.position = Vector3.MoveTowards(transform.position, targetPosition, Time.deltaTime * MoveSpeed);
 
-            if (Vector3.Distance(transform.position, targetPosition) < 0.1f)
+            bool approximatelyEqual = Vector3.Distance(transform.position, targetPosition) < 0.1f;
+            if (approximatelyEqual || _touchedWall)
             {
                 displacement *= -1;
-                print("Changing");
+                _touchedWall = false;
             }
-            print("Stepping");
             yield return null;
         }
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        _hitWall = other.gameObject.layer == LayerMask.NameToLayer("Ground");
-
-        // Reverse direction
-        StopMoving();
-        IsRight = !IsRight;
-        Debug.Assert(_moving == null);
-        StartMoving(IsRight);
-
-        print("Hit wall?: " + _hitWall);
+        _touchedWall = other.gameObject.layer == LayerMask.NameToLayer("Ground");
     }
 
-    public void StartMoving(bool isRight)
+    public void StartMoving()
     {
-        print("started");
         if (_moving == null)
         {
-            _moving = StartCoroutine(MoveLeftAndRight(isRight));
+            _moving = StartCoroutine(MoveLeftAndRight());
         }
     }
 
     public void StopMoving()
     {
-        print("stopped");
         if (_moving != null)
         {
             StopCoroutine(_moving);

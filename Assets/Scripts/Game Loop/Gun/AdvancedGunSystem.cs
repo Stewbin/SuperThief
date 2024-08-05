@@ -317,8 +317,6 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
             }
         }
 
-        print("Dummy? :" + hit.collider.CompareTag("Dummy"));
-
         allGuns[selectedGun].currentAmmoInClip--;
         heatCounter += allGuns[selectedGun].shotDamage;
 
