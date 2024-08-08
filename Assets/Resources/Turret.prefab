@@ -161,9 +161,9 @@ MonoBehaviour:
   _turretHead: {fileID: 4459138201521205675}
   _shootOrigin: {fileID: 1352677597914048582}
   _gunSystem: {fileID: 9205590926706881285}
-  RayLength: 5
-  FOV: 180
-  TurnSpeed: 10
+  RayLength: 10
+  FOV: 30
+  TurnSpeed: 2
   AggroTime: 10
   ReloadTime: 8
   SecPerBullet: 4
@@ -315,12 +315,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MaxHealth: 100
-  healthBarDisplay: {fileID: 0}
   IsGunVisible: 0
   _gunHolder: {fileID: 0}
   Guns:
   - {fileID: 11400000, guid: c0efb9fade191dd4b8423cec77fd3f90, type: 2}
   _raycastOrigin: {fileID: 1352677597914048582}
+  _gunBarrel: {fileID: 1352677597914048582}
   CurrentAmmo: 0
   AmmoInReserve: 0
 --- !u!1 &1761460429491000069
@@ -651,7 +651,7 @@ LineRenderer:
       m_NumColorKeys: 2
       m_NumAlphaKeys: 2
     numCornerVertices: 0
-    numCapVertices: 0
+    numCapVertices: 6
     alignment: 1
     textureMode: 0
     textureScale: {x: 1, y: 1}
@@ -964,6 +964,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4459138201521205675}
+  - component: {fileID: 3622899482922983772}
   m_Layer: 0
   m_Name: Head - low_turret_1
   m_TagString: Untagged
@@ -991,3 +992,16 @@ Transform:
   - {fileID: 8222151671889597961}
   m_Father: {fileID: 2555149369378427508}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3622899482922983772
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8478702638629644546}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6dedc6fa6948bff4a99d29ff9156d94e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  axisLength: 2

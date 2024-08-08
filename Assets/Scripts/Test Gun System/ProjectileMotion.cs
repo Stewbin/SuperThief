@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.Pool;
 using Photon.Pun;
+using System;
 
 public class ProjectileMotion : MonoBehaviourPunCallbacks
 {
@@ -16,11 +17,14 @@ public class ProjectileMotion : MonoBehaviourPunCallbacks
     [Header("Motion")]
     public float Gravity = 9.8f;
     [SerializeField] private Test_GunItem _gunItem;
-    private float _damage => _gunItem.Damage;
     private float _speed => _gunItem.BulletSpeed;
     private Vector3 y_Vel;
     private Vector3 xz_Vel;
-    [HideInInspector] public ObjectPool<GameObject> ProjectilePool;
+    
+    // Shooting
+    public delegate void CollisionEventHandler(MonoBehaviour handler, Collider other);
+    public event CollisionEventHandler FinalCollisionEvent; 
+    private float _damage => _gunItem.Damage;
 
     public override void OnEnable()
     {
@@ -53,17 +57,11 @@ public class ProjectileMotion : MonoBehaviourPunCallbacks
         transform.position = targetPosition;
     }
 
-    private void OnTriggerEnter(Collider victim)
+    private void OnTriggerEnter(Collider other)
     {
         print("Touched something, gunna die now!");
 
-        if (victim.TryGetComponent<Test_GunSystem>(out Test_GunSystem gunSystem))
-        {
-            victim.gameObject.GetPhotonView().RPC(nameof(gunSystem.TakeDamage), RpcTarget.Others, this);
-        }
-
-        //  Add back bullet to object pool instead of destroying
-        ProjectilePool.Release(gameObject);
+        FinalCollisionEvent?.Invoke(this, other);
     }
 
     private IEnumerator PlaySounds()
