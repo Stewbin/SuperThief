@@ -27,8 +27,8 @@ public class Test_GunSystem : MonoBehaviourPunCallbacks
     private float _accumulatedTime;
     private ObjectPool<GameObject> _projectilePool;
     [Header("Reloading")]
-    [HideInInspector] public int CurrentAmmo;
-    [HideInInspector] public int AmmoInReserve;
+    public int CurrentAmmo;
+    public int AmmoInReserve;
 
     private void Start()
     {
@@ -36,11 +36,11 @@ public class Test_GunSystem : MonoBehaviourPunCallbacks
         CurrentHealth = MaxHealth;
         SelectedGun = Guns[_selectedIndex];
         CurrentAmmo = SelectedGun.ClipSize;
-        
+
         if (IsGunVisible)
         {
             SwitchToGun(_selectedIndex);
-        
+
             // Get location of barrel end 
             _gunBarrel = _selectedGunObject.transform.GetChild(0); // Must ensure first child is Barrel End 
             // not clever way to do this :( 
@@ -66,7 +66,7 @@ public class Test_GunSystem : MonoBehaviourPunCallbacks
                     // Get script out
                     Debug.Assert
                     (
-                        bullet.TryGetComponent<ProjectileMotion>(out var bulletScript), 
+                        bullet.TryGetComponent<ProjectileMotion>(out var bulletScript),
                         "No ProjectileMotion script found on bullets"
                     );
                     // Return to object pool on collision
@@ -105,9 +105,9 @@ public class Test_GunSystem : MonoBehaviourPunCallbacks
 
     private void Update()
     {
-        
 
-        if(Input.GetKey(KeyCode.Space))
+
+        if (Input.GetKey(KeyCode.Space))
         {
             StartFiring();
             StopFiring();
@@ -150,21 +150,22 @@ public class Test_GunSystem : MonoBehaviourPunCallbacks
         if (SelectedGun.IsHitscan) // Hitscan weapon
         {
             // Bullet trail
-            GameObject bullet = Instantiate(SelectedGun.BulletPrefab, _gunBarrel.position, _gunBarrel.rotation);
-            
+            GameObject bullet = PhotonNetwork.Instantiate(SelectedGun.BulletPrefab.name, _gunBarrel.position, _gunBarrel.rotation);
+
             Debug.Assert(bullet.TryGetComponent<TrailRenderer>(out var trail), "Bullet does not have trail renderer");
-            
+
             Debug.Assert(trail.autodestruct, "Trails not being destroyed");
-            
+
             trail.AddPosition(_gunBarrel.position); // Start point
             trail.transform.position = _hitInfo.point; // End point
 
-            // Damage enemy
-            if (_hitInfo.transform.TryGetComponent(out Test_GunSystem opponentSystem))
+
+            // Damage damage-able entity
+            if (_hitInfo.collider.TryGetComponent(out Test_GunSystem opponentSystem))
             {
                 opponentSystem.gameObject.GetPhotonView().RPC(nameof(TakeDamage), RpcTarget.All, this);
             }
-            
+
             // Clear, then return bullet to pool 
             // trail.Clear();
             // _projectilePool.Release(bullet);

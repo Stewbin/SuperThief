@@ -5,7 +5,7 @@ using UnityEngine;
 public class ShowLocalAxes : MonoBehaviour
 {
     public float axisLength = 1.0f;
-    void OnDrawGizmos()
+    void OnDrawGizmosSelected()
     {
         // Draw the local X axis in red
         Gizmos.color = Color.red;

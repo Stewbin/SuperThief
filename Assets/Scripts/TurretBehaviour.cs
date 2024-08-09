@@ -35,16 +35,17 @@ public class TurretBehaviour : EnemyBehaviour
     private bool _isRight = true;
     public int AggroTime;
     private float _aggroTime;
+    private RaycastHit _hitInfo;
     void Update()
     {
         #region Raycast 
         Ray ray = new(_shootOrigin.position, _shootOrigin.forward);
-        // Debug.DrawRay(ray.origin, ray.direction, Color.white);
+
         // Shoot raycast
         bool seenPlayer = false;
-        if (Physics.Raycast(ray, out RaycastHit hitInfo, RayLength, ~LayerMask.GetMask("Enemy")))
+        if (Physics.Raycast(ray, out _hitInfo, RayLength, ~LayerMask.GetMask("Enemy")))
         {
-            seenPlayer = hitInfo.collider.CompareTag("Player");
+            seenPlayer = _hitInfo.collider.CompareTag("Player");
         }
 
         // Set the positions of the LineRenderer
@@ -69,39 +70,29 @@ public class TurretBehaviour : EnemyBehaviour
             if (Quaternion.Angle(_turretHead.rotation, _targetRotation) < 0.1f)
             {
                 _isRight = !_isRight;
-                print("Changing gears");
             }
-
-            // Destination ray
-            // Debug.DrawRay(_turretHead.position, _targetRotation * -_turretHead.forward * 10, Color.yellow);
 
             // Exit search state
             if (seenPlayer)
             {
-                TargetPlayer = hitInfo.transform;
+                TargetPlayer = _hitInfo.transform;
                 CurrentState = State.Hunting;
             }
 
         }
         else if (CurrentState == State.Hunting)
         {
-            // Calculate direction to the player
-            directionToPlayer = TargetPlayer.position - _shootOrigin.position;
-            // Ignore vertical rotation
-            directionToPlayer.y = 0;
-            // Destination ray
-            Debug.DrawRay(_turretHead.position, directionToPlayer, Color.yellow);
-
+            directionToPlayer = TargetPlayer.position - _shootOrigin.position; // Calculate direction to the player
+            directionToPlayer.y = 0; // Ignore vertical rotation
             directionToPlayer.Normalize(); // Normalize the direction to avoid scaling issues
 
             // Compute the new rotation
-            _targetRotation = Quaternion.FromToRotation(ray.direction, directionToPlayer); //* _initRotation;
-            Debug.DrawRay(_turretHead.position, _targetRotation * ray.direction * 3, Color.cyan);
+            _targetRotation = Quaternion.FromToRotation(ray.direction, directionToPlayer) * _turretHead.rotation;
 
             // Start atttacking
             if (_isAttacking == null)
             {
-                _isAttacking = StartCoroutine(Attack(hitInfo));
+                _isAttacking = StartCoroutine(Attack());
             }
 
             // Exit hunting state
@@ -120,12 +111,12 @@ public class TurretBehaviour : EnemyBehaviour
         #region Update rotation
 
         float step = TurnSpeed * Mathf.Rad2Deg * Time.deltaTime;
-        _turretHead.rotation = Quaternion.RotateTowards(_turretHead.rotation, _targetRotation * _turretHead.rotation, step);
+        _turretHead.rotation = Quaternion.RotateTowards(_turretHead.rotation, _targetRotation, step);
 
 
 
         // Forward ray
-        Debug.DrawRay(_turretHead.position, ray.direction, Color.blue);
+        Debug.DrawRay(_turretHead.position, ray.direction, Color.cyan);
         #endregion
     }
 
@@ -133,7 +124,7 @@ public class TurretBehaviour : EnemyBehaviour
 
     public float ReloadTime = 5;
     public float SecPerBullet = 5;
-    private IEnumerator Attack(RaycastHit hit)
+    private IEnumerator Attack()
     {
         _gunSystem.AmmoInReserve = int.MaxValue;
         print("Attacking has commenced >:o");
@@ -148,7 +139,7 @@ public class TurretBehaviour : EnemyBehaviour
             }
 
             // Otherwise shoot
-            _gunSystem.SetHitInfo(gameObject, hit);
+            _gunSystem.SetHitInfo(gameObject, _hitInfo);
             _gunSystem.StartFiring();
             _gunSystem.StopFiring();
             print("Pew pew pew");

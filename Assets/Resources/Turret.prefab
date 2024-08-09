@@ -162,11 +162,11 @@ MonoBehaviour:
   _shootOrigin: {fileID: 1352677597914048582}
   _gunSystem: {fileID: 9205590926706881285}
   RayLength: 10
-  FOV: 30
-  TurnSpeed: 2
-  AggroTime: 10
-  ReloadTime: 8
-  SecPerBullet: 4
+  FOV: 90
+  TurnSpeed: 1
+  AggroTime: 15
+  ReloadTime: 2
+  SecPerBullet: 0.5
 --- !u!82 &519824598921865569
 AudioSource:
   m_ObjectHideFlags: 0
@@ -538,7 +538,7 @@ GameObject:
   m_Layer: 0
   m_Name: Shoot origin
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: -5487077368411116049, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
