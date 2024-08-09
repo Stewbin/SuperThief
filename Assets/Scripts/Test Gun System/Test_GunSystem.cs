@@ -10,7 +10,6 @@ public class Test_GunSystem : MonoBehaviourPunCallbacks
     [Header("Player Health")]
     public int MaxHealth = 100;
     public int CurrentHealth { get; private set; }
-    public Image healthBarDisplay;
 
     [Header("Gun Switching")]
     public bool IsGunVisible = true;
@@ -23,27 +22,32 @@ public class Test_GunSystem : MonoBehaviourPunCallbacks
 
     [Header("Gun Shooting")]
     [SerializeField] private Transform _raycastOrigin; // Probably the player's crosshair
-    private Transform _gunBarrel;
+    [SerializeField] private Transform _gunBarrel;
     public bool IsFiring { get; private set; }
     private float _accumulatedTime;
     private ObjectPool<GameObject> _projectilePool;
     [Header("Reloading")]
-    [HideInInspector] public int CurrentAmmo;
-    [HideInInspector] public int AmmoInReserve;
+    public int CurrentAmmo;
+    public int AmmoInReserve;
 
     private void Start()
     {
+        PhotonNetwork.OfflineMode = true;
         CurrentHealth = MaxHealth;
         SelectedGun = Guns[_selectedIndex];
         CurrentAmmo = SelectedGun.ClipSize;
-        
+
         if (IsGunVisible)
         {
             SwitchToGun(_selectedIndex);
-        
+
             // Get location of barrel end 
             _gunBarrel = _selectedGunObject.transform.GetChild(0); // Must ensure first child is Barrel End 
             // not clever way to do this :( 
+        }
+        else
+        {
+            Debug.Assert(_gunBarrel != null, "Need to manually assign gun barrel");
         }
 
 
@@ -55,14 +59,27 @@ public class Test_GunSystem : MonoBehaviourPunCallbacks
             () =>
             {
                 // Instantiate over network
-                GameObject bullet = PhotonNetwork.Instantiate(nameof(SelectedGun.BulletPrefab), _gunBarrel.position, Quaternion.identity);
-                // Set gravity to 0
-                var bulletScript = bullet.GetComponent<ProjectileMotion>();
-                Debug.Assert(bulletScript != null);
-                bulletScript.Gravity = 0;
-                // Set object pool
-                bulletScript.ProjectilePool = _projectilePool;
-
+                GameObject bullet = PhotonNetwork.Instantiate(SelectedGun.BulletPrefab.name, _gunBarrel.position, Quaternion.identity);
+                Debug.Assert(bullet != null, "Bullet was not instantiated over network");
+                // if (!SelectedGun.IsHitscan) // Projectile initialization
+                {
+                    // Get script out
+                    Debug.Assert
+                    (
+                        bullet.TryGetComponent<ProjectileMotion>(out var bulletScript),
+                        "No ProjectileMotion script found on bullets"
+                    );
+                    // Return to object pool on collision
+                    bulletScript.FinalCollisionEvent += (handler, otherCollider) => _projectilePool.Release(handler.gameObject);
+                    // Set owner of projectile to deal damaage
+                    bulletScript.FinalCollisionEvent += (handler, otherCollider) =>
+                    {
+                        if (otherCollider.TryGetComponent<Test_GunSystem>(out Test_GunSystem gunSystem))
+                        {
+                            otherCollider.gameObject.GetPhotonView().RPC(nameof(gunSystem.TakeDamage), RpcTarget.Others, this);
+                        }
+                    };
+                }
                 return bullet;
             },
             // Get from pool
@@ -71,8 +88,7 @@ public class Test_GunSystem : MonoBehaviourPunCallbacks
             bullet =>
             {
                 bullet.SetActive(false);
-                bullet.transform.position = _gunBarrel.position;
-                bullet.transform.rotation = _gunBarrel.rotation;
+                bullet.transform.SetPositionAndRotation(_gunBarrel.position, _gunBarrel.rotation);
             },
             // On exceed pool size
             bullet => PhotonNetwork.Destroy(bullet),
@@ -89,14 +105,19 @@ public class Test_GunSystem : MonoBehaviourPunCallbacks
 
     private void Update()
     {
-        UpdateHealthBar();
+
+
+        if (Input.GetKey(KeyCode.Space))
+        {
+            StartFiring();
+            StopFiring();
+        }
     }
 
     #region Gun Shooting
 
     public void StartFiring() // Can also be used to fire single bullets
     {
-        print("Pew");
         IsFiring = true;
         _accumulatedTime = 0.0f;
         if (CurrentAmmo > 0)
@@ -119,7 +140,6 @@ public class Test_GunSystem : MonoBehaviourPunCallbacks
     public void StopFiring()
     {
         IsFiring = false;
-        print("Stop pewing");
     }
 
     private void FireBullet()
@@ -130,16 +150,25 @@ public class Test_GunSystem : MonoBehaviourPunCallbacks
         if (SelectedGun.IsHitscan) // Hitscan weapon
         {
             // Bullet trail
-            GameObject bullet = Instantiate(SelectedGun.BulletPrefab, _gunBarrel.position, Quaternion.identity);
+            GameObject bullet = PhotonNetwork.Instantiate(SelectedGun.BulletPrefab.name, _gunBarrel.position, _gunBarrel.rotation);
+
             Debug.Assert(bullet.TryGetComponent<TrailRenderer>(out var trail), "Bullet does not have trail renderer");
+
+            Debug.Assert(trail.autodestruct, "Trails not being destroyed");
+
             trail.AddPosition(_gunBarrel.position); // Start point
             trail.transform.position = _hitInfo.point; // End point
 
-            // Damage enemy
-            if (_hitInfo.transform.TryGetComponent(out Test_GunSystem opponentSystem))
+
+            // Damage damage-able entity
+            if (_hitInfo.collider.TryGetComponent(out Test_GunSystem opponentSystem))
             {
                 opponentSystem.gameObject.GetPhotonView().RPC(nameof(TakeDamage), RpcTarget.All, this);
             }
+
+            // Clear, then return bullet to pool 
+            // trail.Clear();
+            // _projectilePool.Release(bullet);
         }
         else // Projectile weapon
         {
@@ -199,15 +228,6 @@ public class Test_GunSystem : MonoBehaviourPunCallbacks
     #endregion
 
     #region Health System
-
-    private void UpdateHealthBar()
-    {
-        if (healthBarDisplay != null)
-        {
-            float fillAmount = (float)CurrentHealth / MaxHealth;
-            healthBarDisplay.fillAmount = fillAmount;
-        }
-    }
 
     [PunRPC]
     public void TakeDamage(Test_GunSystem damager)
