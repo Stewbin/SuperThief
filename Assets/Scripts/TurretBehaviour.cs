@@ -23,9 +23,9 @@ public class TurretBehaviour : EnemyBehaviour
         CurrentState = State.Searching;
 
         // Setup rotating behavior
-        _initRotation = _turretHead.localRotation;
+        _initRotation = _turretHead.rotation;
         _rightRotation = Quaternion.Euler(0, FOV / 2, 0) * _initRotation;
-        _leftRotation =  Quaternion.Euler(0, -FOV / 2, 0) * _initRotation; 
+        _leftRotation = Quaternion.Euler(0, -FOV / 2, 0) * _initRotation;
 
         // Setup line renderer
         _lineRenderer.positionCount = 2;
@@ -39,7 +39,7 @@ public class TurretBehaviour : EnemyBehaviour
     {
         #region Raycast 
         Ray ray = new(_shootOrigin.position, _shootOrigin.forward);
-    
+        // Debug.DrawRay(ray.origin, ray.direction, Color.white);
         // Shoot raycast
         bool seenPlayer = false;
         if (Physics.Raycast(ray, out RaycastHit hitInfo, RayLength, ~LayerMask.GetMask("Enemy")))
@@ -66,14 +66,14 @@ public class TurretBehaviour : EnemyBehaviour
             // Rotate between two angles on Y
             _targetRotation = _isRight ? _rightRotation : _leftRotation;
 
-            if (Quaternion.Angle(_turretHead.localRotation, _targetRotation) < 0.1f)
+            if (Quaternion.Angle(_turretHead.rotation, _targetRotation) < 0.1f)
             {
                 _isRight = !_isRight;
                 print("Changing gears");
             }
 
             // Destination ray
-            Debug.DrawRay(_turretHead.position, _targetRotation * -_turretHead.forward * 10, Color.yellow);
+            // Debug.DrawRay(_turretHead.position, _targetRotation * -_turretHead.forward * 10, Color.yellow);
 
             // Exit search state
             if (seenPlayer)
@@ -91,11 +91,12 @@ public class TurretBehaviour : EnemyBehaviour
             directionToPlayer.y = 0;
             // Destination ray
             Debug.DrawRay(_turretHead.position, directionToPlayer, Color.yellow);
-            
+
             directionToPlayer.Normalize(); // Normalize the direction to avoid scaling issues
 
             // Compute the new rotation
-            _targetRotation = Quaternion.FromToRotation(_turretHead.right, directionToPlayer); //* _initRotation;
+            _targetRotation = Quaternion.FromToRotation(ray.direction, directionToPlayer); //* _initRotation;
+            Debug.DrawRay(_turretHead.position, _targetRotation * ray.direction * 3, Color.cyan);
 
             // Start atttacking
             if (_isAttacking == null)
@@ -119,17 +120,9 @@ public class TurretBehaviour : EnemyBehaviour
         #region Update rotation
 
         float step = TurnSpeed * Mathf.Rad2Deg * Time.deltaTime;
-        
-        if (Quaternion.Angle(_turretHead.localRotation, _targetRotation) < step) // If remaining angle is too big to step to
-        {
-            _turretHead.localRotation = _targetRotation; // Set remaining distance
-            Debug.Assert(_turretHead.localRotation == _targetRotation, "Something is preventing turning");
-            print("Telpurt'd");
-        }
-        else
-        {
-            _turretHead.localRotation = Quaternion.RotateTowards(_turretHead.localRotation, _targetRotation, step);
-        }
+        _turretHead.rotation = Quaternion.RotateTowards(_turretHead.rotation, _targetRotation * _turretHead.rotation, step);
+
+
 
         // Forward ray
         Debug.DrawRay(_turretHead.position, ray.direction, Color.blue);
