@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
-
+using Prototype_Shooting;
+using System.Linq.Expressions;
 
 public class TurretBehaviour : EnemyBehaviour
 {
@@ -31,12 +32,12 @@ public class TurretBehaviour : EnemyBehaviour
         _lineRenderer.positionCount = 2;
     }
 
-    [SerializeField] private Coroutine _isAttacking = null;
+    [SerializeField] private bool _isAttacking = false;
     private bool _isRight = true;
     public int AggroTime;
     private float _aggroTime;
     private RaycastHit _hitInfo;
-    void Update()
+    void LateUpdate()
     {
         #region Raycast 
         Ray ray = new(_shootOrigin.position, _shootOrigin.forward);
@@ -58,10 +59,10 @@ public class TurretBehaviour : EnemyBehaviour
         if (CurrentState == State.Searching)
         {
             // Stop attacknig
-            if (_isAttacking != null)
+            if (_isAttacking && CurrentState == State.Searching)
             {
-                StopCoroutine(_isAttacking);
-                _isAttacking = null;
+                StopCoroutine(Attack());
+                _isAttacking = false;
             }
 
             // Rotate between two angles on Y
@@ -82,28 +83,38 @@ public class TurretBehaviour : EnemyBehaviour
         }
         else if (CurrentState == State.Hunting)
         {
-            directionToPlayer = TargetPlayer.position - _shootOrigin.position; // Calculate direction to the player
-            directionToPlayer.y = 0; // Ignore vertical rotation
-            directionToPlayer.Normalize(); // Normalize the direction to avoid scaling issues
-
-            // Compute the new rotation
-            _targetRotation = Quaternion.FromToRotation(ray.direction, directionToPlayer) * _turretHead.rotation;
-
-            // Start atttacking
-            if (_isAttacking == null)
+            try
             {
-                _isAttacking = StartCoroutine(Attack());
+                // Exit hunting state
+                if (!seenPlayer) // Decrease aggro
+                {
+                    _aggroTime -= Time.deltaTime;
+                }
+
+                if (null == TargetPlayer || _aggroTime <= 0) // 0 aggro, or Target killed
+                {
+                    _aggroTime = AggroTime;
+
+                    CurrentState = State.Searching;
+                }
+
+                directionToPlayer = TargetPlayer.position - _shootOrigin.position; // Calculate direction to the player
+                directionToPlayer.y = 0; // Ignore vertical rotation
+                directionToPlayer.Normalize(); // Normalize the direction to avoid scaling issues
+
+                // Compute the new rotation
+                _targetRotation = Quaternion.FromToRotation(ray.direction, directionToPlayer) * _turretHead.rotation;
+
+                // Start atttacking
+                if (!_isAttacking && CurrentState == State.Hunting)
+                {
+                    StartCoroutine(Attack());
+                    _isAttacking = true;
+                }
             }
-
-            // Exit hunting state
-            if (!seenPlayer)
+            catch (MissingReferenceException e)
             {
-                _aggroTime -= Time.deltaTime;
-            }
-            if (_aggroTime <= 0)
-            {
-                CurrentState = State.Searching;
-                _aggroTime = AggroTime;
+                TargetPlayer = null;
             }
         }
         #endregion
@@ -121,13 +132,16 @@ public class TurretBehaviour : EnemyBehaviour
     }
 
 
-
+    #region Attacking
     public float ReloadTime = 5;
     public float SecPerBullet = 5;
+    private int CoroutinesActive = 0;
+    private int BulletsFired = 0;
     private IEnumerator Attack()
     {
         _gunSystem.AmmoInReserve = int.MaxValue;
-        print("Attacking has commenced >:o");
+
+        print("Coroutines Active: " + CoroutinesActive++);
 
         while (true)
         {
@@ -140,10 +154,14 @@ public class TurretBehaviour : EnemyBehaviour
 
             // Otherwise shoot
             _gunSystem.SetHitInfo(gameObject, _hitInfo);
-            _gunSystem.StartFiring();
-            _gunSystem.StopFiring();
-            print("Pew pew pew");
+            // _gunSystem.StartFiring();
+            // _gunSystem.StopFiring();
+            _gunSystem.FireBullet();
+            print("Bullets Fired: " + BulletsFired++);
+
             yield return new WaitForSeconds(SecPerBullet);
+
         }
     }
+    #endregion
 }

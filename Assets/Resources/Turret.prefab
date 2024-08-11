@@ -162,7 +162,7 @@ MonoBehaviour:
   _shootOrigin: {fileID: 1352677597914048582}
   _gunSystem: {fileID: 9205590926706881285}
   RayLength: 10
-  FOV: 90
+  FOV: 170
   TurnSpeed: 1
   AggroTime: 15
   ReloadTime: 2
@@ -319,6 +319,7 @@ MonoBehaviour:
   _gunHolder: {fileID: 0}
   Guns:
   - {fileID: 11400000, guid: c0efb9fade191dd4b8423cec77fd3f90, type: 2}
+  _audioSource: {fileID: 519824598921865569}
   _raycastOrigin: {fileID: 1352677597914048582}
   _gunBarrel: {fileID: 1352677597914048582}
   CurrentAmmo: 0

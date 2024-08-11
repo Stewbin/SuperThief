@@ -109,7 +109,7 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
     public void Awake()
     {
         instance = this;
-        PhotonNetwork.OfflineMode = true;
+        // PhotonNetwork.OfflineMode = true;
     }
 
 
