@@ -9,10 +9,11 @@ using UnityEngine.SceneManagement;
 // that you want to survive in here!
 
 [Serializable]
-public abstract class EnemyBehaviour : MonoBehaviour
+public abstract class EnemyBehaviour : MonoBehaviourPunCallbacks
 {   
     [SerializeField] public State CurrentState {get; protected set;}
     [SerializeField] public Transform TargetPlayer {get; protected set;}
+    // protected bool _isTargetKilled;
     private static readonly HashSet<EnemyBehaviour> _instances = new HashSet<EnemyBehaviour>(); // Property
     public static HashSet<EnemyBehaviour> Instances => new(_instances); // Field
 
@@ -35,5 +36,6 @@ public abstract class EnemyBehaviour : MonoBehaviour
         Searching,
         Hunting,
     }
+
 
 }

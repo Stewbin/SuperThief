@@ -5,122 +5,125 @@ using TMPro;
 using UnityEngine.UI;
 using System.Collections.Specialized;
 
-public class Test_PlayerHUD : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
+namespace Prototype_Shooting
 {
-    [Header("Gun System")]
-    [SerializeField] private Test_GunSystem GunSystem;
-    
-    [Header("Gun Settings")]
-    [SerializeField] public int ReservedAmmoCapacity = 270;
-
-    // [SerializeField]  public TextMeshProUGUI currentAmmoInClipText;
-    // [SerializeField]  public TextMeshProUGUI currentAmmoText;
-
-    // Variables that change throughout the core game loop
-    private int _currentAmmoInClip;
-    private int _ammoInReserve;
-
-    // Boolz
-    [SerializeField] private bool _shootDownPress;
-    [SerializeField] private bool _shootUpPress; 
-    // True if pressed last frame ^^^
-    [SerializeField] private bool _isReloadButtonPressed;
-    
-
-    void Start()
+    public class Test_PlayerHUD : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     {
-        _currentAmmoInClip = GunSystem.CurrentAmmo;
-        _ammoInReserve = ReservedAmmoCapacity;
+        [Header("Gun System")]
+        [SerializeField] private Test_GunSystem GunSystem;
 
-    }
+        [Header("Gun Settings")]
+        [SerializeField] public int ReservedAmmoCapacity = 270;
 
-    void Update()
-    {
-        // I'm sorrrry this is so big T^T
-        #region Shooting 
-        
-        switch(GunSystem.SelectedGun.FiringType)
+        // [SerializeField]  public TextMeshProUGUI currentAmmoInClipText;
+        // [SerializeField]  public TextMeshProUGUI currentAmmoText;
+
+        // Variables that change throughout the core game loop
+        private int _currentAmmoInClip;
+        private int _ammoInReserve;
+
+        // Boolz
+        [SerializeField] private bool _shootDownPress;
+        [SerializeField] private bool _shootUpPress;
+        // True if pressed last frame ^^^
+        [SerializeField] private bool _isReloadButtonPressed;
+
+
+        void Start()
         {
-            case FireType.FullyAutomatic:
+            _currentAmmoInClip = GunSystem.CurrentAmmo;
+            _ammoInReserve = ReservedAmmoCapacity;
+
+        }
+
+        void Update()
+        {
+            // I'm sorrrry this is so big T^T
+            #region Shooting 
+
+            switch (GunSystem.SelectedGun.FiringType)
             {
-                if(_shootDownPress)
-                    GunSystem.StartFiring();
+                case FireType.FullyAutomatic:
+                    {
+                        if (_shootDownPress)
+                            GunSystem.StartFiring();
 
-                if(GunSystem.IsFiring)
-                    GunSystem.UpdateFiring();
+                        if (GunSystem.IsFiring)
+                            GunSystem.UpdateFiring();
 
-                if(_shootUpPress)
-                    GunSystem.StopFiring();
-                break;
+                        if (_shootUpPress)
+                            GunSystem.StopFiring();
+                        break;
+                    }
+                case FireType.SemiAutomatic:
+                    {
+                        if (_shootDownPress)
+                            GunSystem.StartFiring();
+
+                        if (GunSystem.IsFiring)
+                        {
+                            GunSystem.UpdateFiring();
+                            GunSystem.StopFiring();
+                        }
+                        break;
+                    }
+                case FireType.SingleShot:
+                    {
+                        if (_shootDownPress)
+                        {
+                            GunSystem.StartFiring();
+                            GunSystem.StopFiring();
+                        }
+                        break;
+                    }
+
             }
-            case FireType.SemiAutomatic:
-            {
-                if(_shootDownPress)
-                    GunSystem.StartFiring();
 
-                if(GunSystem.IsFiring)
-                {
-                    GunSystem.UpdateFiring();
-                    GunSystem.StopFiring();
-                }
-                break;
-            }
-            case FireType.SingleShot:
-            {
-                if(_shootDownPress)
-                {
-                    GunSystem.StartFiring();
-                    GunSystem.StopFiring();
-                }
-                break;
-            }
-            
-        }
-
-        _shootDownPress = false;
-        _shootUpPress = false;;
-        #endregion
-
-        // Check for reload button press
-        if (_isReloadButtonPressed)
-        {
-            GunSystem.Reload();
-        }
-        //Display UI Info about ammo in clip and reserve; 
-    //     currentAmmoInClipText.text = _currentAmmoInClip.ToString();
-    //     currentAmmoText.text = _ammoInReserve.ToString();
-    }
-
-    
-
-    public void OnPointerDown(PointerEventData eventData)
-    {
-        // Shoot button
-        if(eventData.pointerCurrentRaycast.gameObject.CompareTag("ShootButton"))
-        {
-            _shootDownPress = true;
-            _shootUpPress = false;
-        }
-
-        if (eventData.pointerCurrentRaycast.gameObject.CompareTag("ReloadButton"))
-        {
-            _isReloadButtonPressed = true;
-        }
-    }
-
-    public void OnPointerUp(PointerEventData eventData)
-    {
-        // Shoot button
-        if(eventData.pointerCurrentRaycast.gameObject.CompareTag("ShootButton"))
-        {
             _shootDownPress = false;
-            _shootUpPress = true;
-        }
-        
+            _shootUpPress = false; ;
+            #endregion
 
-        if (eventData.pointerCurrentRaycast.gameObject.CompareTag("ReloadButton"))
+            // Check for reload button press
+            if (_isReloadButtonPressed)
+            {
+                GunSystem.Reload();
+            }
+            //Display UI Info about ammo in clip and reserve; 
+            //     currentAmmoInClipText.text = _currentAmmoInClip.ToString();
+            //     currentAmmoText.text = _ammoInReserve.ToString();
+        }
+
+
+
+        public void OnPointerDown(PointerEventData eventData)
         {
-            _isReloadButtonPressed = false;
+            // Shoot button
+            if (eventData.pointerCurrentRaycast.gameObject.CompareTag("ShootButton"))
+            {
+                _shootDownPress = true;
+                _shootUpPress = false;
+            }
+
+            if (eventData.pointerCurrentRaycast.gameObject.CompareTag("ReloadButton"))
+            {
+                _isReloadButtonPressed = true;
+            }
+        }
+
+        public void OnPointerUp(PointerEventData eventData)
+        {
+            // Shoot button
+            if (eventData.pointerCurrentRaycast.gameObject.CompareTag("ShootButton"))
+            {
+                _shootDownPress = false;
+                _shootUpPress = true;
+            }
+
+
+            if (eventData.pointerCurrentRaycast.gameObject.CompareTag("ReloadButton"))
+            {
+                _isReloadButtonPressed = false;
+            }
         }
     }
 }
