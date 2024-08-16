@@ -1,9 +1,5 @@
 using System.Collections;
 using UnityEngine;
-#if UNITY_IOS
-using Unity.Notifications.iOS;
-#endif
-
 public class iOSNotifications : MonoBehaviour
 {
 #if UNITY_IOS
@@ -23,12 +19,13 @@ public class iOSNotifications : MonoBehaviour
 
     public IEnumerator RequestAuthorization()
     {
+        Debug.Log("Requesting notification authorization...");
         using var request = new AuthorizationRequest(AuthorizationOption.Alert | AuthorizationOption.Badge, true);
         while (!request.IsFinished)
         {
             yield return null;
         }
-        
+
         if (request.Granted)
         {
             Debug.Log("Notification authorization granted.");
@@ -41,11 +38,13 @@ public class iOSNotifications : MonoBehaviour
 
     public void SendNotification()
     {
+        Debug.Log("Sending notification...");
         string randomMessage = notificationMessages[Random.Range(0, notificationMessages.Length)];
+        Debug.Log("Notification message: " + randomMessage);
 
         var timeTrigger = new iOSNotificationTimeIntervalTrigger()
         {
-            TimeInterval = new System.TimeSpan(6, 0, 0), // 6 hours
+            TimeInterval = new System.TimeSpan(0, 0, 10), // 10 seconds for testing
             Repeats = true
         };
 
@@ -61,6 +60,7 @@ public class iOSNotifications : MonoBehaviour
         };
 
         iOSNotificationCenter.ScheduleNotification(notification);
+        Debug.Log("Notification scheduled.");
     }
 #endif
 }

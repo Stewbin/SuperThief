@@ -1,7 +1,6 @@
+using System.Collections;
 using UnityEngine;
-#if UNITY_IOS
-using Unity.Notifications.iOS;
-#endif
+
 
 public class NotificationController : MonoBehaviour
 {
@@ -10,12 +9,14 @@ public class NotificationController : MonoBehaviour
 
     private void Start()
     {
+        Debug.Log("NotificationController Start method called.");
         StartCoroutine(iosNotifications.RequestAuthorization());
     }
 
     private void OnApplicationFocus(bool focus)
     {
-        if (focus == false)
+        Debug.Log("OnApplicationFocus called with focus: " + focus);
+        if (!focus)
         {
             iosNotifications.SendNotification();
         }

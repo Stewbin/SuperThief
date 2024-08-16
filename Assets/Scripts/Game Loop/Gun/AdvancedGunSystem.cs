@@ -122,9 +122,14 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
         photonView.RPC("SwitchGunForMobile", RpcTarget.All);
         currentHealth = maxHealth;
         UpdateHealthBar();
+
+        
+        
         UIController.instance.healthSlider.maxValue = maxHealth;
         UIController.instance.healthSlider.value = currentHealth;
         UIController.instance.currentHealthDisplay.text = currentHealth.ToString();
+        
+       
         //Disable hit marker
 
 
@@ -335,7 +340,8 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
 
 
             //display damage anmount
-
+            UIController.instance.healthSlider.value = currentHealth;
+            photonView.RPC("UpdateHealthBarRPC", RpcTarget.All, currentHealth);
 
             print(damageAmount + "" + damageTest);
             if (currentHealth <= 0)
@@ -360,19 +366,16 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
                 damagerText = photonView.Owner.NickName;
 
 
-                //
+                
 
-
-
-
-            }
-            else
-            {
-                UIController.instance.healthSlider.value = currentHealth;
-                photonView.RPC("UpdateHealthBarRPC", RpcTarget.All, currentHealth);
-
-            }
-        }
+            } 
+            
+            
+        } 
+      
+        
+            
+       
     }
 
 
@@ -510,6 +513,7 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
         currentHealth = health;
         UpdateHealthBar();
     }
+
 
 
     [PunRPC]

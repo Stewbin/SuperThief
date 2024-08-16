@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
@@ -79,6 +80,7 @@ public class DelayStartWaitingRoomManager : MonoBehaviourPunCallbacks
         }
 
         StartCoroutine(DisplayPlayerJointUI(newPlayer.NickName));
+        Debug.Log($"Player entered: {newPlayer.NickName} (ActorNumber: {newPlayer.ActorNumber})");
     }
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
@@ -86,22 +88,44 @@ public class DelayStartWaitingRoomManager : MonoBehaviourPunCallbacks
         PlayerCountUpdate();
         UpdatePlayerList();
         StartCoroutine(DisplayPlayerLeftUI(otherPlayer.NickName));
+        Debug.Log($"Player left: {otherPlayer.NickName} (ActorNumber: {otherPlayer.ActorNumber})");
     }
 
     private void UpdatePlayerList()
     {
-        foreach (var item in playerListItems.Values)
-        {
-            Destroy(item.gameObject);
-        }
-        playerListItems.Clear();
+        Debug.Log("Updating player list...");
 
+        // Remove players that have left the room
+        List<int> playersToRemove = new List<int>();
+        foreach (var kvp in playerListItems)
+        {
+            if (PhotonNetwork.PlayerList.All(p => p.ActorNumber != kvp.Key))
+            {
+                Destroy(kvp.Value.gameObject);
+                playersToRemove.Add(kvp.Key);
+                Debug.Log($"Removing player from list: ActorNumber {kvp.Key}");
+            }
+        }
+        foreach (int key in playersToRemove)
+        {
+            playerListItems.Remove(key);
+        }
+
+        // Add new players or update existing ones
         foreach (Player player in PhotonNetwork.PlayerList)
         {
-            TMP_Text newPlayerLabel = Instantiate(playerNameLabelPrefab, playerListContent);
-            newPlayerLabel.text = player.NickName;
-            playerListItems.Add(player.ActorNumber, newPlayerLabel);
+            if (!playerListItems.TryGetValue(player.ActorNumber, out TMP_Text playerLabel))
+            {
+                playerLabel = Instantiate(playerNameLabelPrefab, playerListContent);
+                playerListItems.Add(player.ActorNumber, playerLabel);
+                Debug.Log($"Adding new player to list: {player.NickName} (ActorNumber: {player.ActorNumber})");
+            }
+            playerLabel.text = player.NickName;
         }
+
+        // Debug log
+        Debug.Log($"Players in room: {string.Join(", ", PhotonNetwork.PlayerList.Select(p => $"{p.NickName} ({p.ActorNumber})"))}");
+        Debug.Log($"Players in list: {string.Join(", ", playerListItems.Select(kvp => $"{kvp.Value.text} ({kvp.Key})"))}");
     }
 
     [PunRPC]
@@ -158,7 +182,7 @@ public class DelayStartWaitingRoomManager : MonoBehaviourPunCallbacks
 
         timerToStartDisplay.text = timerToStartGame.ToString("00");
 
-        if (timerToStartGame <= 0f && !startingGame)
+        if (timerToStartGame == 0f && !startingGame)
         {
             StartGame();
         }
