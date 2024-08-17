@@ -7,6 +7,9 @@ TagManager:
   - ShootButton
   - ReloadButton
   - Dummy
+  - Head
+  - Body
+  - Extremity
   layers:
   - Default
   - TransparentFX

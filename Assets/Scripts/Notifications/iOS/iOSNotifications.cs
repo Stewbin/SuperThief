@@ -1,4 +1,5 @@
 using System.Collections;
+using Unity.Notifications.iOS;
 using UnityEngine;
 public class iOSNotifications : MonoBehaviour
 {

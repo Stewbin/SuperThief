@@ -109,7 +109,7 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
     public void Awake()
     {
         instance = this;
-        // PhotonNetwork.OfflineMode = true;
+        PhotonNetwork.OfflineMode = true;
     }
 
 
@@ -123,13 +123,13 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
         currentHealth = maxHealth;
         UpdateHealthBar();
 
-        
-        
+
+
         UIController.instance.healthSlider.maxValue = maxHealth;
         UIController.instance.healthSlider.value = currentHealth;
         UIController.instance.currentHealthDisplay.text = currentHealth.ToString();
-        
-       
+
+
         //Disable hit marker
 
 
@@ -267,11 +267,13 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
         {
             StartCoroutine(SpawnTrail(ray.origin, hit.point, BulletSpeed));
 
-
-            if (hit.collider.gameObject.CompareTag("Player") && !hit.collider.gameObject.GetPhotonView().IsMine)
+            if (hit.transform.root.CompareTag("Player") && !hit.transform.root.gameObject.GetPhotonView().IsMine)
             {
                 PhotonNetwork.Instantiate(playerHitImpact.name, hit.point, Quaternion.identity);
-                hit.collider.gameObject.GetPhotonView().RPC("TakeDamage", RpcTarget.All, photonView.Owner.NickName, allGuns[selectedGun].shotDamage, PhotonNetwork.LocalPlayer.ActorNumber);
+
+                int netDamage = hit.collider.GetComponentInParent<HealthManager>().CalculateDamage(allGuns[selectedGun].shotDamage, hit.collider);
+                hit.transform.root.gameObject.GetPhotonView().RPC("TakeDamage", RpcTarget.All, photonView.Owner.NickName, netDamage, PhotonNetwork.LocalPlayer.ActorNumber);
+                // Debug.Log("Damage dealth: " + netDamage);
 
 
                 //Show Hit Marker
@@ -281,10 +283,8 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
                 PlayHitMarkerSoundFX();
 
 
-                UIController.instance.damageTextAmount.text = allGuns[selectedGun].shotDamage.ToString();
-
-
-                damageIndicator.text = allGuns[selectedGun].shotDamage.ToString();
+                UIController.instance.damageTextAmount.text = netDamage.ToString();
+                damageIndicator.text = netDamage.ToString();
 
 
 
@@ -331,52 +331,52 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
     }
 
 
-    [PunRPC]
-    private void TakeDamage(string damager, int damageAmount, int actor)
-    {
-        if (photonView.IsMine)
-        {
-            currentHealth -= damageAmount;
+    // [PunRPC]
+    // private void TakeDamage(string damager, int damageAmount, int actor)
+    // {
+    //     if (photonView.IsMine)
+    //     {
+    //         currentHealth -= damageAmount;
 
 
-            //display damage anmount
-            UIController.instance.healthSlider.value = currentHealth;
-            photonView.RPC("UpdateHealthBarRPC", RpcTarget.All, currentHealth);
+    //         //display damage anmount
+    //         UIController.instance.healthSlider.value = currentHealth;
+    //         photonView.RPC("UpdateHealthBarRPC", RpcTarget.All, currentHealth);
 
-            print(damageAmount + "" + damageTest);
-            if (currentHealth <= 0)
-            {
-                currentHealth = 0;
-                PlayerSpawner.instance.Die(damager);
-                MatchManager.instance.UpdateStatsSend(actor, 0, 1);
-
-
-                MatchManager.instance.UpdateStatsSend(actor, 2, 25);
-
-                string victimName = photonView.Owner.NickName;
+    //         print(damageAmount + "" + damageTest);
+    //         if (currentHealth <= 0)
+    //         {
+    //             currentHealth = 0;
+    //             PlayerSpawner.instance.Die(damager);
+    //             MatchManager.instance.UpdateStatsSend(actor, 0, 1);
 
 
+    //             MatchManager.instance.UpdateStatsSend(actor, 2, 25);
 
-
-                ShowEliminationMessage(damager, victimName);
+    //             string victimName = photonView.Owner.NickName;
 
 
 
 
-                damagerText = photonView.Owner.NickName;
+    //             ShowEliminationMessage(damager, victimName);
 
 
-                
 
-            } 
-            
-            
-        } 
-      
-        
-            
-       
-    }
+
+    //             damagerText = photonView.Owner.NickName;
+
+
+
+
+    //         }
+
+
+    //     }
+
+
+
+
+    // }
 
 
     [PunRPC]

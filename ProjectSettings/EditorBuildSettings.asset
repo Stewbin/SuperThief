@@ -63,8 +63,8 @@ EditorBuildSettings:
     path: Assets/Scenes/Production/Custom.unity
     guid: a7ec5adeb55114900aa4df79551d244e
   - enabled: 1
-    path: Assets/Scenes/Enemies.unity
-    guid: d15de109c1617174a8240ab7f0dc5e24
+    path: Assets/Scenes/Hitboxes.unity
+    guid: d073823b692fce14a863d5de9bee8db9
   - enabled: 1
     path: Assets/Scenes/Shooting Range.unity
     guid: 90f58e15b95378943b7dd7dda1d40548
