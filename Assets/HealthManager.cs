@@ -21,11 +21,12 @@ public class HealthManager : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    private void TakeDamage(string damager, int damageAmount, int actor, Collider collider=null, Action onDealDamage = null)
+    private void TakeDamage(string damager, int damageAmount, int actor)
     {
         if (photonView.IsMine)
         {
-            CurrentHealth -= CalculateDamage(damageAmount, collider);
+            // Deduct damage
+            CurrentHealth -= damageAmount;
 
             // Display damage anmount
             UIController.instance.healthSlider.value = CurrentHealth;
@@ -45,10 +46,11 @@ public class HealthManager : MonoBehaviourPunCallbacks
 
                 // damagerText = photonView.Owner.NickName;
             }
+
         }
     }
 
-    private int CalculateDamage(int rawDamage, Collider collider=null)
+    public int CalculateDamage(int rawDamage, Collider collider = null)
     {
         // Calculate hitbox bonus
         int netDamage = rawDamage;
