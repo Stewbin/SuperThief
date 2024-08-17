@@ -10,9 +10,9 @@ public class HealthManager : MonoBehaviourPunCallbacks
     public float MaxHealth = 100f;
     public float CurrentHealth { get; private set; }
     [Header("Damage Multipliers")]
-    public float HeadBonus;
-    public float BodyBonus;
-    public float ExtremityBonus;
+    public float HeadMultiplier;
+    public float BodyMultiplier;
+    public float ExtremityMultiplier;
 
     public override void OnEnable()
     {
@@ -35,6 +35,7 @@ public class HealthManager : MonoBehaviourPunCallbacks
             if (CurrentHealth <= 0)
             {
                 CurrentHealth = 0;
+                Debug.Log("I'm dead! x<");
 
                 PlayerSpawner.instance.Die(damager);
 
@@ -47,6 +48,7 @@ public class HealthManager : MonoBehaviourPunCallbacks
                 // damagerText = photonView.Owner.NickName;
             }
 
+            Debug.Log("Ouch! Current health: " + CurrentHealth);
         }
     }
 
@@ -59,13 +61,13 @@ public class HealthManager : MonoBehaviourPunCallbacks
             switch (collider.tag)
             {
                 case "Head":
-                    netDamage *= (int)HeadBonus;
+                    netDamage *= (int)HeadMultiplier;
                     break;
                 case "Body":
-                    netDamage *= (int)BodyBonus;
+                    netDamage *= (int)BodyMultiplier;
                     break;
                 case "Extremity":
-                    netDamage *= (int)ExtremityBonus;
+                    netDamage *= (int)ExtremityMultiplier;
                     break;
             }
         }

@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Photon.Pun; 
+using Photon.Pun;
 
 public class CameraLook : MonoBehaviourPunCallbacks
 {
@@ -13,22 +13,22 @@ public class CameraLook : MonoBehaviourPunCallbacks
     [SerializeField] public float Sensivity = 5f;
 
 
-    
+
     void LateUpdate()
     {
-       
-  
+
+
         XMove = LockAxis.x * Sensivity * Time.deltaTime;
         YMove = LockAxis.y * Sensivity * Time.deltaTime;
         XRotation -= YMove;
         XRotation = Mathf.Clamp(XRotation, -90f, 90f);
 
-        transform.localRotation = Quaternion.Euler(XRotation,0,0);
+        transform.localRotation = Quaternion.Euler(XRotation, 0, 0);
         PlayerBody.Rotate(Vector3.up * XMove);
 
-       
-       
+
+
     }
-       
-    
+
+
 }

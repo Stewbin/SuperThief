@@ -109,7 +109,7 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
     public void Awake()
     {
         instance = this;
-        // PhotonNetwork.OfflineMode = true;
+        PhotonNetwork.OfflineMode = true;
     }
 
 
@@ -267,13 +267,13 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
         {
             StartCoroutine(SpawnTrail(ray.origin, hit.point, BulletSpeed));
 
-
-            if (hit.collider.gameObject.CompareTag("Player") && !hit.collider.gameObject.GetPhotonView().IsMine)
+            if (hit.transform.root.CompareTag("Player") && !hit.transform.root.gameObject.GetPhotonView().IsMine)
             {
                 PhotonNetwork.Instantiate(playerHitImpact.name, hit.point, Quaternion.identity);
-                
+
                 int netDamage = hit.collider.GetComponentInParent<HealthManager>().CalculateDamage(allGuns[selectedGun].shotDamage, hit.collider);
-                hit.collider.gameObject.GetPhotonView().RPC("TakeDamage", RpcTarget.All, photonView.Owner.NickName, netDamage, PhotonNetwork.LocalPlayer.ActorNumber);
+                hit.transform.root.gameObject.GetPhotonView().RPC("TakeDamage", RpcTarget.All, photonView.Owner.NickName, netDamage, PhotonNetwork.LocalPlayer.ActorNumber);
+                // Debug.Log("Damage dealth: " + netDamage);
 
 
                 //Show Hit Marker
@@ -282,7 +282,7 @@ public class AdvancedGunSystem : MonoBehaviourPunCallbacks, IPointerDownHandler,
                 playHitMarker = true;
                 PlayHitMarkerSoundFX();
 
-                
+
                 UIController.instance.damageTextAmount.text = netDamage.ToString();
                 damageIndicator.text = netDamage.ToString();
 
