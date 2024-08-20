@@ -90,7 +90,6 @@ public IEnumerator DieCoroutine()
 
 
 
-
     float countdownTime = respawnTime;
 
     while (countdownTime > 0)
@@ -113,6 +112,11 @@ public IEnumerator DieCoroutine()
     if (MatchManager.instance.state == MatchManager.GameState.Playing && player == null)
     {
         SpawnPlayer();
+
+        
     }
+
+
+
 }
 }
